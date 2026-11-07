@@ -110,11 +110,14 @@ _Adapt these commands to the actual project setup._
 
 ## 👥 Our Team
 
+![team.webp](resources/team.webp)
+
 | Name | Role |
 |---|---|
-| TBD | TBD |
-| TBD | TBD |
-| TBD | TBD |
+| Eva | TBD |
+| Jakob | TBD |
+| Niki | TBD |
+| Lukas | TBD |
 
 ---
 
