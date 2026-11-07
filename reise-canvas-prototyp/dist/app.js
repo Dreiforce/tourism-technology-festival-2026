@@ -189,7 +189,7 @@ function renderControls(){
   }else{
     content=header(t('doneHeading'),t('doneHint'))+
       (hasSplit()?periodPicker():'')+
-      `<div class="summary-actions"><button class="small" type="button" id="flip" aria-pressed="${state.flipped}"><span aria-hidden="true">↻</span> ${t('flipCard')}</button><button class="small" type="button" id="share" aria-expanded="false" aria-controls="share-panel"><span aria-hidden="true">↗</span> ${t('share')}</button><button class="small" type="button" id="export">${t('export')}</button><button class="primary" type="button" id="search">${t('find')} <span aria-hidden="true">↓</span></button></div><div id="share-panel" class="share-panel" hidden></div><p id="export-status" role="status"></p>`;
+      `<div class="summary-actions"><button class="small" type="button" id="flip" aria-pressed="${state.flipped}"><span aria-hidden="true">↻</span> ${t('flipCard')}</button><button class="small" type="button" id="share" aria-expanded="false" aria-controls="share-panel"><span aria-hidden="true">↗</span> ${t('share')}</button><button class="small" type="button" id="print-card"><span aria-hidden="true">⎙</span> ${t('printPdf')}</button><button class="small" type="button" id="export">${t('export')}</button><button class="primary" type="button" id="search">${t('find')} <span aria-hidden="true">↓</span></button></div><div id="share-panel" class="share-panel" hidden></div><p id="export-status" role="status"></p>`;
   }
   const disabled=index===0&&!state.family.some(p=>p.kind==='adult');
   $('controls').innerHTML=content+`<div class="control-bottom">${index?`<button type="button" class="small" data-back>← ${t('back')}</button>`:''}${index<finalStep?`<button type="button" class="primary" data-next ${disabled?'disabled':''}>${t('next')} <span aria-hidden="true">→</span></button>`:''}</div>`;
@@ -429,6 +429,7 @@ $('controls').addEventListener('click',event=>{
   else if(target.id==='export') exportPNG();
   else if(target.id==='flip') flipCard(!state.flipped);
   else if(target.id==='share') sharePostcard(target);
+  else if(target.id==='print-card') printSheet();
   else if(target.id==='share-copy') navigator.clipboard?.writeText(shareURL()).then(()=>showExportStatus('shareCopied'),()=>{});
   else if(target.id==='search') search();
 });
@@ -468,27 +469,47 @@ function exportFonts(){
     return css.replace(/\/\*[^]*?\*\//g,'');
   }).catch(()=>{exportFontCSS=null;return ''});
 }
-// Renders the visible side of the postcard as a 1920×1080 PNG blob.
-async function renderPNG(){
+// A4 portrait print sheet (units: 0.1 mm): the front on the top A5 half, the back on the bottom half
+// turned 180°, so the sheet folded along the middle line is a postcard whose back reads the right way up.
+function sheetSVG(styles=''){
   const data={...posterData(),id:'export-art'};
+  const place=svg=>svg.replace('viewBox="0 0 960 540"','x="100" y="208" width="1900" height="1069" viewBox="0 0 960 540"');
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2100 2970" width="2100" height="2970" role="img" aria-label="${html(t('sheetLabel'))}">
+    ${styles?`<defs><style>${styles}</style></defs>`:''}<rect width="2100" height="2970" fill="#fff"/>
+    ${place(poster(data))}
+    <g transform="rotate(180 1050 2227.5) translate(0 1485)">${place(postcardBack(data))}</g>
+    <path d="M30 1485H2070" stroke="#9aa59c" stroke-width="3" stroke-dasharray="18 14"/>
+    <text x="1050" y="1460" text-anchor="middle" font-size="28" fill="#7f8b82" font-family="system-ui, sans-serif">${html(t('foldHere'))}</text>
+  </svg>`;
+}
+// Renders the A4 sheet (both sides) as a PNG blob at 200 dpi.
+async function renderPNG(){
   const fonts=await exportFonts();
-  const source=(state.flipped?postcardBack(data):poster(data))
-    .replace('viewBox="0 0 960 540"','width="1920" height="1080" viewBox="0 0 960 540"')
-    .replace(/<svg([^>]*)>/,(tag,attributes)=>`<svg${attributes}><defs><style>${fonts}</style></defs>`);
+  const source=sheetSVG(fonts).replace('width="2100" height="2970"','width="1654" height="2339"');
   const url=URL.createObjectURL(new Blob([source],{type:'image/svg+xml;charset=utf-8'}));
   try{
     const img=new Image();
     await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=reject;img.src=url});
     await img.decode?.().catch(()=>{});
     const canvas=document.createElement('canvas');
-    canvas.width=1920;canvas.height=1080;
+    canvas.width=1654;canvas.height=2339;
     canvas.getContext('2d').drawImage(img,0,0);
     const png=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
     if(!png) throw Error('PNG unavailable');
     return png;
   }finally{URL.revokeObjectURL(url)}
 }
-const pngName=()=>'familienzeit-'+state.place.toLowerCase()+'.png';
+const pngName=()=>'familienzeit-'+state.place.toLowerCase()+'-a4.png';
+// Print / save as PDF: the same A4 sheet as vector graphics through the browser's print dialog.
+function printSheet(){
+  $('print-sheet')?.remove();
+  const sheet=document.createElement('div');
+  sheet.id='print-sheet';
+  sheet.innerHTML=sheetSVG();
+  document.body.append(sheet);
+  addEventListener('afterprint',()=>sheet.remove(),{once:true});
+  print();
+}
 async function exportPNG(){
   showExportStatus('exporting');
   try{
