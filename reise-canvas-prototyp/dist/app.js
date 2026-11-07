@@ -5,7 +5,7 @@ const finalStep=steps.length-1;
 const journey=$('journey');
 const state={step:0,visited:0,flipped:false,weather:null,place:'Serfaus',start:todayDate(),end:'',family:[],general:new Set(),
   period:'am',groups:{am:{split:false,assignments:new Map()},pm:{split:false,assignments:new Map()}},
-  picks:new Map(),seed:0,openAlternatives:'',tripWeather:{},guestCard:false};
+  picks:new Map(),seed:0,openAlternatives:'',tripWeather:{},guestCard:false,bookings:new Map()};
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 let nextId=1, pending=null, catalogRequest, catalog;
 let dateError='', exportStatus='', resultStatus='';
@@ -603,10 +603,10 @@ function tripItem(entry,day){
     ${o.likes.length?`<p class="trip-likes">${o.likes.map(l=>`<span>♥ ${shortName(l.person)} <small>${l.keys.map(k=>t(k)).join(', ')}</small></span>`).join('')}</p>`:`<p class="trip-likes none">${t('noLikes')}</p>`}
     ${o.access.length?`<p class="access-line">${o.access.map(({key:k,status})=>`<span class="access-chip ${status}">${status==='yes'?'✓':status==='limited'?'≈':'?'} ${t('access_'+k)}: ${t('accessStatus_'+status)}</span>`).join('')}</p>${o.access.some(item=>item.status!=='yes')?`<p class="trip-note">${t('accessAsk')}</p>`:''}`:''}
     ${info.length?`<details class="trip-info"><summary>${t('moreInfo')}</summary>${info.map(note=>`<p>${html(note)}</p>`).join('')}</details>`:''}
-    <div class="trip-actions">${ticket?`<a class="book-now" href="${html(ticket)}" target="_blank" rel="noopener">${t('bookNow')} ↗</a>`:''}<a href="${html(a.sources[0])}" target="_blank" rel="noopener">${t('provider')} ↗</a>
+    <div class="trip-actions">${bookButton(entry)}<a href="${html(ticket||a.sources[0])}" target="_blank" rel="noopener">${t('provider')} ↗</a>
       ${a.checked?`<small>${t('checkedOn',dayText(a.checked))}</small>`:''}
-      ${alternatives.length?`<button type="button" class="small" data-alt="${html(key)}" aria-expanded="${open}">⇄ ${t('swap')}</button>`:''}
-      <button type="button" class="small" data-drop="${html(key)}">${t('removeItem')}</button></div>
+      ${bookingFor(entry)?'':alternatives.length?`<button type="button" class="small" data-alt="${html(key)}" aria-expanded="${open}">⇄ ${t('swap')}</button>`:''}
+      ${bookingFor(entry)?'':`<button type="button" class="small" data-drop="${html(key)}">${t('removeItem')}</button>`}</div>
     ${alternativesList}
   </article>`;
 }
@@ -634,12 +634,12 @@ function bookingOverview(days){
       return `<div class="booking-row"><div><strong>${html(activityTitle(a))}</strong>
         <small>${html(dayText(day.date))} · ${timeRange(entry.chosen.time.start,entry.chosen.time.end)} · ${html(a.address||a.location[0])}${entry.group.id==='all'?'':' · '+html(entry.group.label)}</small>
         ${rule?`<small>${html(rule.note)}</small>`:a.bookingNote?`<small>${html(a.bookingNote)}</small>`:''}</div>
-        <div class="booking-side"><strong>${priceText(cost,mode,a)}</strong>${link?`<a class="book-now" href="${html(link)}" target="_blank" rel="noopener">${t('bookNow')} ↗</a>`:
-          mode==='provider'?`<a href="${html(a.sources[0])}" target="_blank" rel="noopener">${t('provider')} ↗</a>`:''}</div></div>`;
+        <div class="booking-side"><strong>${priceText(cost,mode,a)}</strong>${bookButton(entry)}${link?`<a href="${html(link)}" target="_blank" rel="noopener">${t('provider')} ↗</a>`:''}</div></div>`;
     }).join('')}</section>`:'';
   }).join('');
   return `<section class="booking-overview" aria-labelledby="booking-title"><h3 id="booking-title">${t('bookingTitle')}</h3>
-    <p class="trip-note">${t('bookingIntro')}</p>${groups}
+    <p class="trip-note">${t('bookingIntro')}</p>
+    ${rows.some(row=>!bookingFor(row.entry))?`<button type="button" class="primary book-all" data-book-all>${t('bookAll',rows.filter(row=>!bookingFor(row.entry)).length)}</button>`:`<p class="chip-booked">✓ ${t('allBooked')}</p>`}${groups}
     <div class="booking-total"><span>${t(rows.some(row=>row.cost===null)?'totalKnown':'totalEstimated')}</span><strong>${money(known)}</strong></div></section>`;
 }
 function renderResults(focus){
@@ -656,6 +656,7 @@ function renderResults(focus){
     const w=day.weather;
     return `<section class="trip-day" aria-labelledby="day-${i}"><header><h3 id="day-${i}"><span>${t('dayN',i+1)}</span> ${html(new Intl.DateTimeFormat(locale(),{weekday:'long',day:'numeric',month:'long',timeZone:'UTC'}).format(new Date(day.date+'T00:00:00Z')))}</h3>
       ${w?`<span class="day-weather" title="${t(w.source==='forecast'?'weatherForecast':'weatherLastYear',w.year)}">${weatherIcons[w.kind]} ${t('weather_'+w.kind)} · ${w.tmin}°/${w.tmax}°<small>${t(w.source==='forecast'?'forecastShort':'lastYearShort')}</small></span>`:''}</header>
+      ${dayMap(day)}
       ${day.slots.map(slot=>`<div class="trip-slot"><div class="slot-label">${t(slot.period==='evening'?'evening':slot.period)}</div><div class="slot-entries">${slot.entries.map(entry=>tripItem(entry,day)).join('')}</div></div>`).join('')}
     </section>`;
   }).join('');
@@ -740,7 +741,7 @@ const storeKey='familienzeit-canvas-state';
 function saveState(){
   try{
     localStorage.setItem(storeKey,JSON.stringify({v:1,nextId,step:state.step,visited:state.visited,place:state.place,
-      start:state.start,end:state.end,period:state.period,guestCard:state.guestCard,seed:state.seed,general:[...state.general],picks:[...state.picks],
+      start:state.start,end:state.end,period:state.period,guestCard:state.guestCard,bookings:[...state.bookings],seed:state.seed,general:[...state.general],picks:[...state.picks],
       family:state.family.map(p=>({...p,wishes:[...p.wishes],needs:p.needs&&[...p.needs]})),
       groups:Object.fromEntries(Object.entries(state.groups).map(([key,group])=>[key,{split:group.split,assignments:[...group.assignments]}]))}));
   }catch{}
@@ -749,7 +750,7 @@ function loadState(){
   try{
     const saved=JSON.parse(localStorage.getItem(storeKey));
     if(saved?.v!==1||!saved.family.length) return false;
-    Object.assign(state,{step:saved.step,visited:saved.visited,place:saved.place,start:saved.start,end:saved.end,period:saved.period,guestCard:Boolean(saved.guestCard),
+    Object.assign(state,{step:saved.step,visited:saved.visited,place:saved.place,start:saved.start,end:saved.end,period:saved.period,guestCard:Boolean(saved.guestCard),bookings:new Map(saved.bookings||[]),
       seed:saved.seed,general:new Set(saved.general),picks:new Map(saved.picks),
       family:saved.family.map(p=>({...p,wishes:new Set(p.wishes),needs:p.needs?new Set(p.needs):undefined})),
       groups:Object.fromEntries(Object.entries(saved.groups).map(([key,group])=>[key,{split:group.split,assignments:new Map(group.assignments)}]))});
