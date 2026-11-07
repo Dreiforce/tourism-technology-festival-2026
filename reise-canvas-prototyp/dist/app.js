@@ -121,7 +121,7 @@ function renderSteps(){
   $('steps').innerHTML=steps.map((label,i)=>`<button type="button" data-go="${i}" ${i===state.step?'aria-current="step"':''} ${i<state.step?'class="done"':''} ${i>state.visited?'disabled':''}><b aria-hidden="true">${i<state.step?'✓':i+1}</b>${t(label)}</button>`).join('');
 }
 function wishButtons(selected,id,keys=Object.keys(choices)){
-  return keys.map(key=>`<button type="button" class="choice-button" data-wish="${key}" data-person="${id}" aria-pressed="${selected.has(key)}">${t(key)}</button>`).join('');
+  return keys.map(key=>`<button type="button" class="choice-button" data-wish="${key}" data-person="${id}" aria-pressed="${selected.has(key)}"><svg class="wish-icon" viewBox="-12 -12 24 24" aria-hidden="true"><path d="${choices[key].path}"/></svg>${t(key)}</button>`).join('');
 }
 const hasSplit=()=>Object.values(state.groups).some(settings=>groupSet(state.family,settings).length>1);
 function periodPicker(){
@@ -282,11 +282,19 @@ function dialog(kind,p){
   $('choice-confirm').textContent=t('remove');
   $('choice').showModal();
 }
+function cheer(){
+  if(reduced.matches) return;
+  const board=$('board');
+  board.classList.remove('cheer');
+  void board.offsetWidth;
+  board.classList.add('cheer');
+}
 function add(kind,age,button=kind){
   if(state.family.length>=10) return;
   const p=newPerson(kind,{age});
   state.family.push(p);
   render(p.id);
+  cheer();
   $('controls').querySelector(`[data-add="${button}"]`)?.focus();
   $('announcement').textContent=t('avatarAdded',avatarName(p));
 }
@@ -644,6 +652,13 @@ function bookingOverview(days){
       ${state.tripRef?`<button type="button" class="small" data-cancel-trip>${t('cancelTrip')}</button>`:''}</div>${groups}
     <div class="booking-total"><span>${t(rows.some(row=>row.cost===null)?'totalKnown':'totalEstimated')}</span><strong>${money(known)}</strong></div></section>`;
 }
+// Murmli talks about the weather, Berta about the day's highlight (alternating days).
+function dayTip(day,i){
+  const planned=day.slots.flatMap(slot=>slot.entries.filter(entry=>entry.chosen));
+  const highlight=planned.find(entry=>entry.chosen.today)||planned.find(entry=>entry.chosen.likes.length)||planned[0];
+  if(i%2&&highlight) return t('dayPlanTip',planned.length,html(activityTitle(highlight.chosen.activity)));
+  return t('dayTip_'+(day.weather?.kind||'none'));
+}
 function renderResults(focus){
   resultStatus='';
   const target=$('results');
@@ -651,7 +666,10 @@ function renderResults(focus){
   const {days,happy}=currentTrip();
   const people=state.family.filter(p=>p.kind!=='dog');
   const most=Math.max(1,...happy.values());
-  const fairness=`<section class="fairness" aria-labelledby="fairness-title"><h3 id="fairness-title">${t('fairness')}</h3>
+  const anyWishes=state.general.size||people.some(p=>p.wishes.size);
+  const fairness=!anyWishes?`<aside class="mascot-tip"><svg viewBox="-28 -90 56 96" aria-hidden="true">${murmliArt()}</svg>
+    <p><strong>Murmli:</strong> ${t('noInterestsNudge')} <button type="button" class="small" data-goto-wishes>${t('pickInterests')}</button></p></aside>`:
+    `<section class="fairness" aria-labelledby="fairness-title"><h3 id="fairness-title">${t('fairness')}</h3>
     <div class="fairness-rows">${people.map(p=>`<div class="fair-row"><span>${shortName(p)}</span><span class="fair-bar"><i style="width:${Math.round(100*(happy.get(p.id)||0)/most)}%"></i></span><b>${happy.get(p.id)||0}</b></div>`).join('')}</div>
     ${people.some(p=>!p.wishes.size)?`<p class="trip-note">${t('fairnessHint')}</p>`:''}</section>`;
   const dayCards=days.map((day,i)=>{
@@ -659,6 +677,7 @@ function renderResults(focus){
     return `<section class="trip-day" aria-labelledby="day-${i}"><header><h3 id="day-${i}"><span>${t('dayN',i+1)}</span> ${html(new Intl.DateTimeFormat(locale(),{weekday:'long',day:'numeric',month:'long',timeZone:'UTC'}).format(new Date(day.date+'T00:00:00Z')))}</h3>
       ${w?`<span class="day-weather" title="${t(w.source==='forecast'?'weatherForecast':'weatherLastYear',w.year)}">${weatherIcons[w.kind]} ${t('weather_'+w.kind)} · ${w.tmin}°/${w.tmax}°<small>${t(w.source==='forecast'?'forecastShort':'lastYearShort')}</small></span>`:''}</header>
       ${dayMap(day)}
+      <p class="day-mascot"><svg viewBox="-28 -90 56 96" aria-hidden="true">${(i%2?bertaArt:murmliArt)()}</svg><span><strong>${i%2?'Berta':'Murmli'}:</strong> ${dayTip(day,i)}</span></p>
       ${day.slots.map(slot=>`<div class="trip-slot"><div class="slot-label">${t(slot.period==='evening'?'evening':slot.period)}</div><div class="slot-entries">${slot.entries.map(entry=>tripItem(entry,day)).join('')}</div></div>`).join('')}
     </section>`;
   }).join('');
@@ -694,13 +713,19 @@ $('results').addEventListener('click',event=>{
   }else if(drop!==undefined){
     state.picks.set(drop,-1);
     focus=`[data-alt="${CSS.escape(drop)}"]`;
+  }else if(button.hasAttribute('data-goto-wishes')){
+    go(3);
+    $('controls').scrollIntoView({block:'start',behavior:reduced.matches?'instant':'smooth'});
+    return;
   }else return;
   renderResults(focus);
   $('announcement').textContent=t('planUpdated');
 });
 function showResultStatus(key){
   resultStatus=key;
-  $('results').innerHTML=`<h2 id="results-title" tabindex="-1">${t('results')}</h2><p>${t(key)}</p>`;
+  $('results').innerHTML=`<h2 id="results-title" tabindex="-1">${t('results')}</h2>${key==='loading'
+    ?`<div class="mascot-loading"><svg viewBox="-60 -92 120 98" aria-hidden="true"><g transform="translate(-24 0)"><g class="hop-a">${bertaArt()}</g></g><g transform="translate(26 0)"><g class="hop-b">${murmliArt()}</g></g></svg><p>${t(key)}</p></div>`
+    :`<p>${t(key)}</p>`}`;
 }
 async function search(){
   const target=$('results');
@@ -726,6 +751,10 @@ function renderLanguage(){
   document.querySelectorAll('[data-text]').forEach(el=>{el.textContent=t(el.dataset.text)});
   document.querySelectorAll('[data-label]').forEach(el=>{el.setAttribute('aria-label',t(el.dataset.label))});
   $('language').value=language;
+  $('welcome-mascots').innerHTML=`<svg viewBox="-60 -92 120 98" aria-hidden="true"><g transform="translate(-24 0)"><g class="mascot-wave">${bertaArt()}</g></g><g transform="translate(26 0)"><g class="mascot-wave" style="animation-delay:-2s">${murmliArt()}</g></g></svg><p>${t('welcomeMascots')}</p>`;
+  $('how-steps').innerHTML=[['murmli',1],['berta',2],['both',3]].map(([who,n])=>`<li><svg viewBox="${who==='both'?'-60 -92 120 98':'-28 -90 56 96'}" aria-hidden="true">${
+    who==='both'?`<g transform="translate(-24 0)">${bertaArt()}</g><g transform="translate(26 0)">${murmliArt()}</g>`:who==='murmli'?murmliArt():bertaArt()}</svg>
+    <div><b>${n}</b><strong>${t('how'+n+'Title')}</strong><p>${t('how'+n+'Text')}</p></div></li>`).join('');
   $('cover').innerHTML=poster({place:'Ladis',family:[{id:1,kind:'adult',wishes:new Set()},{id:2,kind:'child',age:6,wishes:new Set(['play'])},{id:3,kind:'child',age:0,wishes:new Set()},{id:4,kind:'dog',wishes:new Set()}],date:t('postcardSample'),id:'cover-art'});
   if(!$('experience').hidden) render();
   if(!$('results').hidden){

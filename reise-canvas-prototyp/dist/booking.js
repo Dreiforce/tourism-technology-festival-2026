@@ -139,6 +139,7 @@ function confirmBooking(form){
     <div class="dialog-actions"><button type="button" class="small" data-ics>📅 ${t('calendarFile')}</button>
       <button type="button" class="primary" data-book-close>${t('done')}</button></div>`;
   bookingDraft=done;
+  $('book-content').insertAdjacentHTML('afterbegin',`<svg class="booked-mascots" viewBox="-60 -92 120 98" aria-hidden="true"><g transform="translate(-24 0)"><g class="hop-a">${bertaArt()}</g></g><g transform="translate(26 0)"><g class="hop-b">${murmliArt()}</g></g></svg>`);
   $('book-content').querySelector('[data-ics]').focus();
 }
 // Calendar file (.ics) with every booked activity of the trip.

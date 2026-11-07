@@ -305,6 +305,8 @@ function poster({place,family,date,general=new Set(),id='card',interactive=false
     ${precipitation(sky,id!=='export-art')}
     ${general.size?`<g><text x="918" y="${split?166:467}" text-anchor="end" font-size="12" font-weight="800" fill="${split||winter?'#21483e':'#fff5d9'}" letter-spacing="1.4">${t('postcardInterests')}</text>${[...general].map((key,i)=>badge(key,906-(general.size-1-i)*27,split?185:496)).join('')}</g>`:''}
     ${split?'':`<text x="44" y="505" font-size="14" letter-spacing="2.4" font-weight="750" fill="${winter?'#21483e':'#fff5d9'}">SERFAUS · FISS · LADIS</text>`}
+    ${interactive&&!count?`<g class="mascot-bubble"><path d="M150 360H610Q622 360 622 372V410Q622 422 610 422H190L150 446 162 422H150Q138 422 138 410V372Q138 360 150 360Z" fill="#fffdf5" stroke="#c9b47a" stroke-width="1.5"/>
+      <text x="154" y="386" font-size="15" font-weight="800" fill="#245748">Murmli:</text><text x="154" y="407" font-size="14" font-weight="650" fill="#173443">${html(t('emptyCardBubble'))}</text></g>`:''}
   </svg>`;
   sceneSeason='summer';
   return svg;
