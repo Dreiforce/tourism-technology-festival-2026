@@ -3,7 +3,7 @@ const steps=['family','place','dates','wishes','groups','done'];
 const groupStep=steps.indexOf('groups');
 const finalStep=steps.length-1;
 const journey=$('journey');
-const state={step:0,visited:0,flipped:false,weather:null,place:'Serfaus',start:'',end:'',family:[],general:new Set(),
+const state={step:0,visited:0,flipped:false,weather:null,place:'Serfaus',start:todayDate(),end:'',family:[],general:new Set(),
   period:'am',groups:{am:{split:false,assignments:new Map()},pm:{split:false,assignments:new Map()}},
   picks:new Map(),seed:0,openAlternatives:'',tripWeather:{}};
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
