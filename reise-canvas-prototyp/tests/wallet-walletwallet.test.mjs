@@ -148,7 +148,7 @@ test('the QR code and booked stops reach WalletWallet', () => {
   const body = walletWalletBody(booked, json, {now});
   assert.equal(body.barcodeValue, 'https://canvas.example/home/');
   assert.equal(body.barcodeFormat, 'QR');
-  assert.equal(body.barcodeAltText, 'Reise-Canvas öffnen');
+  assert.equal(body.barcodeAltText, 'Familienzeit öffnen');
   assert.match(body.backFields.find(field => field.label === 'SA., 10.7.').value, /^09:30–11:00 Murmliwasser am Komperdell ✓/);
   assert.ok(body.secondaryFields.some(field => field.label === 'BUCHUNG' && field.value === 'FZ-AB12CD'));
 });

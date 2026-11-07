@@ -54,7 +54,7 @@ const tripText = {
     careTitle: 'Kinderbetreuung',
     careLabel: 'Betreuungszeit selbst eingetragen',
     booked: 'Gebucht (Demo)',
-    estimateNote: 'Zeiten sind Vorschläge aus dem Reise-Canvas. Öffnungszeiten und Anmeldung bitte beim Anbieter prüfen.',
+    estimateNote: 'Zeiten sind Vorschläge von Familienzeit. Öffnungszeiten und Anmeldung bitte beim Anbieter prüfen.',
     locale: 'de-AT',
     dayFormat: {weekday: 'short', day: 'numeric', month: 'numeric', timeZone: 'UTC'}
   },
@@ -72,7 +72,7 @@ const tripText = {
     careTitle: 'Childcare',
     careLabel: 'Childcare hours you entered',
     booked: 'Booked (demo)',
-    estimateNote: 'Times are suggestions from the Travel Canvas. Please check opening hours and booking with the provider.',
+    estimateNote: 'Times are suggestions from Familienzeit. Please check opening hours and booking with the provider.',
     locale: 'en-GB',
     dayFormat: {weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC'}
   }

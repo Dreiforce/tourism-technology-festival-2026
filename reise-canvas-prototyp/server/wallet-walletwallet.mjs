@@ -155,7 +155,7 @@ export async function createWalletWalletPass(trip, passJson, config) {
   let pro = true, barcode = false, legacy = false;
   for (let attempt = 0; attempt < 5; attempt++) {
     const body = walletWalletBody(trip, passJson, {images: config.images, now: config.now, pro});
-    if (barcode && config.barcodeUrl) Object.assign(body, {barcodeValue: config.barcodeUrl, barcodeFormat: 'QR', barcodeAltText: 'Reise-Canvas'});
+    if (barcode && config.barcodeUrl) Object.assign(body, {barcodeValue: config.barcodeUrl, barcodeFormat: 'QR', barcodeAltText: 'Familienzeit'});
     const response = await doFetch(base + (legacy ? '/api/pkpass' : '/api/passes'), {
       method: 'POST',
       headers: {'Authorization': `Bearer ${config.apiKey}`, 'Content-Type': 'application/json', 'Accept': 'application/json, application/vnd.apple.pkpass'},

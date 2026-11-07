@@ -325,9 +325,9 @@ test('QR code to the Reise-Canvas home page and the demo booking number', () => 
   const pass = buildApplePassJson(booked, {passTypeIdentifier: 'pass.test', teamIdentifier: 'T', images: {'strip.png': new Uint8Array(1)},
     barcodeUrl: 'https://dreiforce.github.io/tourism-technology-festival-2026/reise-canvas-prototyp/'});
   assert.deepEqual(pass.barcodes, [{format: 'PKBarcodeFormatQR', message: 'https://dreiforce.github.io/tourism-technology-festival-2026/reise-canvas-prototyp/',
-    messageEncoding: 'iso-8859-1', altText: 'Reise-Canvas öffnen'}]);
+    messageEncoding: 'iso-8859-1', altText: 'Familienzeit öffnen'}]);
   assert.deepEqual(pass.eventTicket.auxiliaryFields.at(-1), {key: 'booking', label: 'BUCHUNG', value: 'FZ-AB12CD'});
-  assert.match(pass.eventTicket.backFields.find(field => field.key === 'booking-info').value, /FZ-AB12CD – im Reise-Canvas gebucht \(Demo\)/);
+  assert.match(pass.eventTicket.backFields.find(field => field.key === 'booking-info').value, /FZ-AB12CD – bei Familienzeit gebucht \(Demo\)/);
   assert.match(pass.eventTicket.backFields.find(field => field.key === 'day-2027-07-10').value, /Gebucht \(Demo\)/);
   const keys = [...Object.values(pass.eventTicket).flat().map(field => field.key)];
   assert.equal(new Set(keys).size, keys.length, 'field keys stay unique');

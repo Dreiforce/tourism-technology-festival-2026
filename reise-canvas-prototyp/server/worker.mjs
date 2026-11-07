@@ -113,18 +113,18 @@ function postcardFiles(env) {
 
 const walletText = {
   de: {
-    heading: 'Ins Wallet', back: 'Zurück zum Reise-Canvas',
+    heading: 'Ins Wallet', back: 'Zurück zu Familienzeit',
     notConfigured: label => `${label} ist auf diesem Server noch nicht eingerichtet.`,
     failed: label => `Die Karte für ${label} konnte gerade nicht erstellt werden. Bitte versucht es gleich noch einmal.`,
     method: 'Diese Adresse lässt sich nur öffnen, nicht absenden.',
-    postcard: 'Die Postkarte zu dieser Karte ist nicht mehr gespeichert. Bitte erstellt die Karte im Reise-Canvas neu.'
+    postcard: 'Die Postkarte zu dieser Karte ist nicht mehr gespeichert. Bitte erstellt die Karte bei Familienzeit neu.'
   },
   en: {
-    heading: 'Add to Wallet', back: 'Back to the Travel Canvas',
+    heading: 'Add to Wallet', back: 'Back to Familienzeit',
     notConfigured: label => `${label} is not set up on this server yet.`,
     failed: label => `The ${label} pass couldn’t be created right now. Please try again in a moment.`,
     method: 'This address can only be opened, not submitted.',
-    postcard: 'The postcard for this pass is no longer stored. Please create the pass again in the Travel Canvas.'
+    postcard: 'The postcard for this pass is no longer stored. Please create the pass again in Familienzeit.'
   }
 };
 const escapeHTML = value => String(value).replace(/[&<>"']/g, char => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'})[char]);
