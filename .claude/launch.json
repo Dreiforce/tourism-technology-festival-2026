@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "reise-canvas",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8765", "--directory", "reise-canvas-prototyp/dist"],
+      "port": 8765
+    },
+    {
+      "name": "pages-build",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8766", "--directory", "dist/pages"],
+      "port": 8766
+    }
+  ]
+}
