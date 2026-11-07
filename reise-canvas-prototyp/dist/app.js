@@ -100,7 +100,7 @@ function draw(added,move=false){
   const old=move&&!reduced.matches?new Map([...board.querySelectorAll('[data-member]')].map(el=>[
     el.dataset.member,getComputedStyle(el).transform
   ])):null;
-  const interactive=state.step===0;
+  const interactive=true;
   const data={...posterData(),id:'board-art',interactive};
   const final=state.step===finalStep;
   board.innerHTML=`<div class="flip${final&&state.flipped?' flipped':''}"><div class="face front">${poster(data)}</div>${final?`<div class="face back">${postcardBack(data)}</div>`:''}</div>`;
@@ -167,8 +167,10 @@ function renderControls(){
     content=header(t('familyHeading'),count?t(count===1?'figureOne':'figureMany',count):t('familyHint'))+
       `<div class="add-tiles">${[['adult',{id:2,kind:'adult',look:0}],['child',{id:3,kind:'child',age:7,look:0}],['grandparent',{id:1,kind:'adult',age:72,look:2}],['dog',{id:1,kind:'dog',look:0}]].map(([kind,sample])=>{
         const figure=avatarFigure({...sample,wishes:new Set()});
-        return `<button class="add-tile" type="button" data-add="${kind}" ${count>=10?'disabled':''}><svg viewBox="-44 ${-figure.height-8} 88 ${figure.height+14}" aria-hidden="true">${figure.svg}</svg><span>+ ${t(kind)}</span></button>`;
-      }).join('')}</div>`;
+        return `<button class="add-tile" type="button" data-add="${kind}" ${kind==='child'?`aria-expanded="${state.agePicker}" aria-controls="age-picker"`:''} ${count>=10?'disabled':''}><svg viewBox="-44 ${-figure.height-8} 88 ${figure.height+14}" aria-hidden="true">${figure.svg}</svg><span>+ ${t(kind)}</span></button>`;
+      }).join('')}</div>`+(state.agePicker?`<div class="age-picker" id="age-picker" role="group" aria-labelledby="age-pick-title"><p id="age-pick-title"><strong>${t('agePick')}</strong></p>
+        ${[['baby',0,1],['little',2,5],['school',6,11],['teen',12,17]].map(([stage,from,to])=>`<div class="age-band"><span>${t(stage)} <small>${from}–${to}</small></span><div class="age-buttons">${
+          Array.from({length:to-from+1},(_,i)=>from+i).map(age=>`<button type="button" class="age-chip" data-age="${age}" aria-label="${ageText({age})}">${age===0?'&lt;1':age}</button>`).join('')}</div></div>`).join('')}</div>`:'');
   }else if(index===1){
     content=header(t('placeHeading'),t('placeHint'))+
       `<div class="options">${Object.keys(towns).map(town=>`<button type="button" class="place" data-place="${town}" aria-pressed="${town===state.place}"><strong>${town}</strong><small>${t('motif'+town)}</small></button>`).join('')}</div>`;
@@ -271,13 +273,10 @@ $('steps').addEventListener('click',event=>{
 function dialog(kind,p){
   pending={kind,p};
   $('choice').returnValue='';
-  $('choice-title').textContent=t(kind==='age'?'ageHeading':'removeHeading');
-  $('choice-content').innerHTML=kind==='age'
-    ? `<label>${t('age')}<select id="child-age" required><option value="">${t('chooseAge')}</option>${Array.from({length:18},(_,age)=>`<option value="${age}">${ageText({age})}</option>`).join('')}</select></label>`
-    : `<p>${t('removeDescription',html(avatarName(p))+(p.kind!=='dog'&&p.age!=null?' · '+ageText(p):''))}</p>`;
-  $('choice-confirm').textContent=t(kind==='age'?'addChild':'remove');
+  $('choice-title').textContent=t('removeHeading');
+  $('choice-content').innerHTML=`<p>${t('removeDescription',html(avatarName(p))+(p.kind!=='dog'&&p.age!=null?' · '+ageText(p):''))}</p>`;
+  $('choice-confirm').textContent=t('remove');
   $('choice').showModal();
-  if(kind==='age') $('child-age').focus();
 }
 function add(kind,age,button=kind){
   if(state.family.length>=10) return;
@@ -294,24 +293,29 @@ $('choice-form').addEventListener('submit',async event=>{
   pending=null;
   $('choice').close('confirm');
   if(!action) return;
-  if(action.kind==='age') return add('child',Number($('child-age').value));
   state.family=state.family.filter(p=>p!==action.p);
   const figure=$('board').querySelector(`[data-figure="${action.p.id}"]`);
   if(figure&&!reduced.matches){
     figure.classList.add('avatar-leave');
     await new Promise(resolve=>setTimeout(resolve,215));
   }
-  if(!figure?.isConnected||state.step!==0) return;
+  if(!figure?.isConnected) return;
+  if(state.step&&!state.family.some(p=>p.kind==='adult')) return go(0);
   render();
+  if(!$('results').hidden&&catalog) renderResults();
   $('controls').querySelector(`[data-add="${action.p.kind}"]`)?.focus();
   $('announcement').textContent=t('avatarRemoved',avatarName(action.p));
 });
-function requestRemoval(event){
-  if(state.step!==0) return;
-  const mark=event.target.closest('[data-avatar]');
-  const p=mark&&state.family.find(item=>item.id===Number(mark.dataset.avatar));
+// Tapping a figure on any step opens the editor (dogs: the remove prompt).
+function openPerson(p){
   if(!p||$('choice').open||$('editor').open) return;
   if(p.kind==='dog') dialog('remove',p);else openEditor(p);
+}
+let suppressClick=false;
+function requestRemoval(event){
+  if(suppressClick) return;
+  const mark=event.target.closest('[data-avatar]');
+  openPerson(mark&&state.family.find(item=>item.id===Number(mark.dataset.avatar)));
 }
 function changePeriod(period,target){
   if(state.period===period) return;
@@ -360,23 +364,30 @@ $('board').addEventListener('pointerdown',event=>{
   if(!p) return;
   event.preventDefault();
   const svg=el.ownerSVGElement;
-  svg.append(el);
-  drag={p,el,svg,start:svgPoint(svg,event),base:el.getAttribute('transform')};
-  el.classList.add('dragging');
+  drag={p,el,svg,start:svgPoint(svg,event),base:el.getAttribute('transform'),moved:false};
   $('board').setPointerCapture(event.pointerId);
 });
 $('board').addEventListener('pointermove',event=>{
   if(!drag) return;
   const pt=svgPoint(drag.svg,event);
+  if(!drag.moved){
+    if(Math.hypot(pt.x-drag.start.x,pt.y-drag.start.y)<6) return;
+    drag.moved=true;
+    drag.svg.append(drag.el);
+    drag.el.classList.add('dragging');
+  }
   drag.el.setAttribute('transform',`translate(${pt.x-drag.start.x} ${pt.y-drag.start.y}) ${drag.base}`);
   const team=teamAt(drag.svg,pt.x);
   for(const g of drag.svg.querySelectorAll('[data-team]')) g.classList.toggle('drop-target',g===team);
 });
 $('board').addEventListener('pointerup',event=>{
   if(!drag) return;
-  const {p,svg}=drag;
+  const {p,svg,moved}=drag;
   drag=null;
-  moveToGroup(p,teamAt(svg,svgPoint(svg,event).x)?.dataset.team);
+  suppressClick=true;
+  setTimeout(()=>{suppressClick=false});
+  if(moved) moveToGroup(p,teamAt(svg,svgPoint(svg,event).x)?.dataset.team);
+  else openPerson(p);
 });
 $('board').addEventListener('pointercancel',()=>{if(drag){drag=null;draw()}});
 $('board').addEventListener('keydown',event=>{
@@ -386,8 +397,15 @@ $('board').addEventListener('keydown',event=>{
 $('controls').addEventListener('click',event=>{
   const target=event.target.closest('button');
   if(!target) return;
-  const {add:kind,place,wish,person,period,mode}=target.dataset;
-  if(kind==='child') dialog('age');
+  const {add:kind,place,wish,person,period,mode,age}=target.dataset;
+  if(age!==undefined){
+    state.agePicker=false;
+    add('child',Number(age));
+  }else if(kind==='child'){
+    state.agePicker=!state.agePicker;
+    renderControls();
+    $('controls').querySelector(state.agePicker?'[data-age]':'[data-add="child"]')?.focus();
+  }
   else if(kind==='grandparent') add('adult',70,kind);
   else if(kind) add(kind);
   else if(place){
@@ -513,13 +531,15 @@ function resultCards(group){
   if(group.id==='care') return careForm(group);
   const hint=group.pendingCare?`<p>${t('careNeeded')}</p>`:'';
   if(!group.candidates.length) return hint+`<p>${t('noMatches')}</p>`;
-  return hint+`<div class="result-grid">${group.candidates.map(({index,activity:a,time,featured,matches})=>`<article class="result${featured?' is-featured':''}">
+  return hint+(groupAccess(group).length?`<p class="access-intro">${t('accessFiltered')}</p>`:'')+`<div class="result-grid">${group.candidates.map(({index,activity:a,time,featured,matches,access})=>`<article class="result${featured?' is-featured':''}">
     ${featured?`<span class="featured-badge"><span aria-hidden="true">✦</span> ${t('featured')}</span>`:''}
     ${isMascotActivity(a)?`<span class="featured-badge mascot-badge">${t('mascotPick')}</span>`:''}
     <small>${timeRange(time.start,time.end)} · ${t(a.category)}${a.adultFocus?' · '+t('ageLimit',a.min):''}</small>
     <strong>${html(activityTitle(a))}</strong><p>${html(activityDescription(a))}</p>
     ${featured?`<p class="featured-reason">${html(featuredReason(matches))}</p>`:''}
     ${a.advanceBooking?`<p><small>${t('advanceBooking')}</small></p>`:''}
+    ${access.length?`<p class="access-line">${access.map(({key,status})=>`<span class="access-chip ${status}">${status==='yes'?'✓':status==='limited'?'≈':'?'} ${t('access_'+key)}: ${t('accessStatus_'+status)}</span>`).join('')}</p>
+      ${a.accessNote?`<p><small>${html(a.accessNote)}</small></p>`:''}${access.some(item=>item.status!=='yes')?`<p><small>${t('accessAsk')}</small></p>`:''}`:''}
     <div class="result-actions"><a href="${html(a.sources[0])}" target="_blank" rel="noopener">${t('provider')} ↗</a>
     <button type="button" class="small" data-pick="${index}" data-team-pick="${group.id}" aria-pressed="${group.chosen?.index===index}" ${group.pendingCare?'disabled':''}>${group.chosen?.index===index?t('removePlan'):t('addPlan')}</button></div>
   </article>`).join('')}</div>`;

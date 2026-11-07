@@ -16,6 +16,14 @@ const tabIcons={
 const adjustSteps={y:['moveUp','moveDown','↑','↓',-1,1,[-5,5]],size:['smaller','bigger','−','+',-1,1,[-4,4]],
   rot:['rotateLeft','rotateRight','↺','↻',-1,1,[-4,4]],space:['closer','wider','→←','←→',-1,1,[-3,4]]};
 const genderHair={m:2,w:3,d:1};
+const needKeys=['wheelchair','stroller','walker','vision','hearing'];
+const needIcons={
+  wheelchair:'<circle cx="11" cy="16" r="5"/><circle cx="9" cy="4" r="2"/><path d="M9 7v6h6l3 5M9 10h5"/>',
+  stroller:'<path d="M4 7h13a6.5 6.5 0 0 1-13 0Z"/><path d="M4 7a7 7 0 0 1 7-5v5M17 7l2-3h2"/><circle cx="7" cy="20" r="2"/><circle cx="15" cy="20" r="2"/>',
+  walker:'<path d="M7 4v16M17 4v16M7 11h10M5 4h4M15 4h4"/>',
+  vision:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><path d="M4 20 20 4"/>',
+  hearing:'<path d="M8 10a5 5 0 0 1 10 0c0 4-4 5-4 8a3 3 0 0 1-6 0"/><path d="M4 4l16 16"/>'
+};
 let editing=null, draft=null, miiTab='profile', hairTouched=false, stageBox=null, stageAnim=0;
 
 const getPath=path=>path.split('.').reduce((o,k)=>o?.[k],draft);
@@ -34,6 +42,7 @@ function openEditor(p){
   hairTouched=p.hair!=null;
   draft=structuredClone({name:'',birth:'',gender:'',pants:null,hairFlip:false,...p,...lookOf(p)});
   draft.face=faceOf(p);
+  draft.needs=new Set(p.needs||[]);
   draft.body={height:0,weight:0,...p.body};
   miiTab='profile';
   stageBox=null;
@@ -76,6 +85,8 @@ function renderPanel(){
       <div class="editor-age"><label>${t('birth')}<input name="birth" data-field="birth" type="date" min="1900-01-01" max="${todayDate()}" value="${draft.birth||''}"></label>
       <label>${t('age')}<input name="age" data-field="age" type="number" min="0" max="120" inputmode="numeric" value="${draft.age??''}"></label></div>`+
       section('gender',`<div class="chips">${['m','w','d'].map(g=>`<button type="button" class="chip" data-set="gender" data-value="${g}" ${pressed('gender',g)}><b>${g.toUpperCase()}</b> ${t('gender'+g.toUpperCase())}</button>`).join('')}</div>`)+
+      section('needs',`<div class="chips">${(draftPerson().kind==='child'?needKeys:needKeys.filter(k=>k!=='stroller')).map(k=>
+        `<button type="button" class="chip" data-need="${k}" aria-pressed="${draft.needs.has(k)}"><svg viewBox="0 0 24 24" aria-hidden="true" class="need-icon">${needIcons[k]}</svg>${t('need_'+k)}</button>`).join('')}</div>`)+
       section('interests',`<div class="chips">${Object.keys(choices).map(key=>`<button type="button" class="chip" data-wish="${key}" aria-pressed="${draft.wishes.has(key)}"><svg viewBox="-12 -12 24 24" aria-hidden="true"><path d="${choices[key].path}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>${t(key)}</button>`).join('')}</div>`),
     body:()=>section('height',slider('body.height','height','▁','█'))+section('build',slider('body.weight','build','❙','█'))+
       section('shirt',swatches('shirt',palette))+section('pants',swatches('pants',pantsColors)),
@@ -155,7 +166,7 @@ $('mii-tabs').addEventListener('keydown',event=>{
 $('editor-fields').addEventListener('click',event=>{
   const el=event.target.closest('button');
   if(!el) return;
-  const {set,value,toggle,adjust,step,wish}=el.dataset;
+  const {set,value,toggle,adjust,step,wish,need}=el.dataset;
   if(set){
     const v=set==='gender'?value:Number(value);
     setPath(set,v);
@@ -165,6 +176,8 @@ $('editor-fields').addEventListener('click',event=>{
   else if(adjust){
     const [,,,,,, [min,max]]=adjustSteps[adjust.split('.').pop()];
     setPath(adjust,Math.min(max,Math.max(min,getPath(adjust)+Number(step))));
+  }else if(need){
+    if(draft.needs.has(need)) draft.needs.delete(need);else draft.needs.add(need);
   }else if(wish){
     if(draft.wishes.has(wish)) draft.wishes.delete(wish);else draft.wishes.add(wish);
   }else return;
@@ -195,11 +208,12 @@ $('editor-remove').addEventListener('click',()=>{
 $('editor-form').addEventListener('submit',event=>{
   event.preventDefault();
   $('editor').close();
-  const {name,birth,age,gender,wishes,skin,hair,hairColor,shirt,pants,hairFlip,face,body}=draft;
-  Object.assign(editing,{name:name.trim(),birth,age,gender,wishes,skin,hair,hairColor,shirt,pants,hairFlip,face,body});
+  const {name,birth,age,gender,wishes,needs,skin,hair,hairColor,shirt,pants,hairFlip,face,body}=draft;
+  Object.assign(editing,{name:name.trim(),birth,age,gender,wishes,needs,skin,hair,hairColor,shirt,pants,hairFlip,face,body});
   applyAge(editing);
   if(state.family.some(p=>p!==editing&&p.kind===editing.kind&&p.look===editing.look)) editing.look=freeLook(editing.kind,editing);
   render();
+  if(!$('results').hidden&&catalog) renderResults();
   $('board').querySelector(`[data-avatar="${editing.id}"]`)?.focus();
   $('announcement').textContent=t('avatarSaved',avatarName(editing));
 });

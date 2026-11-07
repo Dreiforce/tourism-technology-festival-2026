@@ -90,7 +90,11 @@ function featuredIndexes(candidates,seed){
     .slice(0,count);
   return new Set(picked.map(item=>item.index));
 }
+// What each accessibility need asks of an activity (keys as in the Familienzeit catalogue).
+const needAccess={wheelchair:['stepFree'],walker:['stepFree'],stroller:['stroller'],vision:['vision'],hearing:['hearing']};
+const groupAccess=group=>[...new Set(group.members.flatMap(p=>[...(p.needs||[])]).flatMap(need=>needAccess[need]||[]))];
 function rankedActivities(catalog,{date,period,place,group,general}){
+  const access=groupAccess(group);
   const ages=group.members.filter(p=>p.kind==='child').map(p=>p.age);
   const dog=group.members.some(p=>p.kind==='dog');
   const wishes=[...general,...group.members.flatMap(p=>[...p.wishes])];
@@ -98,6 +102,8 @@ function rankedActivities(catalog,{date,period,place,group,general}){
   for(const [index,activity] of catalog.entries()){
     if(activity.region!=='sfl'||!activity.location[0].startsWith(place)||
       !ages.every(age=>age>=activity.min&&age<=activity.max)||(dog&&activity.pets!=='yes')) continue;
+    // Confirmed unsuitable for a need: leave it out. Confirmed suitable: rank it higher.
+    if(access.some(key=>activity.accessibility?.[key]==='no')) continue;
     const time=suggestedTime(activity,date,period);
     if(!time) continue;
     const matches=new Set();
@@ -109,7 +115,9 @@ function rankedActivities(catalog,{date,period,place,group,general}){
       score+=Number(Boolean(categoryMatch))+Number(waterMatch)+2*Number(Boolean(explicitMatch));
       if(explicitMatch||waterMatch||(categoryMatch&&key!=='water')) matches.add(key);
     }
-    result.push({index,activity,time,score,matches:[...matches].sort()});
+    score+=2*access.filter(key=>activity.accessibility?.[key]==='yes').length;
+    result.push({index,activity,time,score,matches:[...matches].sort(),
+      access:access.map(key=>({key,status:activity.accessibility?.[key]||'unknown'}))});
   }
   const seed=JSON.stringify([place,date,period.start,period.end,ages.sort((a,b)=>a-b),dog,wishes.sort(),Boolean(group.usesCare)]);
   const featured=featuredIndexes(result,seed);

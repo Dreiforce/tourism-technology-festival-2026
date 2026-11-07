@@ -42,12 +42,14 @@ function rainfall(animated,heavy){
   return `<g stroke="#eef4f9" stroke-width="1.6" stroke-linecap="round" opacity=".75" aria-hidden="true">${drops}</g>`;
 }
 // Weather on the postcard: a darker sky and cloud cover, fog bands, rain, snow or lightning.
-function skyWeather(kind){
+function skyWeather(kind,id){
   if(kind==='sun') return '';
   if(kind==='partly') return `<g fill="#fbfaf2" opacity=".95" aria-hidden="true"><path class="drift" d="M600 160q6-22 30-20 10-24 38-14 18-12 36 6 26-2 30 28Z"/><path class="drift" style="animation-delay:-8s" d="M300 96q5-16 22-14 8-18 28-10 14-8 26 6 20 0 22 18Z"/></g>`;
   const shade={cloud:.14,fog:.06,rain:.28,snow:.16,storm:.42}[kind];
   const bank=kind==='fog'?'':`<path d="M-10-10H970V130q-30 26-70 6-30 30-80 8-40 28-90 0-36 30-86 4-40 26-84 2-44 30-92 4-40 24-82 0-46 26-92 2-40 24-86 0-36 20-80-2-34 18-70 0Z" fill="${kind==='storm'?'#7c8693':'#e4e9ee'}" opacity=".96"/>`;
-  const fog=kind==='fog'?'<rect y="190" width="960" height="100" fill="#f4f6f7" opacity=".55"/><rect y="290" width="960" height="150" fill="#f4f6f7" opacity=".4"/>':'';
+  // Fog: a soft vertical mist gradient plus drifting haze, no hard-edged bands.
+  const fog=kind==='fog'?`<defs><linearGradient id="${id}-mist" x2="0" y2="1"><stop offset="0" stop-color="#f4f6f7" stop-opacity="0"/><stop offset=".45" stop-color="#f4f6f7" stop-opacity=".62"/><stop offset="1" stop-color="#f4f6f7" stop-opacity=".2"/></linearGradient></defs>
+    <rect y="140" width="960" height="400" fill="url(#${id}-mist)"/><g fill="#f7f9fa" opacity=".5"><ellipse class="drift" cx="300" cy="300" rx="280" ry="24"/><ellipse class="drift" style="animation-delay:-10s" cx="690" cy="352" rx="320" ry="28"/></g>`:'';
   const bolt=kind==='storm'?'<path class="flash" d="M600 120 572 196h24l-30 86 66-112h-26l24-50Z" fill="#fff4b8"/>':'';
   return `<g aria-hidden="true"><rect width="960" height="540" fill="#4d5a68" opacity="${shade}"/>${bank}${fog}${bolt}</g>`;
 }
@@ -156,15 +158,34 @@ function humanArt(p,stage,look,shadow){
   const child=stage==='school';
   const legs=little?8:child?8:10;
   const handY=little?-29:shoulder+Math.round((hem-shoulder)*.74);
-  return {height:-head+r+7,headY:head,headR:r,svg:shadow+`
-    <path d="M-8 ${hem}l-3 ${-hem-5}m19 ${hem+5} 3 ${-hem-5}" stroke="${p.pants!=null?pantsColors[p.pants]:little?'#365e68':'#293f4b'}" stroke-width="${legs}" stroke-linecap="round" fill="none"/>
-    <path d="M-10-4h-5m26 0h5" stroke="#34444b" stroke-width="${little?6:7}" stroke-linecap="round"/>
+  const pants=p.pants!=null?pantsColors[p.pants]:little?'#365e68':'#293f4b';
+  const needs=p.needs||new Set();
+  // Accessibility needs are drawn: wheelchair (seated, front view), rollator, white cane.
+  const seated=needs.has('wheelchair'), walker=needs.has('walker')&&!seated;
+  const seat=Math.min(-20,Math.round(hem*.6)), dy=seated?seat-hem:0;
+  const frame='#4f5f66';
+  const wheel=Math.round(-seat*.85)+3, wx=width+12;
+  const legsArt=seated
+    ?`<rect x="${-width-6}" y="${seat-36}" width="${2*width+12}" height="38" rx="5" fill="${frame}"/>
+      <g fill="none" stroke-width="4"><ellipse cx="${-wx}" cy="${-wheel}" rx="5" ry="${wheel}" stroke="#2f3b40"/><ellipse cx="${wx}" cy="${-wheel}" rx="5" ry="${wheel}" stroke="#2f3b40"/></g>
+      <path d="M-7 ${seat+3}V-7M8 ${seat+3}V-7" stroke="${pants}" stroke-width="${legs}" stroke-linecap="round"/>
+      <path d="M-13-3h28" stroke="${frame}" stroke-width="4" stroke-linecap="round"/><path d="M-11-6h-3m25 0h3" stroke="#34444b" stroke-width="6" stroke-linecap="round"/>
+      <rect x="${-width-8}" y="${seat-1}" width="${2*width+16}" height="6" rx="3" fill="${frame}"/>`
+    :`<path d="M-8 ${hem}l-3 ${-hem-5}m19 ${hem+5} 3 ${-hem-5}" stroke="${pants}" stroke-width="${legs}" stroke-linecap="round" fill="none"/>
+      <path d="M-10-4h-5m26 0h5" stroke="#34444b" stroke-width="${little?6:7}" stroke-linecap="round"/>`;
+  const handX=width+8;
+  const aids=(walker?`<g stroke="#c8553d" stroke-width="3" stroke-linecap="round" fill="none"><path d="M${-handX} ${handY}V-6M${handX} ${handY}V-6M${-handX} ${Math.round(handY/2)}H${handX}"/></g><circle cx="${-handX}" cy="-4" r="4" fill="#2f3b40"/><circle cx="${handX}" cy="-4" r="4" fill="#2f3b40"/>`:'')+
+    (needs.has('vision')?`<path d="M${-handX} ${handY+dy}L${-handX-18} -1" stroke="#f4f4f0" stroke-width="3" stroke-linecap="round"/><path d="M${-handX-15} -6.5 ${-handX-18} -1" stroke="#c8553d" stroke-width="3.4" stroke-linecap="round"/>`:'');
+  return {height:-head-dy+r+7,headY:head+dy,headR:r,svg:shadow+`
+    ${legsArt}
+    <g transform="translate(0 ${dy})">
     <path d="M${-width+3} ${shoulder+8}L${-width-8} ${handY}M${width-3} ${shoulder+8}L${width+8} ${handY-(little?7:0)}" stroke="${shirt}" stroke-width="${little?9:10}" stroke-linecap="round" fill="none"/>
     <circle cx="${-width-8}" cy="${handY}" r="4" fill="${skin}"/><circle cx="${width+8}" cy="${handY-(little?7:0)}" r="4" fill="${skin}"/>
     <path d="M${-width} ${shoulder+5}Q0 ${shoulder-7} ${width} ${shoulder+5}L${width+2} ${hem}Q0 ${hem+4} ${-width-2} ${hem}Z" fill="${shirt}"/>
     ${clothingDetail(clothes,width,shoulder,hem)}
-    ${stage==='senior'?`<path d="M${width+8} ${handY}V0m0 ${handY}q0-7 7-7" stroke="#7a5a43" stroke-width="3.5" stroke-linecap="round" fill="none"/>`:''}
-    ${faceArt(head,r,skin,hair,hairColor,look,stage,p)}`};
+    ${stage==='senior'&&!seated&&!walker?`<path d="M${width+8} ${handY}V0m0 ${handY}q0-7 7-7" stroke="#7a5a43" stroke-width="3.5" stroke-linecap="round" fill="none"/>`:''}
+    ${faceArt(head,r,skin,hair,hairColor,look,stage,p)}</g>
+    ${aids}`};
 }
 // Appearance as palette indexes: chosen in the editor, otherwise derived from id/look like before.
 function lookOf(p){
@@ -180,6 +201,14 @@ function avatarFigure(p){
   const shadow='<ellipse cx="0" cy="2" rx="26" ry="4" fill="#213e40" opacity=".23"/>';
   if(stage==='care') return {height:119,svg:shadow+`<path d="M-32-24v-53a32 32 0 0 1 64 0v53q0 10-9 6l-8-4-9 6-9-6-9 6-9-6-5 3q-6 2-6-5Z" fill="#f6f0ff" fill-opacity=".88" stroke="#746295" stroke-width="3" stroke-dasharray="6 4"/><g fill="#4c3f67"><circle cx="-9" cy="-75" r="3"/><circle cx="9" cy="-75" r="3"/></g><path d="M-5-63q5 6 10 0" stroke="#4c3f67" stroke-width="2" stroke-linecap="round" fill="none"/>`};
   if(stage==='dog') return dogArt(look,shadow);
+  if((stage==='baby'||stage==='little')&&p.needs?.has('stroller')) return {height:80,headY:-52,headR:12,svg:shadow+`
+    <path d="M30-46 40-70h9" stroke="#3b4a50" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+    <path d="M-18-9 0-26 20-9" stroke="#3b4a50" stroke-width="2.5" fill="none"/>
+    <circle cx="-18" cy="-9" r="9" fill="#2f3b40"/><circle cx="-18" cy="-9" r="3.5" fill="#c9d3d6"/><circle cx="20" cy="-9" r="9" fill="#2f3b40"/><circle cx="20" cy="-9" r="3.5" fill="#c9d3d6"/>
+    <circle cx="14" cy="-52" r="12" fill="${skin}"/><path d="M8-61q-1-6 6-5" stroke="#573d35" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M9-52q2 2.5 4 0m4 0q2 2.5 4 0" stroke="${ink}" stroke-width="1.5" fill="none"/>
+    <path d="M-32-46H32Q30-20 0-18-30-20-32-46Z" fill="${shirt}"/><path d="M-32-46Q-34-80 2-78V-46Z" fill="${shirt}" opacity=".8"/>
+    <path d="M-28-40H28" stroke="#fff3dd" stroke-width="2" opacity=".6"/>`};
   if(stage==='baby') return {height:70,headY:-49,headR:18,svg:shadow+`<ellipse cy="-21" rx="25" ry="23" fill="${shirt}"/><path d="m-20-29 35 25m6-25L-14-7" stroke="#ffefd0" stroke-width="3" opacity=".6"/><circle cy="-49" r="18" fill="${skin}"/><path d="M-5-65q-2-8 7-6 5 2 1 6" fill="none" stroke="#573d35" stroke-width="3" stroke-linecap="round"/><path d="M-9-48q3 4 6 0m6 0q3 4 6 0" fill="none" stroke="${ink}" stroke-width="1.8"/><circle cy="-42" r="2.6" fill="#efbc60"/>`};
   return humanArt(p,stage,look,shadow);
 }
@@ -230,7 +259,7 @@ function personArt(p,x,y,scale,interactive,tag=''){
     ${p.name?`<text y="${-figure.height-(selected.length?45:12)}" text-anchor="middle" font-size="15" font-weight="800" fill="#fff5d9" stroke="#254a42" stroke-width="3" paint-order="stroke">${html(p.name)}</text>`:''}</g>
     ${tag?`<text y="26" text-anchor="middle" font-size="17" font-weight="800" fill="#fff5d9" stroke="#254a42" stroke-width="3" paint-order="stroke">${tag}</text>`:''}</g>`;
 }
-function groupedArt(family,groups){
+function groupedArt(family,groups,interactive=false){
   const teams=groups.map(group=>group.id==='care'
     ?{...group,members:[{id:'care',kind:'care',wishes:new Set()},...group.members]}
     :group);
@@ -247,7 +276,7 @@ function groupedArt(family,groups){
     const center=x+width/2;
     const figures=group.members.map((p,index)=>{
       const tag=p.kind==='child'?t('childTag',children.indexOf(p)+1):p.kind==='dog'?t('dogTag',dogs.indexOf(p)+1):'';
-      return personArt(p,x+(index+.5)*unit,445,scale,false,tag);
+      return personArt(p,x+(index+.5)*unit,445,scale,interactive,tag);
     }).join('');
     const label=`<path d="M${x} 483h${width}" stroke="${group.color}" stroke-width="2.5" stroke-linecap="round"/><rect x="${center-markWidth/2}" y="489" width="${markWidth}" height="24" rx="7" fill="${group.color}"/><text x="${center}" y="505" text-anchor="middle" font-size="13" font-weight="800" fill="#173443">${group.label}</text>`;
     const team=`<g data-team="${group.id}" data-x0="${x}" data-x1="${x+width}">${label}${figures}</g>`;
@@ -265,13 +294,13 @@ function poster({place,family,date,general=new Set(),id='card',interactive=false
   const split=groups.length>1;
   const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" ${interactive?'':'role="img"'} aria-label="${t(interactive?'interactivePostcard':'illustratedPostcard')}" font-family="system-ui, sans-serif">
     ${landscape(place,id)}
-    ${skyWeather(sky)}
+    ${skyWeather(sky,id)}
     <text x="41" y="51" font-size="15" font-weight="800" fill="#21483e" letter-spacing="4">${t('postcardTitle')}</text>
     <text x="38" y="108" font-size="56" font-weight="700" font-family="Fraunces, Georgia, serif" fill="#173c3c">${place}</text>
     <text x="42" y="138" font-size="15" font-weight="650" fill="#234a45">${t('motif'+place)}</text>
     ${date?`<g transform="translate(694 34)"><rect width="223" height="63" rx="9" fill="#fff6db" stroke="#9f9a77" stroke-dasharray="4 3"/><text x="13" y="21" fill="#86602e" font-size="10" font-weight="800" letter-spacing="2">${t('postcardDate')}</text><text x="210" y="21" text-anchor="end" fill="#86602e" font-size="11" font-weight="800">${weather?`${weatherIcons[weather.kind]} ${weather.tmax}°`:t(winter?'seasonWinter':'seasonSummer')}</text><text x="13" y="45" font-size="18" font-weight="750" fill="#21483e">${html(date)}</text></g>`:''}
     ${periodLabel?`<g transform="translate(694 105)"><rect width="223" height="25" rx="6" fill="#21483e"/><text x="111.5" y="17" text-anchor="middle" font-size="13" font-weight="750" fill="#fff5d9">${html(periodLabel)}</text></g>`:''}
-    ${split?groupedArt(family,groups):family.map((p,i)=>personArt(p,peopleArea.x+peopleArea.width/2+(i-(count-1)/2)*spacing,463,scale,interactive)).join('')}
+    ${split?groupedArt(family,groups,interactive):family.map((p,i)=>personArt(p,peopleArea.x+peopleArea.width/2+(i-(count-1)/2)*spacing,463,scale,interactive)).join('')}
     ${mascotScene()}
     ${precipitation(sky,id!=='export-art')}
     ${general.size?`<g><text x="918" y="${split?166:467}" text-anchor="end" font-size="12" font-weight="800" fill="${split||winter?'#21483e':'#fff5d9'}" letter-spacing="1.4">${t('postcardInterests')}</text>${[...general].map((key,i)=>badge(key,906-(general.size-1-i)*27,split?185:496)).join('')}</g>`:''}

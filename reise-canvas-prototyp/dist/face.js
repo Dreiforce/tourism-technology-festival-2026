@@ -96,6 +96,7 @@ function faceArt(head,r,skin,hair,hairColor,look,stage,p={}){
     ${style.back?`<path d="${style.back}" fill="${hairColor}"${flip}/>`:''}
     <circle cx="${-shape.ear}" cy="3" r="4" fill="${skin}"/><circle cx="${shape.ear}" cy="3" r="4" fill="${skin}"/>
     <path d="${shape.d}" fill="${skin}"/>
+    ${p.needs?.has?.('hearing')?`<path d="M${shape.ear+1.5}-1q3 3 1 7" stroke="#e7d2a6" stroke-width="2.4" fill="none" stroke-linecap="round"/>`:''}
     ${style.front?`<path d="${style.front}" fill="${hairColor}"${flip}/>`:''}
     ${f.blush?'<path d="M-12 7h3m18 0h3" stroke="#a45243" stroke-width="2.2" opacity=".56" stroke-linecap="round"/>':''}
     ${f.freckles?'<g fill="#9a5c42" opacity=".55"><circle cx="-10" cy="7" r=".7"/><circle cx="-8" cy="8.6" r=".7"/><circle cx="-11.5" cy="9" r=".6"/><circle cx="10" cy="7" r=".7"/><circle cx="8" cy="8.6" r=".7"/><circle cx="11.5" cy="9" r=".6"/></g>':''}
