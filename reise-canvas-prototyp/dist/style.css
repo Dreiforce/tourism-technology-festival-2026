@@ -266,3 +266,4 @@ dialog.mii{width:min(1040px,calc(100% - 20px));height:min(740px,calc(100dvh - 20
 .share-link{display:inline-flex;align-items:center;min-height:38px;padding:4px 12px;border:1px solid #9eada2;border-radius:999px;background:var(--white);color:var(--green);font-weight:800;font-size:13px;text-decoration:none}
 .share-link:hover{border-color:var(--green);background:var(--mint)}
 .share-link.whatsapp{border-color:#25d366}.share-link.facebook{border-color:#1877f2}.share-link.pinterest{border-color:#e60023}
+.start-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}

@@ -48,6 +48,7 @@ Plain classic `<script defer>` files that share one global scope. **Load order m
 4. `planner.js`: groups (`groupSet`, `adultGroups`, childcare), opening hours (`suggestedTime`), and the **trip planner** (`slotOptions`, `planTrip`).
 5. `weather.js`: Open-Meteo. Forecast up to 15 days ahead, otherwise the same day last year (`fetchWeatherDays`).
 6. `app.js`: state, the 6 steps (family, place, dates, wishes, groups, done), rendering, drag & drop, postcard flip, PNG export, the trip plan UI.
+   The setup (people, place, dates, interests, groups, plan swaps) is saved to `localStorage` (`saveState`/`loadState` in `app.js`, key `familienzeit-canvas-state`) after every redraw. Add new state fields there so they survive a reload.
 7. `mii.js`: the Mii-style character editor dialog (opened by tapping any figure on any step).
 8. `wallet.js`: "Plan mitnehmen" on the last step. It sends the trip plan (`currentTrip()`) to the wallet worker. The pass format only knows `am`/`pm`, so evening entries travel as `pm`.
 

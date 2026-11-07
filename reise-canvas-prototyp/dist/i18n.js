@@ -99,6 +99,8 @@ const messages={
   find:['Reiseplan erstellen','Plan our trip'],
   senior:['Oma / Opa','Grandparent'],
   grandparent:['Oma / Opa','Grandparent'],
+  continueCanvas:['Weiter planen','Continue planning'],
+  resetCanvas:['Neu beginnen','Start over'],
   share:['Teilen','Share'],
   shareTitle:['Familienzeit · Reisepostkarte','Familienzeit · travel postcard'],
   shareText:['Unsere Reisepostkarte aus {0} – geplant mit Familienzeit.','Our travel postcard from {0} – planned with Familienzeit.'],

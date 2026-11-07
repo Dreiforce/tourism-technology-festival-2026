@@ -105,6 +105,7 @@ function draw(added,move=false){
   const final=state.step===finalStep;
   board.innerHTML=`<div class="flip${final&&state.flipped?' flipped':''}"><div class="face front">${poster(data)}</div>${final?`<div class="face back">${postcardBack(data)}</div>`:''}</div>`;
   board.classList.toggle('drag-enabled',canDrag());
+  saveState();
   if(added) board.querySelector(`[data-figure="${added}"]`)?.classList.add('avatar-enter');
   if(!old) return;
   for(const el of board.querySelectorAll('[data-member]')){
@@ -605,6 +606,7 @@ function renderResults(focus){
     <div class="trip-days">${dayCards}</div>
     <p class="trip-note">${t('tripSources')}</p>`;
   if(focus) target.querySelector(focus)?.focus({preventScroll:true});
+  saveState();
 }
 $('results').addEventListener('click',event=>{
   const button=event.target.closest('button');
@@ -667,5 +669,38 @@ function renderLanguage(){
 $('language').addEventListener('change',event=>{
   setLanguage(event.target.value);
   renderLanguage();
+});
+// The whole setup (people, place, dates, interests, groups, plan choices) is kept in this browser's
+// localStorage and comes back after a reload. Nothing leaves the device.
+const storeKey='familienzeit-canvas-state';
+function saveState(){
+  try{
+    localStorage.setItem(storeKey,JSON.stringify({v:1,nextId,step:state.step,visited:state.visited,place:state.place,
+      start:state.start,end:state.end,period:state.period,seed:state.seed,general:[...state.general],picks:[...state.picks],
+      family:state.family.map(p=>({...p,wishes:[...p.wishes],needs:p.needs&&[...p.needs]})),
+      groups:Object.fromEntries(Object.entries(state.groups).map(([key,group])=>[key,{split:group.split,assignments:[...group.assignments]}]))}));
+  }catch{}
+}
+function loadState(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(storeKey));
+    if(saved?.v!==1||!saved.family.length) return false;
+    Object.assign(state,{step:saved.step,visited:saved.visited,place:saved.place,start:saved.start,end:saved.end,period:saved.period,
+      seed:saved.seed,general:new Set(saved.general),picks:new Map(saved.picks),
+      family:saved.family.map(p=>({...p,wishes:new Set(p.wishes),needs:p.needs?new Set(p.needs):undefined})),
+      groups:Object.fromEntries(Object.entries(saved.groups).map(([key,group])=>[key,{split:group.split,assignments:new Map(group.assignments)}]))});
+    nextId=saved.nextId;
+    if(!validStart()){state.start=todayDate();state.end='';}
+    state.family.filter(p=>p.birth).forEach(applyAge);
+    return true;
+  }catch{return false}
+}
+if(loadState()){
+  document.querySelector('.start-label').dataset.text='continueCanvas';
+  $('reset').hidden=false;
+}
+$('reset').addEventListener('click',()=>{
+  try{localStorage.removeItem(storeKey)}catch{}
+  location.reload();
 });
 renderLanguage();
