@@ -106,6 +106,7 @@ function draw(added,move=false){
   board.innerHTML=`<div class="flip${final&&state.flipped?' flipped':''}"><div class="face front">${poster(data)}</div>${final?`<div class="face back">${postcardBack(data)}</div>`:''}</div>`;
   board.classList.toggle('drag-enabled',canDrag());
   saveState();
+  scheduleTrip();
   if(added) board.querySelector(`[data-figure="${added}"]`)?.classList.add('avatar-enter');
   if(!old) return;
   for(const el of board.querySelectorAll('[data-member]')){
@@ -191,9 +192,10 @@ function renderControls(){
   }else{
     content=header(t('doneHeading'),t('doneHint'))+
       (hasSplit()?periodPicker():'')+
-      `<div class="summary-actions"><button class="small" type="button" id="flip" aria-pressed="${state.flipped}"><span aria-hidden="true">↻</span> ${t('flipCard')}</button><button class="small" type="button" id="share" aria-expanded="false" aria-controls="share-panel"><span aria-hidden="true">↗</span> ${t('share')}</button><button class="small" type="button" id="print-card"><span aria-hidden="true">⎙</span> ${t('printPdf')}</button><button class="small" type="button" id="export">${t('export')}</button><button class="primary" type="button" id="search">${t('find')} <span aria-hidden="true">↓</span></button></div><div id="share-panel" class="share-panel" hidden></div><p id="export-status" role="status"></p>`;
+      `<div class="summary-actions"><button class="small" type="button" id="flip" aria-pressed="${state.flipped}"><span aria-hidden="true">↻</span> ${t('flipCard')}</button><button class="small" type="button" id="share" aria-expanded="false" aria-controls="share-panel"><span aria-hidden="true">↗</span> ${t('share')}</button><button class="small" type="button" id="print-card"><span aria-hidden="true">⎙</span> ${t('printPdf')}</button><button class="small" type="button" id="export">${t('export')}</button><a class="primary to-plan" href="#results">${t('toPlan')}</a></div><div id="share-panel" class="share-panel" hidden></div><p id="export-status" role="status"></p>`;
   }
   const disabled=index===0&&!state.family.some(p=>p.kind==='adult');
+  if(planReady()&&index<finalStep) content+=`<a class="plan-hint" href="#results">↓ ${t('planBelow')}</a>`;
   $('controls').innerHTML=content+`<div class="control-bottom">${index?`<button type="button" class="small" data-back>← ${t('back')}</button>`:''}${index<finalStep?`<button type="button" class="primary" data-next ${disabled?'disabled':''}>${t('next')} <span aria-hidden="true">→</span></button>`:''}</div>`;
   if(index===2){
     syncDateFields();
@@ -214,14 +216,17 @@ function start(){
   $('welcome').hidden=true;
   $('experience').hidden=false;
   $('exit').hidden=false;
-  journey.classList.add('canvas-open');
   render(undefined,true);
+  scrollTo({top:0});
 }
 $('start').addEventListener('click',start);
 $('exit').addEventListener('click',()=>{
-  journey.classList.remove('canvas-open');
+  $('experience').hidden=true;
+  $('results').hidden=true;
+  $('welcome').hidden=false;
   $('exit').hidden=true;
-  $('prompt').focus({preventScroll:true});
+  scrollTo({top:0});
+  $('start').focus();
 });
 function go(index){
   if(index>0&&!state.family.some(p=>p.kind==='adult')) return;
@@ -237,8 +242,6 @@ function go(index){
   if(index!==finalStep) state.flipped=false;
   state.step=index;
   state.visited=Math.max(state.visited,index);
-  $('experience').classList.remove('show-results');
-  $('results').hidden=true;
   render(undefined,true);
   // The finale: arriving at the last step turns the postcard over to its stamped back.
   if(arriving) setTimeout(()=>flipCard(true),reduced.matches?0:650);
@@ -441,7 +444,6 @@ $('controls').addEventListener('click',event=>{
   else if(target.id==='share') sharePostcard(target);
   else if(target.id==='print-card') printSheet();
   else if(target.id==='share-copy') navigator.clipboard?.writeText(shareURL()).then(()=>showExportStatus('shareCopied'),()=>{});
-  else if(target.id==='search') search();
 });
 $('controls').addEventListener('change',event=>{
   if(event.target.dataset.assignment){
@@ -596,23 +598,29 @@ function tripItem(entry,day){
   const ticket=mode==='online'?ticketLink(a,day.date):'';
   const map=mapLink(a);
   const info=[a.notes,a.bookingNote,a.priceNote,a.petNote,rule&&`${superSommerCard.name}: ${rule.note}`].filter(Boolean);
-  const chips=[
-    o.today?`<span class="chip-live today">● ${t('liveToday')}</span>`:`<span class="chip-live">● ${t('liveOpen',openingOn(a,day.date))}</span>`,
-    a.weather==='both'&&bad?`<span class="chip-soft">☂ ${t('weatherProof')}</span>`:a.weather==='sun'?`<span class="chip-soft">☀ ${t('outdoors')}</span>`:'',
-    a.advanceBooking?`<span class="chip-soft warn">${t('advanceBooking')}</span>`:'',
-    o.dogCheck?`<span class="chip-soft warn">${t('dogAsk')}</span>`:o.dogWelcome?`<span class="chip-live">${t('dogWelcome')}</span>`:'',
-    isMascotActivity(a)?`<span class="chip-soft mascot">${t('mascotPick')}</span>`:''
-  ].join('');
+  // Card: the essentials only; everything else sits in "Details".
+  const n=group.members.filter(p=>p.kind!=='dog').length;
+  const unsure=o.dogCheck||o.access.some(item=>item.status!=='yes')||a.advanceBooking;
+  const flags=[o.today&&`<span class="chip-live today">● ${t('liveToday')}</span>`,
+    a.weather==='both'&&bad&&`<span class="chip-soft">☂ ${t('weatherProof')}</span>`,
+    isMascotActivity(a)&&`<span class="chip-soft mascot">${t('mascotPick')}</span>`,
+    unsure&&`<span class="chip-soft warn">⚠ ${t('checkFirst')}</span>`].filter(Boolean).join('');
   return `<article class="trip-item">${who}
     <div class="trip-head"><span class="trip-time">${timeRange(o.time.start,o.time.end)}</span><strong>${html(activityTitle(a))}</strong></div>
-    <p class="trip-meta">${html(a.address||a.location[0])}${map?` · <a href="${html(map)}" target="_blank" rel="noopener">${t('mapLink')} ↗</a>`:''} · ${t('minutes',a.duration)} · ${t(a.category)}${a.operator?` · ${html(a.operator)}`:''}</p>
-    <p class="trip-booking"><span class="chip-book ${mode}">${t('book_'+mode)}</span><strong>${priceText(cost,mode,a)}</strong>${cost&&group.members.length>1?`<small>${t('priceFor',group.members.filter(p=>p.kind!=='dog').length)}</small>`:''}</p>
-    <p class="trip-chips">${chips}</p>
-    ${o.likes.length?`<p class="trip-likes">${o.likes.map(l=>`<span>♥ ${shortName(l.person)} <small>${l.keys.map(k=>t(k)).join(', ')}</small></span>`).join('')}</p>`:`<p class="trip-likes none">${t('noLikes')}</p>`}
-    ${o.access.length?`<p class="access-line">${o.access.map(({key:k,status})=>`<span class="access-chip ${status}">${status==='yes'?'✓':status==='limited'?'≈':'?'} ${t('access_'+k)}: ${t('accessStatus_'+status)}</span>`).join('')}</p>${o.access.some(item=>item.status!=='yes')?`<p class="trip-note">${t('accessAsk')}</p>`:''}`:''}
-    ${info.length?`<details class="trip-info"><summary>${t('moreInfo')}</summary>${info.map(note=>`<p>${html(note)}</p>`).join('')}</details>`:''}
-    <div class="trip-actions">${bookButton(entry)}<a href="${html(ticket||a.sources[0])}" target="_blank" rel="noopener">${t('provider')} ↗</a>
-      ${a.checked?`<small>${t('checkedOn',dayText(a.checked))}</small>`:''}
+    <p class="trip-meta">${html(a.location[0])} · ${t('minutes',a.duration)} · <strong>${priceText(cost,mode,a)}</strong></p>
+    ${flags?`<p class="trip-chips">${flags}</p>`:''}
+    ${o.likes.length?`<p class="trip-likes">${o.likes.map(l=>`<span title="${html(l.keys.map(k=>t(k)).join(', '))}">♥ ${shortName(l.person)}</span>`).join('')}</p>`:''}
+    <details class="trip-info"><summary>${t('details')}</summary>
+      <p>${html(activityDescription(a))}</p>
+      <p>📍 ${html(a.address||a.location[0])}${map?` · <a href="${html(map)}" target="_blank" rel="noopener">${t('mapLink')} ↗</a>`:''}</p>
+      <p>🕘 ${t('liveOpen',openingOn(a,day.date))} · ${t(a.category)}${a.operator?` · ${html(a.operator)}`:''}</p>
+      <p><span class="chip-book ${mode}">${t('book_'+mode)}</span>${cost&&n>1?` ${t('priceFor',n)}`:''}</p>
+      ${o.likes.length?`<p>${o.likes.map(l=>`♥ ${shortName(l.person)}: ${l.keys.map(k=>t(k)).join(', ')}`).join(' · ')}</p>`:''}
+      ${o.access.length?`<p class="access-line">${o.access.map(({key:k,status})=>`<span class="access-chip ${status}">${status==='yes'?'✓':status==='limited'?'≈':'?'} ${t('access_'+k)}: ${t('accessStatus_'+status)}</span>`).join('')}</p>`:''}
+      ${[a.advanceBooking&&t('advanceBooking'),o.dogCheck&&t('dogAsk'),o.access.some(item=>item.status!=='yes')&&t('accessAsk'),...info.map(note=>html(note))].filter(Boolean).map(note=>`<p>${note}</p>`).join('')}
+      <p><a href="${html(ticket||a.sources[0])}" target="_blank" rel="noopener">${t('provider')} ↗</a>${a.checked?` · <small>${t('checkedOn',dayText(a.checked))}</small>`:''}</p>
+    </details>
+    <div class="trip-actions">${bookButton(entry)}
       ${bookingFor(entry)?'':alternatives.length?`<button type="button" class="small" data-alt="${html(key)}" aria-expanded="${open}">⇄ ${t('swap')}</button>`:''}
       ${bookingFor(entry)?'':`<button type="button" class="small" data-drop="${html(key)}">${t('removeItem')}</button>`}</div>
     ${alternativesList}
@@ -641,7 +649,7 @@ function bookingOverview(days){
       const link=mode==='online'?ticketLink(a,day.date):'';
       return `<div class="booking-row"><div><strong>${html(activityTitle(a))}</strong>
         <small>${html(dayText(day.date))} · ${timeRange(entry.chosen.time.start,entry.chosen.time.end)} · ${html(a.address||a.location[0])}${entry.group.id==='all'?'':' · '+html(entry.group.label)}</small>
-        ${rule?`<small>${html(rule.note)}</small>`:a.bookingNote?`<small>${html(a.bookingNote)}</small>`:''}</div>
+</div>
         <div class="booking-side"><strong>${priceText(cost,mode,a)}</strong>${bookButton(entry)}${link?`<a href="${html(link)}" target="_blank" rel="noopener">${t('provider')} ↗</a>`:''}</div></div>`;
     }).join('')}</section>`:'';
   }).join('');
@@ -727,18 +735,35 @@ function showResultStatus(key){
     ?`<div class="mascot-loading"><svg viewBox="-60 -92 120 98" aria-hidden="true"><g transform="translate(-24 0)"><g class="hop-a">${bertaArt()}</g></g><g transform="translate(26 0)"><g class="hop-b">${murmliArt()}</g></g></svg><p>${t(key)}</p></div>`
     :`<p>${t(key)}</p>`}`;
 }
-async function search(){
+// The trip plan sits below the canvas and follows every change, as soon as an adult is on board and the
+// dates are valid. No button: scroll down and it's there.
+const planReady=()=>state.family.some(p=>p.kind==='adult')&&!dateIssue();
+let tripTimer=0, tripWeatherKey='';
+function scheduleTrip(){
+  clearTimeout(tripTimer);
+  tripTimer=setTimeout(updateTrip,300);
+}
+async function updateTrip(){
   const target=$('results');
-  $('experience').classList.add('show-results');
+  if($('experience').hidden) return;
   target.hidden=false;
-  showResultStatus('loading');
+  if(!planReady()){
+    resultStatus='';
+    target.innerHTML=`<h2 id="results-title" tabindex="-1">${t('tripTitle')}</h2><aside class="mascot-tip"><svg viewBox="-28 -90 56 96" aria-hidden="true">${murmliArt()}</svg><p><strong>Murmli:</strong> ${t('planPending')}</p></aside>`;
+    return;
+  }
   try{
-    catalogRequest ||= fetch('catalog.json').then(response=>{if(!response.ok) throw Error();return response.json()});
-    catalog=await catalogRequest;
-    state.tripWeather=await fetchWeatherDays(state.place,visitDates()).catch(()=>({}));
-    if(state.step!==finalStep||target.hidden) return;
-    renderResults('#results-title');
-    target.scrollIntoView({block:'start',behavior:reduced.matches?'instant':'smooth'});
+    if(!catalog){
+      showResultStatus('loading');
+      catalogRequest ||= fetch('catalog.json').then(response=>{if(!response.ok) throw Error();return response.json()});
+      catalog=await catalogRequest;
+    }
+    const key=state.place+'|'+visitDates().join(',');
+    if(tripWeatherKey!==key){
+      tripWeatherKey=key;
+      state.tripWeather=await fetchWeatherDays(state.place,visitDates()).catch(()=>({}));
+    }
+    if(planReady()) renderResults();
   }catch{
     catalogRequest=null;
     showResultStatus('catalogFailed');

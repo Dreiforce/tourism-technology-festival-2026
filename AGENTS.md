@@ -47,7 +47,7 @@ Plain classic `<script defer>` files that share one global scope. **Load order m
 3. `face.js`: face parts for the Mii-style editor (`faceOf()` defaults reproduce the original look, `faceArt()`, `headSvg()`).
 4. `planner.js`: groups (`groupSet`, `adultGroups`, childcare), opening hours (`suggestedTime`), and the **trip planner** (`slotOptions`, `planTrip`).
 5. `weather.js`: Open-Meteo. Forecast up to 15 days ahead, otherwise the same day last year (`fetchWeatherDays`).
-6. `app.js`: state, the 6 steps (family, place, dates, wishes, groups, done), rendering, drag & drop, postcard flip, PNG export, the trip plan UI.
+6. `app.js`: state, the 6 steps (family, place, dates, wishes, groups, done), rendering, drag & drop, postcard flip, exports, and the trip plan UI. The plan section `#results` sits below the canvas and re-renders (debounced, `scheduleTrip`) after every redraw once `planReady()`.
    The setup (people, place, dates, interests, groups, plan swaps) is saved to `localStorage` (`saveState`/`loadState` in `app.js`, key `familienzeit-canvas-state`) after every redraw. Add new state fields there so they survive a reload.
 7. `mii.js`: the Mii-style character editor dialog (opened by tapping any figure on any step).
 8. `wallet.js`: "Plan mitnehmen" on the last step. It sends the trip plan (`currentTrip()`) to the wallet worker. The pass format only knows `am`/`pm`, so evening entries travel as `pm`.
@@ -74,6 +74,6 @@ For each day × slot (morning, afternoon, evening events) × group, an activity 
 ## Verify before you push
 
 1. `node -e` syntax check, or simply load the page and watch the console.
-2. Click through: add people (+ Kind opens age buttons), tap a figure (editor), pick dates (weather note), split groups (drag), finish (card flips), "Reiseplan erstellen" (trip plan; try ⇄ and Streichen).
+2. Click through: add people (+ Kind opens age buttons), tap a figure (editor), pick dates (weather note), split groups (drag), finish (card flips), scroll down to the trip plan (it appears by itself once an adult and valid dates exist; try ⇄, Streichen and "Gesamten Reiseplan buchen").
 3. Check desktop and mobile widths. There must be no console errors.
 4. `node scripts/build-pages.mjs` must succeed.

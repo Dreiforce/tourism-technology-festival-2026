@@ -42,11 +42,22 @@ function rainfall(animated,heavy){
   return `<g stroke="#eef4f9" stroke-width="1.6" stroke-linecap="round" opacity=".75" aria-hidden="true">${drops}</g>`;
 }
 // Weather on the postcard: a darker sky and cloud cover, fog bands, rain, snow or lightning.
+// Puffy cloud: overlapping puffs over a slightly lower, darker copy (the shaded underside) and a highlight.
+function cloud(x,y,scale,{light='#ffffff',shade='#dbe4ec',delay=0}={}){
+  const puffs=(dy,grow)=>`<circle cx="-38" cy="${-8+dy}" r="${18+grow}"/><circle cx="-10" cy="${-24+dy}" r="${25+grow}"/><circle cx="22" cy="${-18+dy}" r="${21+grow}"/><circle cx="46" cy="${-6+dy}" r="${14+grow}"/><rect x="-56" y="${-12+dy}" width="116" height="${12+grow}" rx="6"/>`;
+  return `<g class="drift" style="animation-delay:-${delay}s"><g transform="translate(${x} ${y}) scale(${scale})">
+    <ellipse cx="4" cy="6" rx="68" ry="10" fill="${shade}" opacity=".45"/>
+    <g fill="${shade}">${puffs(3,2)}</g><g fill="${light}">${puffs(0,0)}</g>
+    <ellipse cx="-14" cy="-36" rx="12" ry="5" fill="#ffffff" opacity=".75"/></g></g>`;
+}
 function skyWeather(kind,id){
   if(kind==='sun') return '';
-  if(kind==='partly') return `<g fill="#fbfaf2" opacity=".95" aria-hidden="true"><path class="drift" d="M600 160q6-22 30-20 10-24 38-14 18-12 36 6 26-2 30 28Z"/><path class="drift" style="animation-delay:-8s" d="M300 96q5-16 22-14 8-18 28-10 14-8 26 6 20 0 22 18Z"/></g>`;
+  if(kind==='partly') return `<g aria-hidden="true">${cloud(650,160,.95,{delay:4})}${cloud(330,104,.75,{delay:9})}</g>`;
   const shade={cloud:.14,fog:.06,rain:.28,snow:.16,storm:.42}[kind];
-  const bank=kind==='fog'?'':`<path d="M-10-10H970V130q-30 26-70 6-30 30-80 8-40 28-90 0-36 30-86 4-40 26-84 2-44 30-92 4-40 24-82 0-46 26-92 2-40 24-86 0-36 20-80-2-34 18-70 0Z" fill="${kind==='storm'?'#7c8693':'#e4e9ee'}" opacity=".96"/>`;
+  // Overcast, rain and storm: a layered bank of puffy clouds (grey for rain, dark for storm).
+  const tone=kind==='storm'?{light:'#9aa3ad',shade:'#6f7884'}:kind==='rain'?{light:'#e1e6eb',shade:'#b7c0c9'}:{light:'#f4f6f8',shade:'#d3dbe2'};
+  const bank=kind==='fog'?'':[[60,80,1.45],[235,64,1.65],[410,88,1.4],[570,60,1.7],[745,86,1.45],[905,66,1.55],[150,128,1.05],[660,130,1.1]]
+    .map(([x,y,s],i)=>cloud(x,y,s,{...tone,delay:i*3})).join('');
   // Fog: a soft vertical mist gradient plus drifting haze, no hard-edged bands.
   const fog=kind==='fog'?`<defs><linearGradient id="${id}-mist" x2="0" y2="1"><stop offset="0" stop-color="#f4f6f7" stop-opacity="0"/><stop offset=".45" stop-color="#f4f6f7" stop-opacity=".62"/><stop offset="1" stop-color="#f4f6f7" stop-opacity=".2"/></linearGradient></defs>
     <rect y="140" width="960" height="400" fill="url(#${id}-mist)"/><g fill="#f7f9fa" opacity=".5"><ellipse class="drift" cx="300" cy="300" rx="280" ry="24"/><ellipse class="drift" style="animation-delay:-10s" cx="690" cy="352" rx="320" ry="28"/></g>`:'';
@@ -73,7 +84,7 @@ function landscape(place,id){
   const base=`<defs><linearGradient id="${id}-sky" x2="0" y2="1"><stop stop-color="${p.sky[0]}"/><stop offset="1" stop-color="${p.sky[1]}"/></linearGradient></defs>
     <rect width="960" height="540" fill="url(#${id}-sky)"/>
     <circle cx="${place==='Fiss'?750:690}" cy="121" r="45" fill="#f2cb70" opacity=".87"/>
-    <path class="drift" d="M121 127q8-16 25-15 6-19 27-13 16-3 24 12 23 0 33 16zm376-15q11-13 25-11 9-20 31-12 10-4 25 11 17 1 26 12z" fill="#faf8e9" opacity=".7"/>
+    ${cloud(175,122,.85)}${cloud(560,90,.6,{delay:7})}${cloud(820,168,.48,{delay:13})}
     <path d="M-30 328 153 182 210 220 320 133 440 259 526 198 621 255 726 150 803 218 872 192 991 309V540H-30Z" fill="${p.far}"/>
     <path d="m274 172 46-39 49 52-37-16-13 12-12-20zm416 19 36-41 46 45-31-12-14-12-13 13z" fill="#f7f3df"/>
     <path d="M0 322Q164 233 351 304T628 294Q808 231 960 299V540H0Z" fill="${p.hill}"/> `;
