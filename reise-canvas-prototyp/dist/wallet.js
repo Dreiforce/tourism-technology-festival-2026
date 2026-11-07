@@ -2,13 +2,19 @@
 // with family, village, dates and day plan to Apple Wallet or Google Wallet. Nothing is sent until a button is
 // tapped. Then the front of the postcard is rendered in the sizes the wallets need, uploaded to the worker
 // (api/wallet/postcard) and the pass is opened. The buttons show whenever the Reise-Canvas worker answers;
-// a wallet without credentials on the server says so on tap. Without a worker (e.g. the GitHub Pages copy)
-// the status request fails and no buttons appear.
-let walletStatusRequest, walletStatusValue=null, walletBusy=false;
+// a wallet without credentials on the server says so on tap.
+// The static GitHub Pages copy has no worker. scripts/build-pages.mjs publishes the pass modules next to it and
+// marks the page with <meta name="wallet-direct">; then the browser builds the pass content itself, sends it to
+// WalletWallet and opens WalletWallet's install page (Apple) or Google's save page. Without a worker and without
+// that marker (e.g. dist/ served as plain files) no buttons appear.
+let walletStatusRequest, walletStatusValue=null, walletBusy=false, walletModules;
+const walletDirect=document.querySelector('meta[name="wallet-direct"]');
 function walletStatus(){
-  walletStatusRequest ||= fetch('api/wallet/status',{headers:{Accept:'application/json'}})
-    .then(response=>response.ok?response.json():null)
-    .then(status=>status&&Array.isArray(status.strip)&&Array.isArray(status.hero)?status:null)
+  walletStatusRequest ||= (walletDirect
+    ? Promise.resolve({mode:'direct',apple:true,google:true})
+    : fetch('api/wallet/status',{headers:{Accept:'application/json'}})
+      .then(response=>response.ok?response.json():null)
+      .then(status=>status&&Array.isArray(status.strip)&&Array.isArray(status.hero)?{...status,mode:'server'}:null))
     .catch(()=>null)
     .then(status=>(walletStatusValue=status));
   return walletStatusRequest;
@@ -83,13 +89,15 @@ function walletCrop(img,width,height,focusY=.7){
   return new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(Error('PNG unavailable')),'image/png'));
 }
 async function walletImages(status){
+  return walletRender({strip:status.strip[0],'strip@2x':status.strip[1],'strip@3x':status.strip[2],hero:status.hero});
+}
+async function walletRender(sizes){
   const source=poster({...posterData(),id:'export-art'})
     .replace('viewBox="0 0 960 540"','width="1920" height="1080" viewBox="0 0 960 540"');
   const url=URL.createObjectURL(new Blob([source],{type:'image/svg+xml;charset=utf-8'}));
   try{
     const img=new Image();
     await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=reject;img.src=url});
-    const sizes={strip:status.strip[0],'strip@2x':status.strip[1],'strip@3x':status.strip[2],hero:status.hero};
     const images={};
     for(const [name,[width,height]] of Object.entries(sizes)) images[name]=await walletCrop(img,width,height);
     return images;
@@ -104,11 +112,19 @@ async function walletExport(kind){
   walletBusy=true;
   const buttons=[...document.querySelectorAll('[data-wallet]')];
   buttons.forEach(button=>{button.disabled=true});
-  // Google opens in a new tab so the canvas stays as it is. The tab has to be opened right away, inside the tap.
-  const tab=kind==='google'?window.open('','_blank'):null;
+  // Google (and on the static copy also WalletWallet's install page) opens in a new tab so the canvas stays as it
+  // is. The tab has to be opened right away, inside the tap.
+  const direct=walletStatusValue.mode==='direct';
+  const tab=kind==='google'||direct?window.open('','_blank'):null;
   if(tab) tab.document.write(`<title>Google Wallet</title><p style="font:16px system-ui;padding:24px">${html(t('walletPreparing'))}</p>`);
   showExportStatus('walletPreparing');
   try{
+    if(direct){
+      const target=await walletDirectTarget(kind);
+      showExportStatus('walletOpening');
+      if(tab) tab.location.href=target;else location.href=target;
+      return;
+    }
     const status=await walletStatus();
     if(!status?.[kind]) throw Error('wallet not configured');
     const plan=walletPayload();
@@ -129,4 +145,28 @@ async function walletExport(kind){
     walletBusy=false;
     setTimeout(()=>buttons.forEach(button=>{button.disabled=false}),1200);
   }
+}
+
+// Static copy: build the pass in the browser and let WalletWallet sign it. Returns the page to open.
+function walletDirectModules(){
+  const base=new URL(walletDirect.content,document.baseURI);
+  const version=walletDirect.dataset.version?'?v='+encodeURIComponent(walletDirect.dataset.version):'';
+  walletModules ||= Promise.all(['wallet-trip','wallet-apple','wallet-walletwallet'].map(name=>import(new URL(name+'.js'+version,base).href)))
+    .then(([trip,apple,walletwallet])=>({trip,apple,walletwallet,base}));
+  return walletModules;
+}
+async function walletDirectTarget(kind){
+  const {trip:plans,apple,walletwallet,base}=await walletDirectModules();
+  const trip=plans.resolveTrip(plans.decodeTripParam(walletPayload(),language),{catalog:catalog||[],id:crypto.randomUUID()});
+  const bytes=async blob=>blob?new Uint8Array(await blob.arrayBuffer()):null;
+  const asset=name=>fetch(new URL(name,base)).then(response=>response.ok?response.arrayBuffer():null)
+    .then(buffer=>buffer&&new Uint8Array(buffer)).catch(()=>null);
+  const [strip,logo,icon]=await Promise.all([
+    walletRender({strip:walletwallet.WALLETWALLET_STRIP_SIZES[2]}).then(images=>bytes(images.strip)),asset('logo.png'),asset('icon.png')]);
+  const passJson=apple.buildApplePassJson(trip,{images:{'strip.png':strip}});
+  const result=await walletwallet.createWalletWalletPass(trip,passJson,{apiKey:walletwallet.WALLETWALLET_API_KEY,
+    images:{strip3x:strip,logo,icon},barcodeUrl:location.href.split('#')[0]});
+  const target=kind==='google'?result.googleSaveUrl:result.shareUrl;
+  if(!target) throw Error('WalletWallet returned no link');
+  return target;
 }

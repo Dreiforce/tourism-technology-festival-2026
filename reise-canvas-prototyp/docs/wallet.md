@@ -115,6 +115,23 @@ Real test from your own machine (the WalletWallet API must be reachable):
 node reise-canvas-prototyp/scripts/sample-walletwallet-pass.mjs   # writes familienzeit-walletwallet.pkpass to the temp folder
 ```
 
+## Static copy on GitHub Pages (no worker)
+
+GitHub Pages only serves files, so there is no worker to upload the postcard or sign passes. Instead,
+`scripts/build-pages.mjs` publishes `wallet-trip`, `wallet-apple` and `wallet-walletwallet` (as `wallet/*.js`) plus
+the logo and icon next to the canvas and marks the page with `<meta name="wallet-direct">`. On that page
+`dist/wallet.js` skips the worker and, on tap:
+
+1. builds the same pass content in the browser (`decodeTripParam` → `resolveTrip` → `buildApplePassJson`),
+   renders the postcard strip (1125 × 369 px) and sends everything to WalletWallet (`createWalletWalletPass`);
+2. opens, in a new tab, WalletWallet's install page (`shareUrl`: "Add to Apple Wallet" on iPhone, "Save to Google
+   Wallet" on Android, a QR code on desktops) for the Apple button, or the Save to Google Wallet link for the Google
+   button. Google passes therefore also come from WalletWallet on the static copy.
+
+WalletWallet accepts these calls from the browser (checked from dreiforce.github.io). The API key is in the published
+`wallet/wallet-walletwallet.js`, so **every visitor of the page can read it**. Fine for the hackathon prototype on the
+free plan; rotate it at walletwallet.dev afterwards.
+
 ## Apple setup (own certificate)
 
 Needs a paid Apple Developer account; when the five `APPLE_*` secrets are set, they take precedence over WalletWallet. Exact commands are in the header of `scripts/sample-apple-pass.mjs`.

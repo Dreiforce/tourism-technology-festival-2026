@@ -125,7 +125,11 @@ export function walletWalletBody(trip, passJson, {images = {}, now = Date.now(),
 
 async function wwRead(response) {
   const type = response.headers.get('content-type') || '';
-  if (/pkpass|octet-stream|zip/.test(type)) return {pass: new Uint8Array(await response.arrayBuffer())};
+  if (/pkpass|octet-stream|zip/.test(type)) {
+    // Older endpoint: the pass itself, links in (CORS-exposed) headers.
+    return {pass: new Uint8Array(await response.arrayBuffer()),
+      json: {shareUrl: response.headers.get('x-pass-url'), googleSaveUrl: response.headers.get('x-google-save-url')}};
+  }
   const text = await response.text();
   try {
     return {json: JSON.parse(text), text};
@@ -134,12 +138,15 @@ async function wwRead(response) {
   }
 }
 const wwIsZip = bytes => bytes instanceof Uint8Array && bytes.length > 4 && bytes[0] === 0x50 && bytes[1] === 0x4b;
+const wwHttps = value => typeof value === 'string' && /^https:\/\//.test(value) ? value : null;
 
-// Builds the pass at WalletWallet and returns the signed .pkpass bytes.
+// Creates the pass at WalletWallet. Returns {pass, shareUrl, googleSaveUrl}: the signed .pkpass bytes, WalletWallet's
+// hosted install page (Add to Apple Wallet on iPhone, Save to Google Wallet on Android, a QR code on desktops) and
+// the Save to Google Wallet link. Runs in the worker and in the browser (the static GitHub Pages copy).
 // config: {apiKey, images?, fetch?, now?, barcodeUrl? (used only if WalletWallet insists on a barcode), baseUrl?}
-export async function buildWalletWalletPass(trip, passJson, config) {
+export async function createWalletWalletPass(trip, passJson, config) {
   if (!config?.apiKey) throw new Error('WalletWallet: API key missing.');
-  const doFetch = config.fetch || fetch;
+  const doFetch = config.fetch || ((...args) => fetch(...args));
   const base = config.baseUrl || wwBase;
   let pro = true, barcode = false, legacy = false;
   for (let attempt = 0; attempt < 5; attempt++) {
@@ -155,7 +162,7 @@ export async function buildWalletWalletPass(trip, passJson, config) {
     if (response.ok) {
       const pass = result.pass || (typeof result.json?.applePass === 'string' ? wwBytes(result.json.applePass) : null);
       if (!wwIsZip(pass)) throw new Error('WalletWallet: the answer contained no .pkpass.');
-      return pass;
+      return {pass, shareUrl: wwHttps(result.json?.shareUrl), googleSaveUrl: wwHttps(result.json?.googleSaveUrl)};
     }
     const message = (result.json?.error || result.json?.message || result.text || '').toString().slice(0, 300);
     if (response.status === 404 && !legacy) {
@@ -175,4 +182,9 @@ export async function buildWalletWalletPass(trip, passJson, config) {
     throw new Error(`WalletWallet: ${response.status} ${message}`.trim());
   }
   throw new Error('WalletWallet: no pass after several attempts.');
+}
+
+// The worker only needs the signed .pkpass bytes.
+export async function buildWalletWalletPass(trip, passJson, config) {
+  return (await createWalletWalletPass(trip, passJson, config)).pass;
 }

@@ -43,8 +43,24 @@ for (const prototype of prototypes) {
     filter: source => !/[\\/]dist[\\/]server([\\/]|$)/.test(source)
   });
   const page = new URL(prototype + '/index.html', output);
-  const markup = await readFile(page, 'utf8');
-  await writeFile(page, markup.replace(/((?:src|href)=")((?!https?:|\/\/)[^"?#]+\.(?:js|css))"/g, `$1$2?v=${version}"`));
+  let markup = (await readFile(page, 'utf8'))
+    .replace(/((?:src|href)=")((?!https?:|\/\/)[^"?#]+\.(?:js|css))"/g, `$1$2?v=${version}"`);
+  if (prototype === 'reise-canvas-prototyp') markup = await addStaticWallet(markup);
+  await writeFile(page, markup);
+}
+
+// The static Reise-Canvas has no worker, so its wallet buttons talk to WalletWallet straight from the browser
+// (see reise-canvas-prototyp/docs/wallet.md). For that the browser needs the pass modules and two small images.
+async function addStaticWallet(markup) {
+  const from = new URL('reise-canvas-prototyp/server/', root);
+  const to = new URL('reise-canvas-prototyp/wallet/', output);
+  await mkdir(to, { recursive: true });
+  for (const name of ['wallet-trip', 'wallet-apple', 'wallet-walletwallet']) {
+    await cp(new URL(name + '.mjs', from), new URL(name + '.js', to));
+  }
+  await cp(new URL('wallet-assets/apple/logo@3x.png', from), new URL('logo.png', to));
+  await cp(new URL('wallet-assets/apple/icon@3x.png', from), new URL('icon.png', to));
+  return markup.replace('</head>', `<meta name="wallet-direct" content="wallet/" data-version="${version}"></head>`);
 }
 
 // The Reise-Canvas is the default app; the Familienzeit planner stays at /familienzeit/.
