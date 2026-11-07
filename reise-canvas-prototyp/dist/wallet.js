@@ -66,11 +66,11 @@ function walletNote(key){
   for(const status of document.querySelectorAll('.wallet-booking-status')) status.textContent=t(key);
 }
 // iOS adds the pass and stays in Safari; it never switches to the Wallet app by itself, and the page is not told
-// whether "Hinzufügen" was tapped. So shortly after the Apple button a small popup opens underneath Apple's sheet;
-// once the sheet is gone it offers the Wallet app (shoebox:// – undocumented, but it has opened Apple's Wallet app for
-// years). The tap on that link counts as the user's own, so iOS opens Wallet right away. The status line keeps the link.
+// whether "Hinzufügen" or "Abbrechen" was tapped. So after the tap the status line offers the Wallet app
+// (shoebox:// – undocumented, but it has opened Apple's Wallet app for years), and on the static copy the page asks
+// WalletWallet whether a phone now has the pass (walletWatchInstall). Only then does "Karte hinzugefügt" pop up.
 const walletIOS=()=>/iPhone|iPad|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1);
-function walletOfferOpen(){
+function walletOpenLink(){
   for(const status of [$('export-status'),...document.querySelectorAll('.wallet-booking-status')]){
     if(!status) continue;
     status.textContent=t('walletAdded')+' ';
@@ -78,13 +78,35 @@ function walletOfferOpen(){
     link.href='shoebox://';link.className='wallet-open';link.textContent=t('walletOpenApp');
     status.append(link);
   }
+}
+function walletAddedPopup(){
   const dialog=walletDialog();
-  dialog.innerHTML=`<h2 id="wallet-open-title">${t('walletAddedTitle')}</h2><p>${t('walletAddedText')}</p>
+  dialog.innerHTML=`<p class="wallet-added-check" aria-hidden="true">✓</p><h2 id="wallet-open-title">${t('walletAddedTitle')}</h2><p>${t('walletAddedText')}</p>
     <div class="dialog-actions"><button type="button" class="small" data-wallet-close>${t('walletClose')}</button>
       <a class="primary" href="shoebox://" data-wallet-open>${t('walletOpenApp')}</a></div>`;
   dialog.querySelector('[data-wallet-close]').addEventListener('click',()=>dialog.close());
   dialog.querySelector('[data-wallet-open]').addEventListener('click',()=>setTimeout(()=>dialog.close(),400));
   if(!dialog.open) dialog.showModal();
+}
+// After the tap: check when the page is back in view (Apple's sheet closed) and a few seconds later, plus fallback
+// timers in case Safari sends no event. At most four checks; each one counts against the WalletWallet quota.
+function walletWatchInstall(check){
+  if(!check||!walletIOS()) return;
+  let attempts=0, last=0, found=false;
+  const run=async()=>{
+    if(found||attempts>=4||Date.now()-last<2500) return;
+    attempts++;last=Date.now();
+    try{
+      if(await check(attempts)>0){
+        found=true;stop();walletAddedPopup();
+      }
+    }catch(error){console.warn('Wallet install check failed',error)}
+  };
+  const back=()=>{if(document.visibilityState==='visible'){run();setTimeout(run,4000)}};
+  const timers=[4000,9000,17000,30000].map(ms=>setTimeout(run,ms));
+  const stop=()=>{window.removeEventListener('focus',back);document.removeEventListener('visibilitychange',back);timers.forEach(clearTimeout)};
+  window.addEventListener('focus',back);document.addEventListener('visibilitychange',back);
+  setTimeout(stop,45000);
 }
 function walletDialog(){
   let dialog=$('wallet-open-dialog');
@@ -99,7 +121,7 @@ function walletDialog(){
 // Apple devices: the pass is prepared on the first tap, then our own popup shows it with a real link. Tapping that
 // link opens the .pkpass as the user's own navigation, so Safari shows Apple's "Add" sheet without first asking
 // whether the page may show a pass (which it does when a page opens it by itself after the preparation).
-function walletReady(target,preview){
+function walletReady(target,preview,check){
   walletNote('walletReadyNote');
   const dialog=walletDialog();
   const src=preview?URL.createObjectURL(preview):'';
@@ -110,7 +132,12 @@ function walletReady(target,preview){
   dialog.querySelector('[data-wallet-close]').addEventListener('click',()=>dialog.close());
   dialog.querySelector('[data-wallet-add]').addEventListener('click',()=>{
     walletNote('walletOpening');
-    if(walletIOS()) setTimeout(walletOfferOpen,1500);else setTimeout(()=>dialog.close(),800);
+    // Our popup steps aside, so Apple's sheet is the only thing on screen.
+    setTimeout(()=>dialog.close(),150);
+    if(walletIOS()){
+      setTimeout(walletOpenLink,1200);
+      walletWatchInstall(check);
+    }
   });
   if(src) dialog.addEventListener('close',()=>URL.revokeObjectURL(src),{once:true});
   if(!dialog.open) dialog.showModal();
@@ -140,21 +167,28 @@ function walletPayload(){
   const ref=/^FZ-[A-Z0-9]{4,12}$/.test(state.tripRef||'')&&entries.some(entry=>entry[6])?state.tripRef:'';
   return walletBase64(JSON.stringify({v:1,l:language,p:state.place,s:state.start,e:state.end||'',f:family,w:wishes,r:entries.slice(0,60),...(ref&&{b:ref})}));
 }
-// Renders the whole 1920×1080 postcard into width×height, never cropped. Wider formats (the Apple strip) show the
-// card centred on the pass's dark green, like a framed postcard; taller formats (Google's hero) show it on the
+// Renders the 1920×1080 postcard into width×height. Wide formats (the Apple strip, about 3:1) show the card across
+// the full width with a small dark-green margin and rounded corners, as a slice around the family and the village
+// (place name and dates are on the pass as text anyway). Taller formats (Google's hero) show the whole card on the
 // canvas paper colour.
-function walletCrop(img,width,height){
+function walletCrop(img,width,height,focusY=.68){
   const canvas=document.createElement('canvas');
   canvas.width=width;canvas.height=height;
   const context=canvas.getContext('2d');
   context.imageSmoothingQuality='high';
   if(width/height>=1920/1080){
-    const pad=Math.round(height*.07);
-    const scale=(height-2*pad)/1080, cardWidth=1920*scale, cardHeight=1080*scale;
+    // Trim the card's own thin inner frame at the sides (inset ~2% of the card) so it doesn't show as two lines.
+    const gap=Math.round(height*.05), w=width-2*gap, h=height-2*gap, x=48, cropWidth=1920-2*x;
+    const cropHeight=Math.min(1080,h*cropWidth/w);
+    const y=Math.min(Math.max(focusY*1080-cropHeight/2,0),1080-cropHeight);
     context.fillStyle='#294e41';
     context.fillRect(0,0,width,height);
-    context.shadowColor='rgba(0,0,0,.28)';context.shadowBlur=Math.round(height*.05);context.shadowOffsetY=Math.round(height*.015);
-    context.drawImage(img,(width-cardWidth)/2,(height-cardHeight)/2,cardWidth,cardHeight);
+    context.save();
+    context.beginPath();
+    if(context.roundRect) context.roundRect(gap,gap,w,h,Math.round(gap*.9));else context.rect(gap,gap,w,h);
+    context.clip();
+    context.drawImage(img,x,y,cropWidth,cropHeight,gap,gap,w,h);
+    context.restore();
   }else{
     const margin=Math.round(width*.04);
     const scale=Math.min((width-2*margin)/1920,(height-2*margin)/1080);
@@ -199,11 +233,11 @@ async function walletExport(kind){
   walletNote('walletPreparing');
   try{
     if(direct){
-      const {target,preview}=await walletDirectTarget(kind);
+      const {target,preview,check}=await walletDirectTarget(kind);
       if(tab){
         walletNote('walletOpening');
         tab.location.href=target;
-      }else walletReady(target,preview);
+      }else walletReady(target,preview,check);
       return;
     }
     const status=await walletStatus();
@@ -260,5 +294,8 @@ async function walletDirectTarget(kind){
   // page in between. Other devices get the install page (with a QR code for the phone).
   const target=kind==='google'?result.googleSaveUrl:(walletAppleDevice()&&result.appleUrl)||result.shareUrl;
   if(!target) throw Error('WalletWallet returned no link');
-  return {target,preview:new Blob([strip],{type:'image/png'})};
+  // Asks WalletWallet whether a phone has the pass now (see walletWatchInstall).
+  const check=result.serialNumber?bump=>walletwallet.walletWalletInstalls(result.serialNumber,result.body,
+    {apiKey:walletwallet.WALLETWALLET_API_KEY},bump):null;
+  return {target,preview:new Blob([strip],{type:'image/png'}),check};
 }

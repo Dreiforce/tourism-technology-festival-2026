@@ -167,7 +167,7 @@ export async function createWalletWalletPass(trip, passJson, config) {
       const pass = result.pass || (typeof result.json?.applePass === 'string' ? wwBytes(result.json.applePass) : null);
       if (!wwIsZip(pass)) throw new Error('WalletWallet: the answer contained no .pkpass.');
       const serial = typeof result.json?.serialNumber === 'string' && /^[\w-]{1,100}$/.test(result.json.serialNumber) ? result.json.serialNumber : null;
-      return {pass, appleUrl: serial ? `${base}/p/${serial}/apple.pkpass` : null,
+      return {pass, serialNumber: serial, body, appleUrl: serial ? `${base}/p/${serial}/apple.pkpass` : null,
         shareUrl: wwHttps(result.json?.shareUrl), googleSaveUrl: wwHttps(result.json?.googleSaveUrl)};
     }
     const message = (result.json?.error || result.json?.message || result.text || '').toString().slice(0, 300);
@@ -188,6 +188,24 @@ export async function createWalletWalletPass(trip, passJson, config) {
     throw new Error(`WalletWallet: ${response.status} ${message}`.trim());
   }
   throw new Error('WalletWallet: no pass after several attempts.');
+}
+
+// How many devices have the pass installed. WalletWallet doesn't tell anyone when a pass is added, but an update
+// (PUT) answers with `notifiedDevices`: the devices that registered the pass and got the update push. It only pushes
+// when the body changed, so each check moves the expiry by `bump` days (invisible on the pass). Each check counts
+// against the monthly pass quota. Used by the static copy to show "Karte hinzugefügt" only after a real add.
+export async function walletWalletInstalls(serial, body, config, bump = 1) {
+  if (!config?.apiKey || !/^[\w-]{1,100}$/.test(String(serial))) throw new Error('WalletWallet: serial number or API key missing.');
+  const doFetch = config.fetch || ((...args) => fetch(...args));
+  const response = await doFetch(`${config.baseUrl || wwBase}/api/passes/${serial}`, {
+    method: 'PUT',
+    headers: {'Authorization': `Bearer ${config.apiKey}`, 'Content-Type': 'application/json', 'Accept': 'application/json'},
+    body: JSON.stringify({...body, expirationDays: Math.min(3650, (Number(body?.expirationDays) || 30) + bump)}),
+    signal: AbortSignal.timeout(15000)
+  });
+  if (!response.ok) throw new Error(`WalletWallet: update answered ${response.status}.`);
+  const json = await response.json();
+  return Math.max(0, Number(json?.notifiedDevices) || 0);
 }
 
 // The worker only needs the signed .pkpass bytes.

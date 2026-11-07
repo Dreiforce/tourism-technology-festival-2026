@@ -137,6 +137,11 @@ the logo and icon next to the canvas and marks the page with `<meta name="wallet
    - Apple button on iPhone, iPad or Mac Safari: the pass file itself
      (`https://api.walletwallet.dev/p/<serial>/apple.pkpass`, served as `application/vnd.apple.pkpass`), so Apple's
      "Add to Wallet" sheet opens right away on top of the canvas;
+     On these devices the pass is prepared first and shown in our own popup ("Eure Wallet-Karte ist fertig", with the
+     postcard as preview). Its button is a real link, so Safari opens Apple's sheet on the tap instead of asking
+     whether the page may show a pass. On iPhone/iPad the page then asks WalletWallet whether a phone has the pass
+     (`walletWalletInstalls`: an update answers with `notifiedDevices`); only then "Karte hinzugefügt" pops up with
+     "Wallet öffnen" (`shoebox://`). At most four checks per pass, each counts against the WalletWallet quota;
    - Apple button elsewhere: WalletWallet's install page (`shareUrl`) in a new tab, with a QR code for the phone;
    - Google button: the Save to Google Wallet link in a new tab. Google passes therefore also come from WalletWallet
      on the static copy.

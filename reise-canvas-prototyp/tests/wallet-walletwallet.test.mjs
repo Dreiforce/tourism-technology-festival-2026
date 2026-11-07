@@ -4,7 +4,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {buildApplePassJson} from '../server/wallet-apple.mjs';
-import {buildWalletWalletPass, createWalletWalletPass, walletWalletBody, WALLETWALLET_API_KEY, WALLETWALLET_STRIP_SIZES} from '../server/wallet-walletwallet.mjs';
+import {buildWalletWalletPass, createWalletWalletPass, walletWalletBody, walletWalletInstalls, WALLETWALLET_API_KEY, WALLETWALLET_STRIP_SIZES} from '../server/wallet-walletwallet.mjs';
 
 const fixture = JSON.parse(readFileSync(new URL('./fixtures/trip.json', import.meta.url), 'utf8'));
 const now = Date.parse('2026-11-07T20:00:00Z');
@@ -151,4 +151,20 @@ test('the QR code and booked stops reach WalletWallet', () => {
   assert.equal(body.barcodeAltText, 'Familienzeit öffnen');
   assert.match(body.backFields.find(field => field.label === 'SA., 10.7.').value, /^09:30–11:00 Murmliwasser am Komperdell ✓/);
   assert.ok(body.secondaryFields.some(field => field.label === 'BUCHUNG' && field.value === 'FZ-AB12CD'));
+});
+
+test('install check: the update answer tells whether a phone has the pass', async () => {
+  const created = fakeApi([Response.json({serialNumber: 'abc-123', applePass: Buffer.from(fakePass).toString('base64')})]);
+  const result = await createWalletWalletPass(fixture, passJson, config({fetch: created.fetch}));
+  assert.equal(result.serialNumber, 'abc-123');
+  assert.equal(result.body.logoText, 'familienzeit.', 'the request body comes back for later updates');
+
+  const api = fakeApi([Response.json({notifiedDevices: 0, unchanged: false}), Response.json({notifiedDevices: 1, unchanged: false})]);
+  assert.equal(await walletWalletInstalls('abc-123', result.body, config({fetch: api.fetch}), 1), 0);
+  assert.equal(await walletWalletInstalls('abc-123', result.body, config({fetch: api.fetch}), 2), 1);
+  assert.equal(api.calls[0].url, 'https://api.walletwallet.dev/api/passes/abc-123');
+  assert.equal(api.calls[0].body.expirationDays, result.body.expirationDays + 1, 'each check changes the body');
+  assert.equal(api.calls[1].body.expirationDays, result.body.expirationDays + 2);
+  await assert.rejects(walletWalletInstalls('../x', result.body, config({fetch: api.fetch})), /serial number/);
+  await assert.rejects(walletWalletInstalls('abc-123', result.body, config({fetch: fakeApi([new Response('no', {status: 500})]).fetch})), /answered 500/);
 });
