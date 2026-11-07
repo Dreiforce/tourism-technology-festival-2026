@@ -80,48 +80,92 @@ function stableHash(text){
   for(let i=0;i<text.length;i++) hash=Math.imul(hash^text.charCodeAt(i),16777619);
   return hash>>>0;
 }
-function featuredIndexes(candidates,seed){
-  if(candidates.length<2) return new Set();
-  const best=Math.max(...candidates.map(item=>item.score));
-  const count=candidates.length>=9?2:1;
-  const picked=candidates.filter(item=>item.score>=best-1)
-    .map(item=>({index:item.index,priority:stableHash(JSON.stringify([seed,item.activity.title]))}))
-    .sort((a,b)=>a.priority-b.priority||a.index-b.index)
-    .slice(0,count);
-  return new Set(picked.map(item=>item.index));
-}
 // What each accessibility need asks of an activity (keys as in the Familienzeit catalogue).
 const needAccess={wheelchair:['stepFree'],walker:['stepFree'],stroller:['stroller'],vision:['vision'],hearing:['hearing']};
 const groupAccess=group=>[...new Set(group.members.flatMap(p=>[...(p.needs||[])]).flatMap(need=>needAccess[need]||[]))];
-function rankedActivities(catalog,{date,period,place,group,general}){
+
+// ---------- Trip planner ----------
+// Fills every day (morning, afternoon and evening events) for every group. Hard rules: open that day,
+// fits all ages, the dog, accessibility needs and the weather. Score: who in the group likes it,
+// weighted by fairness (people whose wishes came up short so far count more), plus bonuses for
+// one-day events, weatherproof activities on bad days, confirmed access and short distances.
+const eveningPeriod={start:17*60+30,end:22*60+30};
+const badWeather=new Set(['rain','storm']);
+function personLikes(person,activity){
+  return [...person.wishes].filter(key=>activity.interests?.includes(key)||
+    (key==='water'?/bad|schwimm|wasser|see/i.test(activity.title):wishCategories[key]?.includes(activity.category))||
+    key==='wellness'&&activity.category==='Wellness');
+}
+const datedEvent=(activity,date)=>activity.hours.some(rule=>rule.from===date&&rule.to===date);
+function openingOn(activity,date){
+  const weekday=new Date(date+'T00:00:00Z').getUTCDay();
+  const rule=activity.hours.find(r=>r.kind!=='closed'&&r.days.includes(weekday)&&(!r.from||r.from<=date)&&(!r.to||date<=r.to));
+  return rule?`${rule.open}–${rule.close}`:'';
+}
+const distanceKm=([a,b],[c,d])=>Math.hypot((a-c)*111,(b-d)*76);
+function slotOptions(catalog,{date,period,group,place,general,weather,used,day,fairness,seed}){
   const access=groupAccess(group);
   const ages=group.members.filter(p=>p.kind==='child').map(p=>p.age);
   const dog=group.members.some(p=>p.kind==='dog');
-  const wishes=[...general,...group.members.flatMap(p=>[...p.wishes])];
-  const result=[];
+  const people=group.members.filter(p=>p.kind!=='dog');
+  const window=period==='evening'?eveningPeriod:periods[period];
+  const options=[];
   for(const [index,activity] of catalog.entries()){
-    if(activity.region!=='sfl'||!activity.location[0].startsWith(place)||
-      !ages.every(age=>age>=activity.min&&age<=activity.max)||(dog&&activity.pets!=='yes')) continue;
-    // Confirmed unsuitable for a need: leave it out. Confirmed suitable: rank it higher.
-    if(access.some(key=>activity.accessibility?.[key]==='no')) continue;
-    const time=suggestedTime(activity,date,period);
-    if(!time) continue;
-    const matches=new Set();
-    let score=Number(Boolean(group.usesCare&&activity.adultFocus));
-    for(const key of wishes){
-      const categoryMatch=wishCategories[key]?.includes(activity.category);
-      const waterMatch=key==='water'&&/bad|schwimm|wasser|see/i.test(activity.title);
-      const explicitMatch=activity.interests?.includes(key);
-      score+=Number(Boolean(categoryMatch))+Number(waterMatch)+2*Number(Boolean(explicitMatch));
-      if(explicitMatch||waterMatch||(categoryMatch&&key!=='water')) matches.add(key);
-    }
-    score+=2*access.filter(key=>activity.accessibility?.[key]==='yes').length;
-    result.push({index,activity,time,score,matches:[...matches].sort(),
+    if(used.has(index)||activity.region!=='sfl'||!ages.every(age=>age>=activity.min&&age<=activity.max)||
+      dog&&activity.pets!=='yes'||access.some(key=>activity.accessibility?.[key]==='no')) continue;
+    const time=suggestedTime(activity,date,window);
+    if(!time||period==='evening'&&time.start<17*60) continue;
+    const outdoorOnly=activity.weather==='sun';
+    if(outdoorOnly&&badWeather.has(weather?.kind)) continue;
+    const likes=people.map(person=>({person,keys:personLikes(person,activity)})).filter(item=>item.keys.length);
+    const today=datedEvent(activity,date);
+    if(period==='evening'&&!today&&!likes.length) continue;
+    let score=likes.reduce((sum,item)=>sum+1.5*fairness(item.person),0);
+    score+=.7*personLikes({wishes:general},activity).length;
+    score+=access.filter(key=>activity.accessibility?.[key]==='yes').length;
+    if(today) score+=1.5;
+    if(badWeather.has(weather?.kind)&&activity.weather==='both') score+=1;
+    if(weather?.kind==='sun'&&outdoorOnly) score+=.5;
+    if(outdoorOnly&&weather&&weather.tmax<=2) score-=1.5;
+    if(ages.length&&/murmli|berta/i.test(activity.title)) score+=.5;
+    if(activity.location[0].startsWith(place)) score+=.6;
+    if(day.categories.has(activity.category)) score-=1;
+    if(day.coords&&activity.coords) score-=.12*distanceKm(day.coords,activity.coords);
+    score+=(stableHash(seed+activity.title+date+period)%100)/250;
+    options.push({index,activity,time,score,likes,today,
       access:access.map(key=>({key,status:activity.accessibility?.[key]||'unknown'}))});
   }
-  const seed=JSON.stringify([place,date,period.start,period.end,ages.sort((a,b)=>a-b),dog,wishes.sort(),Boolean(group.usesCare)]);
-  const featured=featuredIndexes(result,seed);
-  for(const item of result) item.featured=featured.has(item.index);
-  return result.sort((a,b)=>Number(b.featured)-Number(a.featured)||b.score-a.score||
-    activityTitle(a.activity).localeCompare(activityTitle(b.activity),locale()));
+  return options.sort((a,b)=>b.score-a.score);
+}
+// picks: the user's choices per slot key (activity index, or -1 for "keep this slot free").
+function planTrip(catalog,{dates,place,family,groupsFor,general,weatherByDate,picks,seed}){
+  const used=new Set(), happy=new Map(family.filter(p=>p.kind!=='dog').map(p=>[p.id,0]));
+  // Whoever has had the most favourite moments counts least; everyone else counts more the further behind they are.
+  const fairness=person=>{
+    const most=Math.max(...happy.values()), own=happy.get(person.id);
+    return own===most&&most>0?.4:1+(most-own);
+  };
+  const days=dates.map(date=>{
+    const weather=weatherByDate[date]||null;
+    const day={categories:new Set(),coords:null};
+    const slots=['am','pm','evening'].map(period=>{
+      const groups=period==='evening'?[{id:'all',label:t('allTogether'),members:family}]:groupsFor(period);
+      const entries=groups.map(group=>{
+        if(group.id==='care') return {group,care:true};
+        const key=[date,period,...group.members.map(p=>p.id)].join('/');
+        const options=slotOptions(catalog,{date,period,group,place,general,weather,used,day,fairness,seed});
+        const chosen=picks.has(key)?options.find(o=>o.index===picks.get(key))||null:options[0]||null;
+        if(chosen){
+          used.add(chosen.index);
+          for(const item of chosen.likes) happy.set(item.person.id,happy.get(item.person.id)+1);
+          day.categories.add(chosen.activity.category);
+          if(chosen.activity.coords) day.coords=chosen.activity.coords;
+        }
+        return {group,key,chosen,alternatives:options.filter(o=>o!==chosen).slice(0,4)};
+      });
+      return {period,entries};
+    }).filter(slot=>slot.period!=='evening'||slot.entries.some(entry=>entry.chosen||entry.alternatives?.length&&picks.has(entry.key)));
+    return {date,weather,slots};
+  });
+  return {days,happy};
 }

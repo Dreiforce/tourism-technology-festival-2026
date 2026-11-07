@@ -5,7 +5,7 @@ const finalStep=steps.length-1;
 const journey=$('journey');
 const state={step:0,visited:0,flipped:false,weather:null,place:'Serfaus',start:'',end:'',family:[],general:new Set(),
   period:'am',groups:{am:{split:false,assignments:new Map()},pm:{split:false,assignments:new Map()}},
-  plan:new Map(),care:new Map(),resultDate:''};
+  picks:new Map(),seed:0,openAlternatives:'',tripWeather:{}};
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 let nextId=1, pending=null, catalogRequest, catalog;
 let dateError='', exportStatus='', resultStatus='';
@@ -481,145 +481,97 @@ function visitDates(){
   for(let t=dateTime(state.start);t<=dateTime(end);t+=dayMs) dates.push(new Date(t).toISOString().slice(0,10));
   return dates;
 }
-function planKey(date,period,group){
-  return [state.place,date,period,...group.members.map(p=>p.id)].join('/');
-}
-function resultGroups(date,period){
-  const groups=groupSet(state.family,state.groups[period]);
-  const care=groups.find(group=>group.id==='care');
-  const careKey=care&&planKey(date,period,care);
-  const hours=state.care.get(careKey);
-  return groups.map(group=>{
-    if(group.id==='care') return {...group,key:careKey,hours};
-    const pendingCare=group.usesCare&&!hours?.window;
-    const slot=group.usesCare&&hours?.window?hours.window:periods[period];
-    const candidates=rankedActivities(catalog,{date,period:slot,place:state.place,group,general:state.general});
-    const key=planKey(date,period,group);
-    return {...group,candidates,key,pendingCare,chosen:!pendingCare&&candidates.find(item=>item.index===state.plan.get(key))};
-  });
-}
 function groupName(group){
   return `<span class="group-chip" style="--team-color:${group.color??'#d7e6d8'}">${group.label}</span>`;
 }
-function careForm(group){
-  const hours=group.hours;
-  const links=Object.entries(childcareLinks).map(([key,urls])=>
-    `<a href="${urls[language]}" target="_blank" rel="noopener">${t(key)} ↗</a>`).join('');
-  return `<p>${t('careHoursHint')}</p><form id="care-form">
-    <div class="date-fields">
-      <label>${t('careFrom')}<input id="care-from" name="from" type="time" value="${hours?.draft?.from??hours?.from??''}" required></label>
-      <label>${t('careTo')}<input name="to" type="time" value="${hours?.draft?.to??hours?.to??''}" required></label>
-    </div>
-    <div class="result-actions"><button type="submit" class="small">${t('careSave')}</button>
-      ${hours?.window?`<button type="button" class="small" data-clear-care>${t('careClear')}</button>`:''}</div>
-    <p id="care-error" role="alert"></p>
-  </form><div class="care-links">${links}</div>`;
+const shortName=p=>p.name?html(p.name):memberLabel(p).split(' · ')[0];
+function currentTrip(){
+  return planTrip(catalog,{dates:visitDates(),place:state.place,family:state.family,general:state.general,
+    groupsFor:period=>groupSet(state.family,state.groups[period]),weatherByDate:state.tripWeather,picks:state.picks,seed:state.seed});
 }
-function planEntry(group){
-  if(group.id==='care') return group.hours?.window
-    ?`<strong>${group.hours.from}–${group.hours.to}</strong>`:t('careUnconfirmed');
-  return group.chosen
-    ?`<strong>${timeRange(group.chosen.time.start,group.chosen.time.end)}</strong> · ${html(activityTitle(group.chosen.activity))}`
-    :t('openSlot');
-}
-function featuredReason(matches){
-  if(!matches.length) return t('featuredFilters');
-  const interests=new Intl.ListFormat(locale(),{style:'short'}).format(matches.map(key=>t(key)));
-  return t('featuredInterests',interests);
-}
-function resultCards(group){
-  if(group.id==='care') return careForm(group);
-  const hint=group.pendingCare?`<p>${t('careNeeded')}</p>`:'';
-  if(!group.candidates.length) return hint+`<p>${t('noMatches')}</p>`;
-  return hint+(groupAccess(group).length?`<p class="access-intro">${t('accessFiltered')}</p>`:'')+`<div class="result-grid">${group.candidates.map(({index,activity:a,time,featured,matches,access})=>`<article class="result${featured?' is-featured':''}">
-    ${featured?`<span class="featured-badge"><span aria-hidden="true">✦</span> ${t('featured')}</span>`:''}
-    ${isMascotActivity(a)?`<span class="featured-badge mascot-badge">${t('mascotPick')}</span>`:''}
-    <small>${timeRange(time.start,time.end)} · ${t(a.category)}${a.adultFocus?' · '+t('ageLimit',a.min):''}</small>
-    <strong>${html(activityTitle(a))}</strong><p>${html(activityDescription(a))}</p>
-    ${featured?`<p class="featured-reason">${html(featuredReason(matches))}</p>`:''}
-    ${a.advanceBooking?`<p><small>${t('advanceBooking')}</small></p>`:''}
-    ${access.length?`<p class="access-line">${access.map(({key,status})=>`<span class="access-chip ${status}">${status==='yes'?'✓':status==='limited'?'≈':'?'} ${t('access_'+key)}: ${t('accessStatus_'+status)}</span>`).join('')}</p>
-      ${a.accessNote?`<p><small>${html(a.accessNote)}</small></p>`:''}${access.some(item=>item.status!=='yes')?`<p><small>${t('accessAsk')}</small></p>`:''}`:''}
-    <div class="result-actions"><a href="${html(a.sources[0])}" target="_blank" rel="noopener">${t('provider')} ↗</a>
-    <button type="button" class="small" data-pick="${index}" data-team-pick="${group.id}" aria-pressed="${group.chosen?.index===index}" ${group.pendingCare?'disabled':''}>${group.chosen?.index===index?t('removePlan'):t('addPlan')}</button></div>
-  </article>`).join('')}</div>`;
+function tripItem(entry,day){
+  if(entry.care){
+    const links=Object.entries(childcareLinks).map(([key,urls])=>`<a href="${urls[language]}" target="_blank" rel="noopener">${t(key)} ↗</a>`).join(' · ');
+    return `<article class="trip-item care">${groupName(entry.group)}<p><strong>${t('care')}</strong> · ${links}</p></article>`;
+  }
+  const {chosen:o,group,key,alternatives}=entry;
+  const open=state.openAlternatives===key;
+  const who=group.id==='all'?'':`<p class="trip-who">${groupName(group)} ${group.members.map(shortName).join(' · ')}</p>`;
+  const alternativesList=open&&alternatives.length?`<div class="trip-alternatives" id="alt-${CSS.escape(key)}"><p>${t('alternatives')}</p>${alternatives.map(alt=>
+    `<button type="button" class="alt" data-key="${html(key)}" data-choose="${alt.index}"><strong>${html(activityTitle(alt.activity))}</strong>
+      <small>${timeRange(alt.time.start,alt.time.end)} · ${html(alt.activity.location[0])}${alt.likes.length?` · ♥ ${alt.likes.map(l=>shortName(l.person)).join(', ')}`:''}</small></button>`).join('')}</div>`:'';
+  if(!o) return `<article class="trip-item empty">${who}<p>${t('freeTime')}</p>
+    ${alternatives.length?`<button type="button" class="small" data-alt="${html(key)}" aria-expanded="${open}">${t('pickSomething')}</button>`:''}${alternativesList}</article>`;
+  const a=o.activity;
+  const bad=badWeather.has(day.weather?.kind);
+  const chips=[
+    o.today?`<span class="chip-live today">● ${t('liveToday')}</span>`:`<span class="chip-live">● ${t('liveOpen',openingOn(a,day.date))}</span>`,
+    a.weather==='both'&&bad?`<span class="chip-soft">☂ ${t('weatherProof')}</span>`:a.weather==='sun'?`<span class="chip-soft">☀ ${t('outdoors')}</span>`:'',
+    a.advanceBooking?`<span class="chip-soft warn">${t('advanceBooking')}</span>`:'',
+    isMascotActivity(a)?`<span class="chip-soft mascot">${t('mascotPick')}</span>`:''
+  ].join('');
+  return `<article class="trip-item">${who}
+    <div class="trip-head"><span class="trip-time">${timeRange(o.time.start,o.time.end)}</span><strong>${html(activityTitle(a))}</strong></div>
+    <p class="trip-meta">${html(a.location[0])} · ${t('minutes',a.duration)} · ${t(a.category)}</p>
+    <p class="trip-chips">${chips}</p>
+    ${o.likes.length?`<p class="trip-likes">${o.likes.map(l=>`<span>♥ ${shortName(l.person)} <small>${l.keys.map(k=>t(k)).join(', ')}</small></span>`).join('')}</p>`:`<p class="trip-likes none">${t('noLikes')}</p>`}
+    ${o.access.length?`<p class="access-line">${o.access.map(({key:k,status})=>`<span class="access-chip ${status}">${status==='yes'?'✓':status==='limited'?'≈':'?'} ${t('access_'+k)}: ${t('accessStatus_'+status)}</span>`).join('')}</p>${o.access.some(item=>item.status!=='yes')?`<p class="trip-note">${t('accessAsk')}</p>`:''}`:''}
+    <div class="trip-actions"><a href="${html(a.sources[0])}" target="_blank" rel="noopener">${t('provider')} ↗</a>
+      ${a.checked?`<small>${t('checkedOn',dayText(a.checked))}</small>`:''}
+      ${alternatives.length?`<button type="button" class="small" data-alt="${html(key)}" aria-expanded="${open}">⇄ ${t('swap')}</button>`:''}
+      <button type="button" class="small" data-drop="${html(key)}">${t('removeItem')}</button></div>
+    ${alternativesList}
+  </article>`;
 }
 function renderResults(focus){
   resultStatus='';
   const target=$('results');
   const dates=visitDates();
-  if(!dates.includes(state.resultDate)) state.resultDate=dates[0];
-  const date=state.resultDate;
-  const groups={am:resultGroups(date,'am'),pm:resultGroups(date,'pm')};
-  const slots=Object.entries(periods).map(([key,period])=>`<section class="plan-slot">
-    <h4>${t(key)} <small>${timeRange(period.start,period.end)}</small></h4>
-    ${groups[key].map(g=>`<div class="plan-entry">${groupName(g)}<span>${planEntry(g)}</span></div>`).join('')}
-    </section>`).join('');
-  const current=groups[state.period];
-  const ordered=[...current.filter(g=>g.id==='care'),...current.filter(g=>g.id!=='care')];
-  const cards=ordered.map(g=>`<section class="result-group">
-    <h4>${groupName(g)}</h4>
-    <p>${g.members.map(memberLabel).join(' · ')}</p>
-    ${resultCards(g)}
-    </section>`).join('');
-  target.innerHTML=`<h2 id="results-title" tabindex="-1">${t('results')}</h2>
-    <p>${state.place} · ${html(dayText(date))} · ${t('catalogNote')}</p>
-    ${dates.length>1?`<label class="plan-date">${t('chooseDay')} <select id="plan-date">${dates.map(d=>`<option value="${d}" ${date===d?'selected':''}>${html(dayText(d))}</option>`).join('')}</select></label>`:''}
+  const {days,happy}=currentTrip();
+  const people=state.family.filter(p=>p.kind!=='dog');
+  const most=Math.max(1,...happy.values());
+  const fairness=`<section class="fairness" aria-labelledby="fairness-title"><h3 id="fairness-title">${t('fairness')}</h3>
+    <div class="fairness-rows">${people.map(p=>`<div class="fair-row"><span>${shortName(p)}</span><span class="fair-bar"><i style="width:${Math.round(100*(happy.get(p.id)||0)/most)}%"></i></span><b>${happy.get(p.id)||0}</b></div>`).join('')}</div>
+    ${people.some(p=>!p.wishes.size)?`<p class="trip-note">${t('fairnessHint')}</p>`:''}</section>`;
+  const dayCards=days.map((day,i)=>{
+    const w=day.weather;
+    return `<section class="trip-day" aria-labelledby="day-${i}"><header><h3 id="day-${i}"><span>${t('dayN',i+1)}</span> ${html(new Intl.DateTimeFormat(locale(),{weekday:'long',day:'numeric',month:'long',timeZone:'UTC'}).format(new Date(day.date+'T00:00:00Z')))}</h3>
+      ${w?`<span class="day-weather" title="${t(w.source==='forecast'?'weatherForecast':'weatherLastYear',w.year)}">${weatherIcons[w.kind]} ${t('weather_'+w.kind)} · ${w.tmin}°/${w.tmax}°<small>${t(w.source==='forecast'?'forecastShort':'lastYearShort')}</small></span>`:''}</header>
+      ${day.slots.map(slot=>`<div class="trip-slot"><div class="slot-label">${t(slot.period==='evening'?'evening':slot.period)}</div><div class="slot-entries">${slot.entries.map(entry=>tripItem(entry,day)).join('')}</div></div>`).join('')}
+    </section>`;
+  }).join('');
+  target.innerHTML=`<div class="trip-top"><div><h2 id="results-title" tabindex="-1">${t('tripTitle')}</h2>
+    <p>${state.place} · ${html(stamp())} · ${t('tripIntro')}</p></div>
+    <button type="button" class="primary" id="replan">✨ ${t('replan')}</button></div>
     <aside class="mascot-tip mascot-world"><svg viewBox="-56 -90 112 96" aria-hidden="true"><g transform="translate(-22 0)">${bertaArt()}</g><g transform="translate(24 0)">${murmliArt()}</g></svg>
-      <p><strong>${t(isWinter(date)?'mascotWinter':'mascotSummer')}</strong> ${t('mascotWorldHint')}
-      <a href="${isWinter(date)?'https://www.serfaus-fiss-ladis.at/de/winterurlaub/familienwinter/murmlis-und-bertas-winterwelt':'https://www.serfaus-fiss-ladis.at/de/sommerurlaub/familiensommer/murmlis-und-bertas-bergabenteuer'}" target="_blank" rel="noopener">${t('mascotWorldLink')} ↗</a></p></aside>
-    <section class="day-plan" aria-labelledby="day-plan-title">
-      <h3 id="day-plan-title">${t('dayPlan')}</h3><p>${t('dayPlanHint')}</p>
-      <div class="plan-slots">${slots}</div>
-    </section>
-    <div class="suggestions"><h3>${t('suggestions')}</h3>${periodPicker()}${cards}</div>`;
+      <p><strong>${t(isWinter(dates[0])?'mascotWinter':'mascotSummer')}</strong> ${t('mascotWorldHint')}
+      <a href="${isWinter(dates[0])?'https://www.serfaus-fiss-ladis.at/de/winterurlaub/familienwinter/murmlis-und-bertas-winterwelt':'https://www.serfaus-fiss-ladis.at/de/sommerurlaub/familiensommer/murmlis-und-bertas-bergabenteuer'}" target="_blank" rel="noopener">${t('mascotWorldLink')} ↗</a></p></aside>
+    ${fairness}
+    <div class="trip-days">${dayCards}</div>
+    <p class="trip-note">${t('tripSources')}</p>`;
   if(focus) target.querySelector(focus)?.focus({preventScroll:true});
 }
-$('results').addEventListener('change',event=>{
-  if(event.target.id!=='plan-date') return;
-  state.resultDate=event.target.value;
-  renderResults('#plan-date');
-});
-$('results').addEventListener('input',event=>{
-  const form=event.target.form;
-  if(form?.id!=='care-form') return;
-  const care=resultGroups(state.resultDate,state.period).find(group=>group.id==='care');
-  state.care.set(care.key,{...care.hours,draft:{from:form.elements.from.value,to:form.elements.to.value}});
-  $('care-error').textContent='';
-});
-$('results').addEventListener('submit',event=>{
-  if(event.target.id!=='care-form') return;
-  event.preventDefault();
-  const care=resultGroups(state.resultDate,state.period).find(group=>group.id==='care');
-  const form=new FormData(event.target);
-  const from=form.get('from');
-  const to=form.get('to');
-  const period=periods[state.period];
-  const window={start:Math.max(period.start,toMinutes(from)),end:Math.min(period.end,toMinutes(to))};
-  if(window.start>=window.end){
-    $('care-error').textContent=t('careInvalid');
-    return;
-  }
-  state.care.set(care.key,{from,to,window});
-  renderResults('#care-from');
-});
 $('results').addEventListener('click',event=>{
   const button=event.target.closest('button');
   if(!button) return;
-  const {period,pick,teamPick}=button.dataset;
-  if(period) return changePeriod(period,button);
-  if(button.hasAttribute('data-clear-care')){
-    const care=resultGroups(state.resultDate,state.period).find(group=>group.id==='care');
-    state.care.delete(care.key);
-    renderResults('#care-from');
-    return;
-  }
-  if(pick===undefined) return;
-  const group=resultGroups(state.resultDate,state.period).find(g=>String(g.id)===teamPick);
-  if(!group||group.pendingCare||!group.candidates.some(item=>item.index===Number(pick))) return;
-  if(group.chosen?.index===Number(pick)) state.plan.delete(group.key);
-  else state.plan.set(group.key,Number(pick));
-  renderResults(`[data-team-pick="${teamPick}"][data-pick="${pick}"]`);
+  const {alt,choose,key,drop}=button.dataset;
+  let focus;
+  if(button.id==='replan'){
+    state.seed++;
+    state.openAlternatives='';
+    focus='#replan';
+  }else if(alt!==undefined){
+    state.openAlternatives=state.openAlternatives===alt?'':alt;
+    focus=`[data-alt="${CSS.escape(alt)}"]`;
+  }else if(choose!==undefined){
+    state.picks.set(key,Number(choose));
+    state.openAlternatives='';
+    focus=`[data-alt="${CSS.escape(key)}"]`;
+  }else if(drop!==undefined){
+    state.picks.set(drop,-1);
+    focus=`[data-alt="${CSS.escape(drop)}"]`;
+  }else return;
+  renderResults(focus);
   $('announcement').textContent=t('planUpdated');
 });
 function showResultStatus(key){
@@ -634,6 +586,7 @@ async function search(){
   try{
     catalogRequest ||= fetch('catalog.json').then(response=>{if(!response.ok) throw Error();return response.json()});
     catalog=await catalogRequest;
+    state.tripWeather=await fetchWeatherDays(state.place,visitDates()).catch(()=>({}));
     if(state.step!==finalStep||target.hidden) return;
     renderResults('#results-title');
     target.scrollIntoView({block:'start',behavior:reduced.matches?'instant':'smooth'});

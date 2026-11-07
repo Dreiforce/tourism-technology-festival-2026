@@ -207,3 +207,52 @@ dialog.mii{width:min(1040px,calc(100% - 20px));height:min(740px,calc(100dvh - 20
 .access-chip.limited{background:#fff0c2;color:#7a5418}
 .board.drag-enabled [data-member]:not([data-member=care]):active{cursor:grabbing}
 @media(max-width:690px){.age-band{grid-template-columns:1fr}}
+
+/* trip plan */
+.trip-top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.trip-top p{max-width:680px}
+.fairness{background:var(--white);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin:12px 0}
+.fairness h3,.trip-day h3{font:700 21px/1.15 'Fraunces',Georgia,serif;margin:0 0 8px}
+.fairness-rows{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:6px 18px}
+.fair-row{display:grid;grid-template-columns:minmax(70px,auto) 1fr 22px;align-items:center;gap:8px;font-size:13px;font-weight:750}
+.fair-bar{height:10px;border-radius:99px;background:#e6ebe1;overflow:hidden}
+.fair-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#efc66d,#d1745a)}
+.trip-days{display:grid;gap:14px}
+.trip-day{background:var(--white);border:1px solid var(--line);border-radius:18px;padding:14px 16px;box-shadow:0 14px 34px -28px #193b3890}
+.trip-day header{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;border-bottom:1px dashed var(--line);padding-bottom:8px;margin-bottom:6px}
+.trip-day h3 span{display:inline-block;margin-right:6px;padding:2px 9px;border-radius:999px;background:var(--green);color:#fff;font:800 12px/1.6 system-ui,sans-serif;vertical-align:middle}
+.day-weather{font-size:13px;font-weight:750;color:var(--ink)}
+.day-weather small{margin-left:6px;color:var(--muted);font-weight:600}
+.trip-slot{display:grid;grid-template-columns:96px minmax(0,1fr);gap:12px;padding:8px 0;border-top:1px solid #eef0e8}
+.trip-slot:first-of-type{border-top:0}
+.slot-label{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#966324;padding-top:6px}
+.slot-entries{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+.trip-item{border:1px solid #dfe6da;border-radius:14px;padding:11px 13px;background:#fbfcf8}
+.trip-item.empty{border-style:dashed;background:transparent}
+.trip-item.care{background:#f3f0fa;border-color:#ddd5ee}
+.trip-item p{margin:4px 0!important}
+.trip-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.trip-head strong{font-size:16px}
+.trip-time{font-weight:800;font-size:13px;color:var(--green);font-variant-numeric:tabular-nums}
+.trip-meta,.trip-who{font-size:12px!important}
+.trip-chips,.trip-likes{display:flex;flex-wrap:wrap;gap:5px}
+.chip-live,.chip-soft{border-radius:999px;padding:2px 8px;font-size:11px;font-weight:800;background:#e8f2ea;color:#2d6b52}
+.chip-live.today{background:#fde7cf;color:#8a4a17}
+.chip-soft{background:#eef0ea;color:var(--muted)}
+.chip-soft.warn{background:#fff0c2;color:#7a5418}
+.chip-soft.mascot{background:#fff0c2;color:#7a5418}
+.trip-likes span{border-radius:999px;padding:2px 9px;font-size:12px;font-weight:800;background:#fbe3dc;color:#9b3d27}
+.trip-likes small{font-weight:650;opacity:.85}
+.trip-likes.none{font-size:12px!important;color:var(--muted)!important}
+.trip-note{font-size:12px!important;color:var(--muted)!important}
+.trip-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px}
+.trip-actions a{color:var(--green);font-weight:750;font-size:13px}
+.trip-actions small{color:var(--muted);font-size:11px}
+.trip-actions .small,.trip-item.empty .small{min-height:34px;padding:4px 10px;font-size:12px;border-radius:999px}
+.trip-actions .small:last-child{margin-left:auto}
+.trip-alternatives{display:grid;gap:6px;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+.trip-alternatives p{font-size:12px!important;font-weight:800;color:var(--green)!important}
+.alt{display:grid;gap:2px;text-align:left;border:1px solid #cfdccc;border-radius:10px;background:var(--white);padding:7px 10px;color:var(--ink)}
+.alt:hover{border-color:var(--green);background:var(--mint)}
+.alt small{color:var(--muted);font-size:11px}
+@media(max-width:690px){.trip-slot{grid-template-columns:1fr;gap:4px}.slot-label{padding-top:0}}

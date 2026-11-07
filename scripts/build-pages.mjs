@@ -50,14 +50,15 @@ for (const prototype of prototypes) {
   await writeFile(page, markup.replace(/((?:src|href)=")((?!https?:|\/\/)[^"?#]+\.(?:js|css))"/g, `$1$2?v=${version}"`));
 }
 
+// The Reise-Canvas is the default app; the Familienzeit planner stays at /familienzeit/.
 await writeFile(new URL('index.html', output), `<!doctype html>
 <html lang="de">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="refresh" content="0;url=./familienzeit/">
-<title>Familienzeit</title>
+<meta http-equiv="refresh" content="0;url=./reise-canvas-prototyp/">
+<title>Familienzeit · Reise-Canvas</title>
 </head>
-<body><a href="./familienzeit/">Zum Familienplaner</a></body>
+<body><a href="./reise-canvas-prototyp/">Zum Reise-Canvas</a> · <a href="./familienzeit/">Zum Familienplaner</a></body>
 </html>
 `);
