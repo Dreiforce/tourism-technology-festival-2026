@@ -65,8 +65,10 @@ function walletNote(key){
   showExportStatus(key);
   for(const status of document.querySelectorAll('.wallet-booking-status')) status.textContent=t(key);
 }
-// iOS adds the pass and stays in Safari; it never switches to the Wallet app by itself. After the Apple button we
-// offer a link to the Wallet app (shoebox:// – undocumented, but it has opened Apple's Wallet app for years).
+// iOS adds the pass and stays in Safari; it never switches to the Wallet app by itself, and the page is not told
+// whether "Hinzufügen" was tapped. So shortly after the Apple button a small popup opens underneath Apple's sheet;
+// once the sheet is gone it offers the Wallet app (shoebox:// – undocumented, but it has opened Apple's Wallet app for
+// years). The tap on that link counts as the user's own, so iOS opens Wallet right away. The status line keeps the link.
 const walletIOS=()=>/iPhone|iPad|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1);
 function walletOfferOpen(){
   for(const status of [$('export-status'),...document.querySelectorAll('.wallet-booking-status')]){
@@ -76,6 +78,19 @@ function walletOfferOpen(){
     link.href='shoebox://';link.className='wallet-open';link.textContent=t('walletOpenApp');
     status.append(link);
   }
+  let dialog=$('wallet-open-dialog');
+  if(!dialog){
+    dialog=document.createElement('dialog');
+    dialog.id='wallet-open-dialog';dialog.className='wallet-open-dialog';
+    dialog.setAttribute('aria-labelledby','wallet-open-title');
+    document.body.append(dialog);
+  }
+  dialog.innerHTML=`<h2 id="wallet-open-title">${t('walletAddedTitle')}</h2><p>${t('walletAddedText')}</p>
+    <div class="dialog-actions"><button type="button" class="small" data-wallet-close>${t('walletClose')}</button>
+      <a class="primary" href="shoebox://" data-wallet-open>${t('walletOpenApp')}</a></div>`;
+  dialog.querySelector('[data-wallet-close]').addEventListener('click',()=>dialog.close());
+  dialog.querySelector('[data-wallet-open]').addEventListener('click',()=>setTimeout(()=>dialog.close(),400));
+  if(!dialog.open) dialog.showModal();
 }
 
 function walletBase64(text){
