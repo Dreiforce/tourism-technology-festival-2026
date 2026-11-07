@@ -262,6 +262,7 @@ async function walletPass(request, env, kind) {
     return walletPage(400, error.message, lang);
   }
   const postcard = url.searchParams.get('p');
+  const home = `${url.origin}/`; // the QR code on the pass opens the Reise-Canvas home page
   if (postcard !== null && !postcardId.test(postcard)) return walletPage(400, walletText[lang].postcard, lang);
 
   try {
@@ -269,8 +270,8 @@ async function walletPass(request, env, kind) {
       const strip = postcard ? await postcardStrip(env, postcard) : null;
       if (postcard && !strip) console.warn('Postcard missing or expired, building the pass without it', postcard);
       const pass = appleMode(env) === 'certificate'
-        ? await buildApplePass(trip, {...config, images: {...config.images, ...strip}})
-        : await buildWalletWalletPass(trip, buildApplePassJson(trip, {images: strip ? {'strip.png': strip['strip.png']} : {}}), {
+        ? await buildApplePass(trip, {...config, images: {...config.images, ...strip}, barcodeUrl: home})
+        : await buildWalletWalletPass(trip, buildApplePassJson(trip, {images: strip ? {'strip.png': strip['strip.png']} : {}, barcodeUrl: home}), {
           apiKey: config.apiKey, barcodeUrl: url.origin + '/',
           images: {...config.images, ...(strip && {strip: strip['strip.png'], strip2x: strip['strip@2x.png'], strip3x: strip['strip@3x.png']})}
         });
@@ -283,7 +284,7 @@ async function walletPass(request, env, kind) {
     const hero = postcard ? await postcardObject(env, postcard, 'hero') : null;
     if (postcard && !hero) console.warn('Postcard missing or expired, building the pass without it', postcard);
     const location = await buildGoogleSaveUrl(trip, hero
-      ? {...config, heroImageUrl: `${url.origin}/api/wallet/postcards/${postcard}/hero.png`} : config);
+      ? {...config, barcodeUrl: home, heroImageUrl: `${url.origin}/api/wallet/postcards/${postcard}/hero.png`} : {...config, barcodeUrl: home});
     return new Response(null, {status: 302, headers: {Location: location, 'Cache-Control': 'no-store', ...securityHeaders}});
   } catch (error) {
     console.error(`${label} pass failed`, error);

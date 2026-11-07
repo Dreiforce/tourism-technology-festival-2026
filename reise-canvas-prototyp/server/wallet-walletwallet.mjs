@@ -55,7 +55,7 @@ const wwDataUri = bytes => bytes && bytes.length && bytes.length <= wwMaxImage ?
 // One short line per stop, so a day fits into WalletWallet's 256 characters per back field.
 function wwDayText(day) {
   return [...day.stops].sort((a, b) => wwMinutes(a.start) - wwMinutes(b.start))
-    .map(stop => `${stop.start}–${stop.end} ${stop.title}${stop.group && stop.kind !== 'care' ? ` (${stop.group})` : ''}`)
+    .map(stop => `${stop.start}–${stop.end} ${stop.title}${stop.group && stop.kind !== 'care' ? ` (${stop.group})` : ''}${stop.booked ? ' ✓' : ''}`)
     .join('\n');
 }
 
@@ -103,6 +103,9 @@ export function walletWalletBody(trip, passJson, {images = {}, now = Date.now(),
     // Whole days from now, rounded up: the pass leaves the Wallet within a day after the trip ends.
     expirationDays: Math.min(3650, Math.max(1, Math.ceil((tripEnd - now) / 86400000)))
   };
+  // The QR code of our own pass (Reise-Canvas home page) becomes WalletWallet's barcode.
+  const qr = Array.isArray(passJson.barcodes) ? passJson.barcodes.find(code => code?.format === 'PKBarcodeFormatQR') : null;
+  if (qr?.message) Object.assign(body, {barcodeValue: wwClip(qr.message, 512), barcodeFormat: 'QR', ...(qr.altText ? {barcodeAltText: wwClip(qr.altText, 128)} : {})});
   if (Array.isArray(passJson.locations) && passJson.locations.length) {
     body.locations = passJson.locations.slice(0, 10).map(({latitude, longitude, relevantText}) =>
       ({latitude, longitude, ...(relevantText ? {relevantText: wwClip(relevantText, 128)} : {})}));
@@ -127,8 +130,8 @@ async function wwRead(response) {
   const type = response.headers.get('content-type') || '';
   if (/pkpass|octet-stream|zip/.test(type)) {
     // Older endpoint: the pass itself, links in (CORS-exposed) headers.
-    return {pass: new Uint8Array(await response.arrayBuffer()),
-      json: {shareUrl: response.headers.get('x-pass-url'), googleSaveUrl: response.headers.get('x-google-save-url')}};
+    return {pass: new Uint8Array(await response.arrayBuffer()), json: {serialNumber: response.headers.get('x-serial-number'),
+      shareUrl: response.headers.get('x-pass-url'), googleSaveUrl: response.headers.get('x-google-save-url')}};
   }
   const text = await response.text();
   try {
@@ -140,9 +143,10 @@ async function wwRead(response) {
 const wwIsZip = bytes => bytes instanceof Uint8Array && bytes.length > 4 && bytes[0] === 0x50 && bytes[1] === 0x4b;
 const wwHttps = value => typeof value === 'string' && /^https:\/\//.test(value) ? value : null;
 
-// Creates the pass at WalletWallet. Returns {pass, shareUrl, googleSaveUrl}: the signed .pkpass bytes, WalletWallet's
-// hosted install page (Add to Apple Wallet on iPhone, Save to Google Wallet on Android, a QR code on desktops) and
-// the Save to Google Wallet link. Runs in the worker and in the browser (the static GitHub Pages copy).
+// Creates the pass at WalletWallet. Returns {pass, appleUrl, shareUrl, googleSaveUrl}: the signed .pkpass bytes, the
+// direct link to that .pkpass (served as application/vnd.apple.pkpass, so Safari on iPhone/iPad/Mac opens Apple's
+// "Add to Wallet" sheet right away), WalletWallet's hosted install page (Add to Apple Wallet on iPhone, Save to
+// Google Wallet on Android, a QR code on desktops) and the Save to Google Wallet link. Runs in the worker and in the browser (the static GitHub Pages copy).
 // config: {apiKey, images?, fetch?, now?, barcodeUrl? (used only if WalletWallet insists on a barcode), baseUrl?}
 export async function createWalletWalletPass(trip, passJson, config) {
   if (!config?.apiKey) throw new Error('WalletWallet: API key missing.');
@@ -162,7 +166,9 @@ export async function createWalletWalletPass(trip, passJson, config) {
     if (response.ok) {
       const pass = result.pass || (typeof result.json?.applePass === 'string' ? wwBytes(result.json.applePass) : null);
       if (!wwIsZip(pass)) throw new Error('WalletWallet: the answer contained no .pkpass.');
-      return {pass, shareUrl: wwHttps(result.json?.shareUrl), googleSaveUrl: wwHttps(result.json?.googleSaveUrl)};
+      const serial = typeof result.json?.serialNumber === 'string' && /^[\w-]{1,100}$/.test(result.json.serialNumber) ? result.json.serialNumber : null;
+      return {pass, appleUrl: serial ? `${base}/p/${serial}/apple.pkpass` : null,
+        shareUrl: wwHttps(result.json?.shareUrl), googleSaveUrl: wwHttps(result.json?.googleSaveUrl)};
     }
     const message = (result.json?.error || result.json?.message || result.text || '').toString().slice(0, 300);
     if (response.status === 404 && !legacy) {

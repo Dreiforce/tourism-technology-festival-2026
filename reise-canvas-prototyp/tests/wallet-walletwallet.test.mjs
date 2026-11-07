@@ -130,11 +130,25 @@ test('returns the install page and the Google link for the static copy', async (
   const result = await createWalletWalletPass(fixture, passJson, config({fetch: api.fetch}));
   assert.deepEqual(result.pass, fakePass);
   assert.equal(result.shareUrl, 'https://pass.walletwallet.dev/p/abc');
+  assert.equal(result.appleUrl, 'https://api.walletwallet.dev/p/s/apple.pkpass', 'direct .pkpass link for Safari');
   assert.equal(result.googleSaveUrl, 'https://pay.google.com/gp/v/save/jwt');
 
   const legacy = fakeApi([new Response('Not found', {status: 404}), new Response(fakePass, {headers: {
-    'Content-Type': 'application/vnd.apple.pkpass', 'X-Pass-Url': 'https://pass.walletwallet.dev/p/old', 'X-Google-Save-Url': 'javascript:alert(1)'}})]);
+    'Content-Type': 'application/vnd.apple.pkpass', 'X-Serial-Number': '../../evil', 'X-Pass-Url': 'https://pass.walletwallet.dev/p/old', 'X-Google-Save-Url': 'javascript:alert(1)'}})]);
   const old = await createWalletWalletPass(fixture, passJson, config({fetch: legacy.fetch}));
   assert.equal(old.shareUrl, 'https://pass.walletwallet.dev/p/old');
   assert.equal(old.googleSaveUrl, null, 'only https links are passed on');
+  assert.equal(old.appleUrl, null, 'odd serial numbers don’t become links');
+});
+
+test('the QR code and booked stops reach WalletWallet', () => {
+  const booked = {...fixture, booking: {ref: 'FZ-AB12CD'},
+    days: fixture.days.map((day, i) => ({...day, stops: day.stops.map((stop, j) => i === 0 && j === 0 ? {...stop, booked: true} : stop)}))};
+  const json = buildApplePassJson(booked, {images: {'strip.png': strip}, barcodeUrl: 'https://canvas.example/home/'});
+  const body = walletWalletBody(booked, json, {now});
+  assert.equal(body.barcodeValue, 'https://canvas.example/home/');
+  assert.equal(body.barcodeFormat, 'QR');
+  assert.equal(body.barcodeAltText, 'Reise-Canvas öffnen');
+  assert.match(body.backFields.find(field => field.label === 'SA., 10.7.').value, /^09:30–11:00 Murmliwasser am Komperdell ✓/);
+  assert.ok(body.secondaryFields.some(field => field.label === 'BUCHUNG' && field.value === 'FZ-AB12CD'));
 });

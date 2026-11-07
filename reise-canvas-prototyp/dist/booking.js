@@ -136,6 +136,7 @@ function confirmBooking(form){
     <p class="trip-ref">${t('bookingNumber')} <code>${html(state.tripRef)}</code></p>
     <ul class="booked-list">${done.map(({a,day,booking})=>`<li><strong>${html(activityTitle(a))}</strong>
       <span>${html(dayText(day.date))} · ${timeText(booking.start)} · ${html(a.address||a.location[0])}</span></li>`).join('')}</ul>
+    ${typeof walletBookingButtons==='function'?walletBookingButtons():''}
     <div class="dialog-actions"><button type="button" class="small" data-ics>📅 ${t('calendarFile')}</button>
       <button type="button" class="primary" data-book-close>${t('done')}</button></div>`;
   bookingDraft=done;

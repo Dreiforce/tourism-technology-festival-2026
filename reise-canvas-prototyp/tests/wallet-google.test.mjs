@@ -297,3 +297,13 @@ test('English labels for lang "en"', () => {
   assert.equal(buildGooglePass({...winter, lang: 'de'}, config()).genericObject.subheader.defaultValue.value,
     '30. Jänner – 2. Februar 2027 · Serfaus');
 });
+
+test('QR code to the Reise-Canvas home page and the demo booking number', () => {
+  const booked = {...fixture, booking: {ref: 'FZ-AB12CD'}};
+  const {genericObject} = buildGooglePass(booked, config({barcodeUrl: 'https://canvas.example/'}));
+  assert.deepEqual(genericObject.barcode, {type: 'QR_CODE', value: 'https://canvas.example/', alternateText: 'Reise-Canvas öffnen'});
+  const right = genericObject.textModulesData.find(module => module.id === 'row2right');
+  assert.deepEqual([right.header, right.body], ['Buchung', 'FZ-AB12CD']);
+  assert.match(genericObject.textModulesData.at(-1).body, /Buchung FZ-AB12CD – im Reise-Canvas gebucht \(Demo\)/);
+  assert.equal(buildGooglePass(fixture, config()).genericObject.barcode, undefined, 'no QR code without a home address');
+});

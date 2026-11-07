@@ -3,7 +3,16 @@
 On the last step of the Reise-Canvas ("Eure Reisepostkarte ist fertig"), next to "PNG exportieren", families can
 add their postcard to Apple Wallet or Google Wallet. The pass shows the family's own postcard as its picture,
 plus village, dates, family, wishes and the day plan they picked in "Erlebnisse suchen" (including childcare
-hours). It is an overview, **not a ticket, and has no barcode**. Language follows the canvas (Deutsch/English).
+hours). It is an overview, **not a ticket**. Its QR code opens the Reise-Canvas home page (captioned "Reise-Canvas
+öffnen"), handy for showing the pass in the pitch. Language follows the canvas (Deutsch/English).
+
+**Bookings.** The same buttons also appear in the confirmation of the canvas' demo booking (`dist/booking.js`), next
+to the calendar file. Booked activities travel with their booked time and a booked flag, plus the trip's booking
+number (`state.tripRef`, e.g. `FZ-AB12CD`). The pass shows the number on the front ("BUCHUNG"), marks booked
+activities ("Gebucht (Demo)" / ✓) and says on the back that the demo booking reserves and pays nothing.
+
+**The picture** is the whole postcard, never cropped: on the wide Apple strip it sits centred on the pass's dark
+green like a framed card, on Google's taller image on the canvas paper colour.
 
 ## How it works
 
@@ -124,9 +133,13 @@ the logo and icon next to the canvas and marks the page with `<meta name="wallet
 
 1. builds the same pass content in the browser (`decodeTripParam` → `resolveTrip` → `buildApplePassJson`),
    renders the postcard strip (1125 × 369 px) and sends everything to WalletWallet (`createWalletWalletPass`);
-2. opens, in a new tab, WalletWallet's install page (`shareUrl`: "Add to Apple Wallet" on iPhone, "Save to Google
-   Wallet" on Android, a QR code on desktops) for the Apple button, or the Save to Google Wallet link for the Google
-   button. Google passes therefore also come from WalletWallet on the static copy.
+2. opens the result:
+   - Apple button on iPhone, iPad or Mac Safari: the pass file itself
+     (`https://api.walletwallet.dev/p/<serial>/apple.pkpass`, served as `application/vnd.apple.pkpass`), so Apple's
+     "Add to Wallet" sheet opens right away on top of the canvas;
+   - Apple button elsewhere: WalletWallet's install page (`shareUrl`) in a new tab, with a QR code for the phone;
+   - Google button: the Save to Google Wallet link in a new tab. Google passes therefore also come from WalletWallet
+     on the static copy.
 
 WalletWallet accepts these calls from the browser (checked from dreiforce.github.io). The API key is in the published
 `wallet/wallet-walletwallet.js`, so **every visitor of the page can read it**. Fine for the hackathon prototype on the
