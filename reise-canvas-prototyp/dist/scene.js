@@ -328,14 +328,14 @@ function postcardBack({place,family,date,general=new Set(),season='summer',weath
   const hand='font-family="Caveat, \'Segoe Print\', \'Comic Sans MS\', cursive"';
   const ink='#3d4f7a';
   const wishY=176+lines.length*40+14;
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="${t('backLabel')}" font-family="system-ui, sans-serif">
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="${html(t('backLabel'))}" font-family="system-ui, sans-serif">
     <rect width="960" height="540" fill="#fbf6e8"/>
     <rect x="14" y="14" width="932" height="512" rx="3" fill="none" stroke="#e6d9b8" stroke-width="2"/>
     <path d="M548 64V476" stroke="#dccfae" stroke-width="2"/>
     <g class="hand" style="animation-delay:.95s"><text x="56" y="116" ${hand} font-size="56" font-weight="700" fill="#245748">${html(t('backGreeting',place))}</text></g>
     ${lines.map((line,i)=>`<g class="hand" style="animation-delay:${(1.15+i*.22).toFixed(2)}s"><text x="60" y="${176+i*40}" ${hand} font-size="33" fill="#2c3e44">${html(line)}</text></g>`).join('')}
     ${wishes.length?`<g class="hand" style="animation-delay:${(1.2+lines.length*.22).toFixed(2)}s"><g transform="translate(72 ${wishY})">${wishes.map((key,i)=>badge(key,i*30,0)).join('')}</g></g>`:''}
-    <g class="hand" style="animation-delay:${(1.4+lines.length*.22).toFixed(2)}s"><text x="60" y="462" ${hand} font-size="34" fill="#245748">${t('backSignoff')}</text></g>
+    <g class="hand" style="animation-delay:${(1.4+lines.length*.22).toFixed(2)}s"><text x="60" y="462" ${hand} font-size="34" fill="#245748">${html(t('backSignoff'))}</text></g>
     <g transform="translate(470 486) scale(.62)"><g class="mascot-wave">${bertaArt()}</g></g><g transform="translate(514 490) scale(.55)"><g class="mascot-wave" style="animation-delay:-2s">${murmliArt()}</g></g>
     <g transform="translate(790 50) rotate(3)"><g class="stamp">
       <rect width="120" height="150" fill="#fff"/>
@@ -356,10 +356,10 @@ function postcardBack({place,family,date,general=new Set(),season='summer',weath
     </g></g>
     <g stroke="#cdbf9e" stroke-width="2"><path d="M592 318H908M592 378H908M592 438H908"/></g>
     <g class="hand" style="animation-delay:${(1.6+lines.length*.22).toFixed(2)}s" ${hand} fill="#2c3e44">
-      <text x="598" y="308" font-size="30">${t('backTo')}</text>
+      <text x="598" y="308" font-size="30">${html(t('backTo'))}</text>
       <text x="598" y="368" font-size="30">${html(place)} · Tirol</text>
-      <text x="598" y="428" font-size="30">${t('backCountry')}</text>
+      <text x="598" y="428" font-size="30">${html(t('backCountry'))}</text>
     </g>
-    <text x="592" y="496" font-size="11" letter-spacing="3" font-weight="800" fill="#a8997a">${t('postcardTitle')}</text>
+    <text x="592" y="496" font-size="11" letter-spacing="3" font-weight="800" fill="#a8997a">${html(t('postcardTitle'))}</text>
   </svg>`;
 }

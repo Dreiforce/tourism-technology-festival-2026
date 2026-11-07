@@ -188,7 +188,7 @@ function renderControls(){
   }else{
     content=header(t('doneHeading'),t('doneHint'))+
       (hasSplit()?periodPicker():'')+
-      `<div class="summary-actions"><button class="small" type="button" id="flip" aria-pressed="${state.flipped}"><span aria-hidden="true">↻</span> ${t('flipCard')}</button><button class="small" type="button" id="export">${t('export')}</button><button class="primary" type="button" id="search">${t('find')} <span aria-hidden="true">↓</span></button></div><p id="export-status" role="status"></p>`;
+      `<div class="summary-actions"><button class="small" type="button" id="flip" aria-pressed="${state.flipped}"><span aria-hidden="true">↻</span> ${t('flipCard')}</button><button class="small" type="button" id="share" aria-expanded="false" aria-controls="share-panel"><span aria-hidden="true">↗</span> ${t('share')}</button><button class="small" type="button" id="export">${t('export')}</button><button class="primary" type="button" id="search">${t('find')} <span aria-hidden="true">↓</span></button></div><div id="share-panel" class="share-panel" hidden></div><p id="export-status" role="status"></p>`;
   }
   const disabled=index===0&&!state.family.some(p=>p.kind==='adult');
   $('controls').innerHTML=content+`<div class="control-bottom">${index?`<button type="button" class="small" data-back>← ${t('back')}</button>`:''}${index<finalStep?`<button type="button" class="primary" data-next ${disabled?'disabled':''}>${t('next')} <span aria-hidden="true">→</span></button>`:''}</div>`;
@@ -315,7 +315,9 @@ function openPerson(p){
 let suppressClick=false;
 function requestRemoval(event){
   if(suppressClick) return;
-  const mark=event.target.closest('[data-avatar]');
+  const mark=state.flipped?null:event.target.closest('[data-avatar]');
+  // Last step: tapping the card itself (not a person on it) turns it over.
+  if(!mark&&state.step===finalStep&&event.target.closest('.flip')) return flipCard(!state.flipped);
   openPerson(mark&&state.family.find(item=>item.id===Number(mark.dataset.avatar)));
 }
 function changePeriod(period,target){
@@ -425,6 +427,8 @@ $('controls').addEventListener('click',event=>{
   else if(target.hasAttribute('data-back')) go(state.step-1);
   else if(target.id==='export') exportPNG();
   else if(target.id==='flip') flipCard(!state.flipped);
+  else if(target.id==='share') sharePostcard(target);
+  else if(target.id==='share-copy') navigator.clipboard?.writeText(shareURL()).then(()=>showExportStatus('shareCopied'),()=>{});
   else if(target.id==='search') search();
 });
 $('controls').addEventListener('change',event=>{
@@ -451,30 +455,80 @@ function showExportStatus(key){
   const status=$('export-status');
   if(status) status.textContent=t(key);
 }
-async function exportPNG(){
-  showExportStatus('exporting');
+// An SVG drawn as an image cannot load web fonts, so the export inlines ours as data URLs.
+let exportFontCSS;
+function exportFonts(){
+  return exportFontCSS ||= fetch('fonts/fonts.css').then(response=>response.text()).then(async css=>{
+    for(const file of new Set(css.match(/[\w-]+\.woff2/g))){
+      const blob=await fetch('fonts/'+file).then(response=>response.blob());
+      const data=await new Promise(resolve=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.readAsDataURL(blob)});
+      css=css.split(`url(${file})`).join(`url(${data})`);
+    }
+    return css.replace(/\/\*[^]*?\*\//g,'');
+  }).catch(()=>{exportFontCSS=null;return ''});
+}
+// Renders the visible side of the postcard as a 1920×1080 PNG blob.
+async function renderPNG(){
   const data={...posterData(),id:'export-art'};
+  const fonts=await exportFonts();
   const source=(state.flipped?postcardBack(data):poster(data))
-    .replace('viewBox="0 0 960 540"','width="1920" height="1080" viewBox="0 0 960 540"');
+    .replace('viewBox="0 0 960 540"','width="1920" height="1080" viewBox="0 0 960 540"')
+    .replace(/<svg([^>]*)>/,(tag,attributes)=>`<svg${attributes}><defs><style>${fonts}</style></defs>`);
   const url=URL.createObjectURL(new Blob([source],{type:'image/svg+xml;charset=utf-8'}));
   try{
     const img=new Image();
     await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=reject;img.src=url});
+    await img.decode?.().catch(()=>{});
     const canvas=document.createElement('canvas');
     canvas.width=1920;canvas.height=1080;
     canvas.getContext('2d').drawImage(img,0,0);
     const png=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
     if(!png) throw Error('PNG unavailable');
-    const pngURL=URL.createObjectURL(png);
+    return png;
+  }finally{URL.revokeObjectURL(url)}
+}
+const pngName=()=>'familienzeit-'+state.place.toLowerCase()+'.png';
+async function exportPNG(){
+  showExportStatus('exporting');
+  try{
+    const pngURL=URL.createObjectURL(await renderPNG());
     const link=document.createElement('a');
-    link.download='familienzeit-'+state.place.toLowerCase()+'.png';
+    link.download=pngName();
     link.href=pngURL;
     document.body.append(link);link.click();link.remove();
     setTimeout(()=>URL.revokeObjectURL(pngURL),60000);
     showExportStatus('exported');
   }catch{
     showExportStatus('exportFailed');
-  }finally{URL.revokeObjectURL(url)}
+  }
+}
+// Share: the device's share sheet with the postcard image (phones: WhatsApp, Instagram, Signal …);
+// where that is not available, a panel with social links and "copy link".
+const shareURL=()=>location.origin+location.pathname;
+async function sharePostcard(button){
+  const text=t('shareText',state.place);
+  try{
+    const file=new File([await renderPNG()],pngName(),{type:'image/png'});
+    if(navigator.canShare?.({files:[file]})){
+      await navigator.share({files:[file],title:t('shareTitle'),text:`${text} ${shareURL()}`});
+      return;
+    }
+  }catch(error){
+    if(error?.name==='AbortError') return;
+  }
+  const panel=$('share-panel');
+  const open=panel.hidden;
+  panel.hidden=!open;
+  button.setAttribute('aria-expanded',String(open));
+  if(!open) return;
+  const url=encodeURIComponent(shareURL()), message=encodeURIComponent(text);
+  const links={whatsapp:`https://wa.me/?text=${message}%20${url}`,facebook:`https://www.facebook.com/sharer/sharer.php?u=${url}`,
+    x:`https://x.com/intent/post?text=${message}&url=${url}`,pinterest:`https://www.pinterest.com/pin/create/button/?url=${url}&description=${message}`,
+    email:`mailto:?subject=${encodeURIComponent(t('shareTitle'))}&body=${message}%20${url}`};
+  panel.innerHTML=`<p>${t('shareHint')}</p><div class="share-links">${Object.entries(links).map(([key,href])=>
+    `<a class="share-link ${key}" href="${html(href)}" ${key==='email'?'':'target="_blank" rel="noopener"'}>${t('share_'+key)}</a>`).join('')}
+    <button type="button" class="share-link" id="share-copy">${t('shareCopy')}</button></div>`;
+  panel.querySelector('a').focus();
 }
 function visitDates(){
   const end=state.end||state.start;
