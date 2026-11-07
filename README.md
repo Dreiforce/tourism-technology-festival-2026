@@ -1,114 +1,208 @@
+# 🏔️ Family Holiday Planner
+### One family holiday. One plan. All activities in one place.
 
-# 🚀 Tourism Technology Festival 2026
+A smarter way for families to discover, plan and book activities during their holiday in **Serfaus-Fiss-Ladis**.
 
-### Building the future of tourism through technology.
+Built during the **Tourism Technology Festival 2026** in Salzburg, Austria.
 
-[![Tourism Technology Festival 2026](https://img.shields.io/badge/TTF-2026-blue)](https://www.tourism-technology.com/)
-[![Hackathon](https://img.shields.io/badge/Event-24h%20Hackathon-purple)](https://buildbar.at/ttf-2026)
-
-Welcome to our project repository for the **Tourism Technology Festival 2026** in Salzburg, Austria.
-
-During this 24-hour hackathon, we're bringing ideas to life by exploring how modern technology can solve real-world challenges in tourism.
-
-This repository contains our concept, experiments, source code, and final prototype.
+Our project addresses Challenge 06: **One Family Holiday, Four Booking Systems**.
 
 ---
 
-## 💡 Our Idea
+## 💡 The Idea
 
-> *[A short, memorable one-liner describing our idea goes here.]*
+Imagine arriving in Serfaus-Fiss-Ladis with two children, aged 4 and 9.
 
-**[Project Name]** is our approach to [problem or opportunity].
+It's Tuesday, the weather forecast predicts rain, and you want to find something everyone can enjoy.
 
-We want to [describe what the solution does] and help [target audience] achieve [intended benefit].
+Where do you start?
 
-### The Problem
+Today, families have to navigate multiple platforms, compare age restrictions, check availability, consider weather conditions and switch between different booking processes.
 
-_[What problem are we trying to solve? Why does it matter?]_
+**We want to change that.**
 
-### Our Solution
+Our Family Holiday Planner brings activities together into one intelligent discovery and planning experience.
 
-_[What are we building? How does it work? What makes our approach interesting?]_
+Families tell us:
+- When they are staying.
+- How old their children are.
+- What they enjoy doing.
+- How much time they have.
+- What kind of experience they are looking for.
 
-### Our Vision
+The application turns this information into relevant activities and practical daily itineraries, with a straightforward path to registration or booking.
 
-_[What could this solution look like beyond the hackathon?]_
+**Less searching. Less planning. More holiday.**
 
----
+## 🎯 The Challenge
 
-## 🎯 Selected Challenge
+**Challenge 06 – One Family Holiday, Four Booking Systems**
 
-**Challenge:** _[Challenge number and title]_
+Partner: Dialogschmiede GmbH, on behalf of Serfaus-Fiss-Ladis.
 
-_[Describe the selected challenge and how our project addresses its core requirements.]_
+Serfaus-Fiss-Ladis offers a wide range of family activities, from kids' clubs and guided hikes to bike parks and cable car experiences.
 
-Reference: [TTF 2026 – Challenges & Resources](https://buildbar.at/ttf-2026)
+However, the information and booking processes are distributed across different systems:
 
----
-
-## 🛠️ Tech Stack
-
-_Our technology choices will be documented here._
-
-| Area | Technology |
+| Platform | Content |
 |---|---|
-| Frontend | TBD |
-| Backend | TBD |
-| Database | TBD |
-| AI / LLM | TBD |
-| APIs & Data | TBD |
-| Infrastructure | TBD |
+| Feratel | Events without registration |
+| Feratel Experience Shop | Registration-based activities |
+| Incert | Cable car experiences and online tickets |
+| Contwise | Service providers and A–Z entries |
+
+Families currently need to understand and navigate these systems individually.
+
+Our goal is to make the experience feel like one connected destination.
+
+## 🚀 Our Solution
+
+We envision a unified family activity companion with three core capabilities.
+
+### 1. Discover – Find the right activities
+
+Bring activities from different sources into one searchable experience.
+
+Recommendations consider:
+- Children's age groups.
+- Family interests and preferences.
+- Travel dates and available time.
+- Activity duration.
+- Weather conditions.
+- Opening hours and operational status.
+
+### 2. Plan – Create a holiday that works
+
+Turn individual activities into realistic daily plans.
+
+The planner considers:
+- Available time and activity duration.
+- Geographic distance between activities.
+- Weather and changing conditions.
+- Age suitability.
+- Opening times and activity schedules.
+
+The result is a practical family itinerary rather than just another list of recommendations.
+
+### 3. Book – From inspiration to confirmation
+
+Make it easy to move from discovering an activity to actually participating.
+
+We distinguish between:
+- Free activities without registration.
+- Activities requiring registration.
+- Paid experiences with online booking.
+
+Where supported, families can continue directly to the relevant booking or registration process.
+
+The goal is to reduce unnecessary steps without replacing the existing booking infrastructure.
+
+## 👨‍👩‍👧‍👦 Our Target Audience
+
+Families visiting Serfaus-Fiss-Ladis, especially parents who want to organise enjoyable activities for children of different ages.
+
+Our example family:
+
+- Two parents.
+- Two children, aged 4 and 9.
+- A week-long holiday.
+- Different interests and activity preferences.
+- A mixture of sunny and rainy days.
+
+The experience should help the whole family find activities everyone can enjoy.
+
+## 🧠 Intelligence & Personalisation
+
+The application combines structured tourism data with intelligent recommendations.
+
+Rather than relying on an AI model to invent activities or availability, we aim to use actual destination data as the foundation for recommendations.
+
+AI can help with:
+- Understanding natural-language requests.
+- Translating family preferences into search criteria.
+- Explaining why activities match a family.
+- Supporting itinerary creation.
+- Suggesting alternatives when weather or availability changes.
+
+Activity details, age restrictions, opening hours and booking information should remain grounded in their respective data sources.
+
+## 🗂️ Data Sources & Integrations
+
+The solution is designed around the data and infrastructure made available for Challenge 06.
+
+| Source | Purpose |
+|---|---|
+| Feratel | Events and activities without registration |
+| Feratel Experience Shop | Activities requiring registration |
+| Incert | Cable car experiences and ticket booking |
+| Feratel / Contwise | Service providers and destination information |
+| Austrian Tourism Data | Events, POIs, tours, accommodation and gastronomy |
+| GeoSphere Austria | Weather information |
+| OpenStreetMap | Geographic information and distances |
+| Open-Meteo | Weather forecasts |
+| OpenHolidays API | School holiday information |
+
+Additional context:
+- Family travel dates.
+- Children's age groups: 0–2, 3–6, 7–12 and 13–17.
+- Interests and preferences.
+- Lift and trail status.
+- Opening hours and operational information.
+
+Data availability and integration methods will depend on the access provided during the hackathon.
+
+## 🏗️ Technical Concept
+
+The architecture aims to separate data integration, activity matching, itinerary planning and the user experience.
+
+### Main components
+
+1. **Frontend:** Family-facing discovery, recommendations and itinerary interface.
+2. **Data integration:** Connect and normalise information from the different tourism systems.
+3. **Recommendation engine:** Match activities against family profiles and contextual conditions.
+4. **Planning engine:** Build realistic daily itineraries based on time, distance and weather.
+5. **Booking integration:** Link users to the appropriate registration and payment flows.
+6. **AI layer:** Natural-language interaction and recommendation explanations.
+
+### Hackathon infrastructure
+
+We can leverage the infrastructure provided by buildbar_ and destination.one, where appropriate:
+
+- Next.js starter application.
+- n8n workflows.
+- one.intelligence AI models.
+- Supabase and PostgreSQL.
+- MCP integrations.
+- TTF Data Space.
+
+The final technology choices will reflect the actual implementation.
+
+## 🎯 MVP – What We Want to Demonstrate
+
+Our primary objective is to demonstrate a complete family journey:
+
+1. A family enters its holiday dates and children's ages.
+2. The family selects interests and preferences.
+3. The application discovers suitable activities across the different sources.
+4. The family receives recommendations that account for weather and timing.
+5. The application creates a practical daily itinerary.
+6. The family can open the original activity details and continue to registration or booking.
+
+**The key demonstration:** One family, one interface, multiple booking systems – without having to search through them individually.
+
+## 🌱 Our Vision
+
+We believe destination experiences should be organised around the guest, not around the systems that store the information.
+
+Our vision goes beyond a single destination.
+
+The same approach could eventually help tourism regions connect fragmented activity catalogues, booking systems and contextual information into one coherent guest experience.
+
+A family should not need to understand the technology behind a destination to enjoy everything it has to offer.
 
 ---
 
-## 🏗️ Architecture
-
-_[Add an architecture diagram and a short explanation of the main components once the technical concept is established.]_
-
----
-
-## 📸 Screenshots & Demo
-
-_[Add screenshots, recordings, or a link to the running prototype here.]_
-
----
-
-## 🚀 Getting Started
-
-Instructions for running the project locally will be added here.
-
-### Prerequisites
-
-_[List required software and tools.]_
-
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY.git
-
-# Enter the project directory
-cd YOUR-REPOSITORY
-
-# Install dependencies
-npm install
-```
-
-### Configuration
-
-Create a `.env` file based on `.env.example` and configure the required environment variables.
-
-### Run locally
-
-```bash
-npm run dev
-```
-
-_Adapt these commands to the actual project setup._
-
----
-
-## 👥 Our Team
+## 👥 Team
 
 ![team.webp](resources/team.webp)
 
@@ -119,9 +213,15 @@ _Adapt these commands to the actual project setup._
 | Niki | TBD |
 | Lukas | TBD |
 
----
+## 🛠️ Getting Started
 
-## 🗺️ Hackathon Context
+Setup and installation instructions will be added once the application structure has been finalised.
+
+## 📸 Screenshots & Demo
+
+Coming soon.
+
+## 🏆 Hackathon
 
 **Tourism Technology Festival 2026**
 
@@ -129,13 +229,15 @@ _Adapt these commands to the actual project setup._
 - 📅 7–8 November 2026
 - ⏱️ 24-hour hackathon
 
-Useful links:
+**Selected challenge:** Challenge 06 – One Family Holiday, Four Booking Systems.
 
-- [Official Festival Website](https://www.tourism-technology.com/)
-- [Hackathon Challenges & Technical Resources](https://buildbar.at/ttf-2026)
+**Challenge partner:** Dialogschmiede GmbH / Serfaus-Fiss-Ladis.
+
+Useful resources:
+- https://www.tourism-technology.com/
+- https://buildbar.at/ttf-2026
+- https://www.serfaus-fiss-ladis.at/
 
 ---
 
-<p align="center">
-  <strong>🌍 Innovating Tourism. Building What's Next. 🚀</strong>
-</p>
+*Making family holidays easier to discover, plan and enjoy.* 🏔️
