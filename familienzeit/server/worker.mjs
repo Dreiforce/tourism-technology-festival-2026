@@ -257,9 +257,126 @@ async function catalog(request, env, admin) {
   }
 }
 
+// ---- Wallet export (Apple Wallet / Google Wallet) -------------------------------------------------
+
+const walletAssetCache = new Map();
+function walletAsset(key) {
+  if (typeof walletAssets==='undefined' || !Object.hasOwn(walletAssets,key)) return null;
+  if (!walletAssetCache.has(key)) {
+    const binary = atob(walletAssets[key]);
+    const bytes = new Uint8Array(binary.length);
+    for (let i=0;i<binary.length;i++) bytes[i] = binary.charCodeAt(i);
+    walletAssetCache.set(key, bytes);
+  }
+  return walletAssetCache.get(key);
+}
+function walletImages(prefix) {
+  if (typeof walletAssets==='undefined') return {};
+  return Object.fromEntries(Object.keys(walletAssets).filter(key=>key.startsWith(prefix))
+    .map(key=>[key.slice(prefix.length),walletAsset(key)]));
+}
+
+// PEM secrets may be stored as the PEM text itself (also with escaped "\n", as in a service-account JSON)
+// or base64-encoded so that line breaks survive the hosting's secret form.
+function walletPem(value) {
+  if (typeof value!=='string' || !value.trim()) return '';
+  const text = value.trim();
+  if (text.includes('-----BEGIN')) return text.replace(/\\n/g,'\n');
+  try {
+    const decoded = atob(text.replace(/\s+/g,''));
+    return decoded.includes('-----BEGIN') ? decoded.trim() : '';
+  } catch {
+    return '';
+  }
+}
+function appleWalletConfig(env) {
+  const config = {
+    passTypeIdentifier: env.APPLE_PASS_TYPE_ID?.trim(), teamIdentifier: env.APPLE_TEAM_ID?.trim(),
+    certificatePem: walletPem(env.APPLE_PASS_CERT), privateKeyPem: walletPem(env.APPLE_PASS_KEY),
+    wwdrPem: walletPem(env.APPLE_WWDR_CERT), images: walletImages('apple/')
+  };
+  return Object.values(config).every(Boolean) ? config : null;
+}
+function googleWalletConfig(env, origin) {
+  const config = {
+    issuerId: env.GOOGLE_ISSUER_ID?.trim(), serviceAccountEmail: env.GOOGLE_SA_EMAIL?.trim(),
+    privateKeyPem: walletPem(env.GOOGLE_SA_KEY), origin
+  };
+  return Object.values(config).every(Boolean) ? config : null;
+}
+
+function walletPage(status, message) {
+  const text = String(message).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[char]);
+  return new Response(`<!doctype html><html lang="de-AT"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/styles.css"><title>Wallet · Familienzeit</title></head><body class="catalog-admin"><main><h1>Plan mitnehmen</h1><p>${text}</p><p><a href="/">Zurück zum Familienplaner</a></p></main></body></html>`,{
+    status, headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','X-Robots-Tag':'noindex'}
+  });
+}
+
+async function wallet(request, env, kind) {
+  const url = new URL(request.url);
+  const label = kind==='apple' ? 'Apple Wallet' : 'Google Wallet';
+  if (request.method!=='GET') return walletPage(405,'Methode nicht erlaubt.');
+  const build = kind==='apple'
+    ? (typeof buildApplePass==='function' ? buildApplePass : null)
+    : (typeof buildGoogleSaveUrl==='function' ? buildGoogleSaveUrl : null);
+  const config = kind==='apple' ? appleWalletConfig(env) : googleWalletConfig(env, url.origin);
+  if (!build || !config || typeof decodeTripParam!=='function') {
+    return walletPage(503,`${label} ist auf diesem Server noch nicht eingerichtet.`);
+  }
+  let compact;
+  try {
+    compact = decodeTripParam(url.searchParams.get('t'));
+  } catch (error) {
+    return walletPage(400,error.message);
+  }
+  let catalogById;
+  try {
+    await importInitialCatalog(env.DB);
+    await addAccessibilityDetails(env.DB);
+    await addGuestCardDetails(env.DB);
+    const {results} = await env.DB.prepare("SELECT id, details FROM experiences WHERE active=1 AND json_extract(details,'$.region')='sfl'").all();
+    catalogById = new Map(results.map(row=>[row.id,{id:row.id,...JSON.parse(row.details)}]));
+  } catch (error) {
+    console.error('Wallet catalog lookup failed', error);
+    return walletPage(503,'Der Katalog ist gerade nicht erreichbar. Bitte versucht es gleich noch einmal.');
+  }
+  let trip;
+  try {
+    trip = resolveTrip(compact,{catalog:catalogById,places:localPlaces,cards:guestCards,id:crypto.randomUUID()});
+  } catch (error) {
+    return walletPage(400,error.message);
+  }
+  try {
+    if (kind==='apple') {
+      const pass = await build(trip, config);
+      return new Response(pass,{headers:{
+        'Content-Type':'application/vnd.apple.pkpass',
+        'Content-Disposition':'attachment; filename="familienzeit.pkpass"',
+        'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'
+      }});
+    }
+    const location = await build(trip, config);
+    return new Response(null,{status:302,headers:{Location:location,'Cache-Control':'no-store'}});
+  } catch (error) {
+    console.error(`${label} pass failed`, error);
+    return walletPage(500,`Die Karte für ${label} konnte gerade nicht erstellt werden.`);
+  }
+}
+
 export default {
   async fetch(request, env) {
     const {pathname,origin} = new URL(request.url);
+    if (pathname==='/api/wallet/apple' || pathname==='/api/wallet/google') {
+      return wallet(request, env, pathname.slice('/api/wallet/'.length));
+    }
+    const walletImage = /^\/wallet\/([a-z0-9-]+)\.png$/.exec(pathname);
+    if (walletImage && request.method==='GET') {
+      const bytes = walletAsset('google/'+walletImage[1]+'.png');
+      if (!bytes) return new Response('Bild nicht gefunden.',{status:404});
+      return new Response(bytes,{headers:{
+        'Content-Type':'image/png','Cache-Control':'public, max-age=86400','X-Content-Type-Options':'nosniff'
+      }});
+    }
     if (pathname==='/robots.txt') return new Response(
       'User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /api/admin/\nSitemap: '+origin+'/sitemap.xml\n',
       {headers:{'Content-Type':'text/plain; charset=utf-8'}});

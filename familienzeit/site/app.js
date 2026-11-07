@@ -565,8 +565,53 @@ const bookingGroups=[
   ['free','Kein Ticket nötig']
 ];
 
+// One source for every export of the plan: the text download and the wallet links.
+function tripExport(){
+  const dayPlans=tripPlans();
+  const rows=tripRows(dayPlans);
+  return {dates:[...days],place:origin(),placeIndex:Number(placeInput.value),family:wholeFamily(),
+    familySummary:familySummary(),card:cardInput.value,dayPlans,rows,total:$('total').textContent,
+    totalLabel:rows.some(row=>row.entry===null)?'Summe der bekannten Eintrittspreise':'Geschätzter Eintritt gesamt'};
+}
+
+// Wallet passes are built and signed by the worker (server/wallet-*.mjs). The plan travels in the link as
+// compact format v1 (see server/wallet-trip.mjs); nothing is sent before someone taps a wallet button.
+// The static GitHub Pages edition shows the buttons only when <meta name="wallet-url"> names such a worker.
+const walletBase=document.querySelector('meta[name="wallet-url"]')?.content.trim().replace(/\/+$/,'')
+  || (document.querySelector('meta[name="catalog-url"]')?'':'/api/wallet');
+const walletLimits={stops:60,length:8000};
+const walletLabels={apple:'Zu Apple Wallet hinzufügen',google:'Zu Google Wallet hinzufügen'};
+function walletPayload(trip=tripExport()){
+  const compact={v:1,s:trip.dates[0],e:trip.dates.at(-1),p:trip.placeIndex,a:trip.family.adults,
+    k:trip.family.ages,d:trip.family.dogs,c:trip.card,
+    r:trip.rows.map(row=>[row.date,row.start,row.end,row.activity.id,row.group?.label||'',row.pass?1:0,row.entry??null])};
+  let binary='';
+  for(const byte of new TextEncoder().encode(JSON.stringify(compact))) binary+=String.fromCharCode(byte);
+  return btoa(binary).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+function walletTargets(){
+  const agent=navigator.userAgent;
+  if(/Android/i.test(agent)) return ['google'];
+  const iOS=/iPhone|iPad|iPod/.test(agent)||(/Macintosh/.test(agent)&&navigator.maxTouchPoints>1);
+  const macSafari=/Macintosh/.test(agent)&&/Safari\//.test(agent)&&!/Chrome|Chromium|CriOS|Edg|OPR|Firefox|FxiOS/.test(agent);
+  return iOS||macSafari?['apple']:['apple','google'];
+}
+function walletSection(trip){
+  if(!walletBase||!trip.rows.length) return '';
+  const payload=walletPayload(trip);
+  if(trip.rows.length>walletLimits.stops||payload.length>walletLimits.length){
+    return '<section class="wallet-export"><h3>Plan mitnehmen</h3><p>Euer Plan ist zu umfangreich für eine Wallet-Karte. Ladet ihn stattdessen herunter.</p></section>';
+  }
+  // TODO: replace with official "Add to Apple Wallet" / "Add to Google Wallet" badges (brand guidelines)
+  return `<section class="wallet-export" aria-labelledby="wallet-title"><h3 id="wallet-title">Plan mitnehmen</h3>
+    <p>Euer Plan als Karte im Wallet – alle Tage, Zeiten und Adressen. Kein Ticket.</p>
+    <div class="wallet-buttons">${walletTargets().map(kind=>`<a class="wallet-button" data-wallet="${kind}" href="${escapeHTML(walletBase+'/'+kind+'?t='+payload)}"${kind==='google'?' target="_blank" rel="noopener"':''}>${walletLabels[kind]}</a>`).join('')}</div>
+  </section>`;
+}
+
 function renderCheckout(){
-  const items=tripRows();
+  const trip=tripExport();
+  const items=trip.rows;
   $('modal-content').innerHTML=`<p class="eyebrow">EUER FAMILIENTAG</p><h2>So kommt ihr zu euren Tickets.</h2>
     <p>Hier steht für jedes Erlebnis, wo ihr buchen oder bezahlen könnt. Die Buchung erfolgt beim jeweiligen Anbieter.</p>
     ${bookingGroups.map(([mode,label])=>{
@@ -580,9 +625,10 @@ function renderCheckout(){
         </span><strong>${mode==='free'?'Gratis':a.meeting==='hoeg'&&!pass?'Bergbahn separat':money(entry)}</strong></div>`).join('')}
       </div></section>`;
     }).join('')}
-    <div class="modal-total"><span>${items.some(row=>row.entry===null)?'Summe der bekannten Eintrittspreise':'Geschätzter Eintritt gesamt'}</span><strong>${$('total').textContent}</strong></div>
-    <button class="primary modal-action" id="download">${days.length>1?'Urlaubsplan':'Tagesplan'} herunterladen <span>↓</span></button>`;
-  $('download').addEventListener('click',downloadPlan);
+    <div class="modal-total"><span>${trip.totalLabel}</span><strong>${trip.total}</strong></div>
+    <button class="primary modal-action" id="download">${days.length>1?'Urlaubsplan':'Tagesplan'} herunterladen <span>↓</span></button>
+    ${walletSection(trip)}`;
+  $('download').addEventListener('click',()=>downloadPlan());
 }
 
 $('checkout').addEventListener('click',()=>{
@@ -591,10 +637,10 @@ $('checkout').addEventListener('click',()=>{
 });
 
 function downloadPlan(){
-  const dayPlans=tripPlans();
-  const rows=tripRows(dayPlans);
+  const trip=tripExport();
+  const {dayPlans,rows}=trip;
   if (!rows.length) return;
-  const lines=['FAMILIENZEIT · URLAUBSPLAN',days[0]+' bis '+days.at(-1)+' · '+origin().name,familySummary(),
+  const lines=['FAMILIENZEIT · URLAUBSPLAN',trip.dates[0]+' bis '+trip.dates.at(-1)+' · '+trip.place.name,trip.familySummary,
     '','Wegezeiten und Eintrittskosten sind Schätzungen.'];
   for(const {date,back,finish,blocks} of dayPlans){
     lines.push('',dateLabel(date)+' ('+date+') · '+(forecasts.get(date)?.label||'Keine Vorhersage'));
@@ -616,11 +662,11 @@ function downloadPlan(){
     }
     if(back) lines.push('Rückweg: '+kmLabel(back.km)+' · ca. '+back.minutes+' Min. · zurück gegen '+timeLabel(finish)+' Uhr');
   }
-  lines.push('',(rows.some(row=>row.entry===null)?'Summe der bekannten Eintrittspreise: ':'Geschätzter Eintritt gesamt: ')+$('total').textContent);
+  lines.push('',trip.totalLabel+': '+trip.total);
   const url=URL.createObjectURL(new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'}));
   const link=document.createElement('a');
   link.href=url;
-  link.download='familienzeit-'+days[0]+'.txt';
+  link.download='familienzeit-'+trip.dates[0]+'.txt';
   link.click();
   setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
