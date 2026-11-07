@@ -175,3 +175,31 @@ function planTrip(catalog,{dates,place,family,groupsFor,general,weatherByDate,pi
   });
   return {days,happy};
 }
+
+// ---------- Booking (rules taken over from the Familienzeit planner) ----------
+const superSommerCard={name:'Super. Sommer. Card.',start:'06-12',end:'10-17',
+  source:'https://www.serfaus-fiss-ladis.at/de/sommerurlaub/super-sommer-card'};
+function cardRule(activity,date,hasCard){
+  if(!hasCard||date.slice(5)<superSommerCard.start||date.slice(5)>superSommerCard.end) return null;
+  return activity.passes?.find(rule=>rule.card==='sfl'&&(!rule.from||rule.from<=date)&&(!rule.to||date<=rule.to))||null;
+}
+const bookingMode=(activity,rule)=>rule?'pass':activity.booking||'provider';
+// Estimated entry for exactly these people; null when the price depends on date and tariff.
+function groupPrice(activity,members,rule){
+  const dogs=members.filter(p=>p.kind==='dog').length;
+  if(rule) return (activity.dogPrice||0)*dogs;
+  if(activity.priceKnown===false||activity.adult==null) return null;
+  return members.reduce((sum,p)=>{
+    if(p.kind==='dog') return sum+(activity.dogPrice||0);
+    if(p.kind==='adult'||p.age==null) return sum+activity.adult;
+    if(p.age<activity.childFrom) return sum;
+    if(p.age<=activity.childTo) return sum+activity.child;
+    return sum+(activity.youth!=null&&p.age>=activity.youthFrom?activity.youth:activity.adult);
+  },0);
+}
+function ticketLink(activity,date){
+  const weekday=new Date(date+'T00:00:00Z').getUTCDay();
+  const rule=activity.hours.find(r=>r.ticketUrl&&r.days.includes(weekday)&&(!r.from||r.from<=date)&&(!r.to||date<=r.to));
+  return rule?.ticketUrl||activity.bookingLink||'';
+}
+const mapLink=activity=>activity.coords?`https://www.openstreetmap.org/?mlat=${activity.coords[0]}&mlon=${activity.coords[1]}#map=16/${activity.coords[0]}/${activity.coords[1]}`:'';

@@ -5,7 +5,7 @@ const finalStep=steps.length-1;
 const journey=$('journey');
 const state={step:0,visited:0,flipped:false,weather:null,place:'Serfaus',start:todayDate(),end:'',family:[],general:new Set(),
   period:'am',groups:{am:{split:false,assignments:new Map()},pm:{split:false,assignments:new Map()}},
-  picks:new Map(),seed:0,openAlternatives:'',tripWeather:{}};
+  picks:new Map(),seed:0,openAlternatives:'',tripWeather:{},guestCard:false};
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 let nextId=1, pending=null, catalogRequest, catalog;
 let dateError='', exportStatus='', resultStatus='';
@@ -177,7 +177,9 @@ function renderControls(){
       `<div class="options">${Object.keys(towns).map(town=>`<button type="button" class="place" data-place="${town}" aria-pressed="${town===state.place}"><strong>${town}</strong><small>${t('motif'+town)}</small></button>`).join('')}</div>`;
   }else if(index===2){
     content=header(t('datesHeading'),t('datesHint'))+
-      `<div class="date-fields"><label>${t('dateFrom')}<input id="date-start" type="date" value="${state.start}" aria-describedby="date-error"></label><label>${t('dateTo')}<input id="date-end" type="date" value="${state.end}" aria-describedby="date-error"></label></div><p id="date-error" role="alert"></p><p id="weather-note" class="weather-note" role="status"></p>`;
+      `<div class="date-fields"><label>${t('dateFrom')}<input id="date-start" type="date" value="${state.start}" aria-describedby="date-error"></label><label>${t('dateTo')}<input id="date-end" type="date" value="${state.end}" aria-describedby="date-error"></label></div><p id="date-error" role="alert"></p><p id="weather-note" class="weather-note" role="status"></p>
+      <label class="card-toggle"><input type="checkbox" id="guest-card" ${state.guestCard?'checked':''}> <span>${t('guestCardLabel')}</span>
+      <a href="${superSommerCard.source}" target="_blank" rel="noopener">${t('guestCardInfo')} ↗</a></label>`;
   }else if(index===3){
     content=header(t('wishesHeading'),t('wishesHint'))+
       (children.length?children.map(p=>`<fieldset class="wish-group"><legend>${memberLabel(p)}</legend><div class="options">${wishButtons(p.wishes,p.id)}</div></fieldset>`).join('')
@@ -447,6 +449,7 @@ $('controls').addEventListener('change',event=>{
     state.family.filter(p=>p.birth).forEach(applyAge);
     requestWeather();
   }else if(event.target.id==='date-end') state.end=event.target.value;
+  else if(event.target.id==='guest-card'){state.guestCard=event.target.checked;saveState();return}
   else return;
   dateError='';
   $('date-error').textContent='';
@@ -581,6 +584,10 @@ function tripItem(entry,day){
     ${alternatives.length?`<button type="button" class="small" data-alt="${html(key)}" aria-expanded="${open}">${t('pickSomething')}</button>`:''}${alternativesList}</article>`;
   const a=o.activity;
   const bad=badWeather.has(day.weather?.kind);
+  const rule=cardRule(a,day.date,state.guestCard), mode=bookingMode(a,rule), cost=groupPrice(a,group.members,rule);
+  const ticket=mode==='online'?ticketLink(a,day.date):'';
+  const map=mapLink(a);
+  const info=[a.notes,a.bookingNote,a.priceNote,a.petNote,rule&&`${superSommerCard.name}: ${rule.note}`].filter(Boolean);
   const chips=[
     o.today?`<span class="chip-live today">● ${t('liveToday')}</span>`:`<span class="chip-live">● ${t('liveOpen',openingOn(a,day.date))}</span>`,
     a.weather==='both'&&bad?`<span class="chip-soft">☂ ${t('weatherProof')}</span>`:a.weather==='sun'?`<span class="chip-soft">☀ ${t('outdoors')}</span>`:'',
@@ -590,16 +597,50 @@ function tripItem(entry,day){
   ].join('');
   return `<article class="trip-item">${who}
     <div class="trip-head"><span class="trip-time">${timeRange(o.time.start,o.time.end)}</span><strong>${html(activityTitle(a))}</strong></div>
-    <p class="trip-meta">${html(a.location[0])} · ${t('minutes',a.duration)} · ${t(a.category)}</p>
+    <p class="trip-meta">${html(a.address||a.location[0])}${map?` · <a href="${html(map)}" target="_blank" rel="noopener">${t('mapLink')} ↗</a>`:''} · ${t('minutes',a.duration)} · ${t(a.category)}${a.operator?` · ${html(a.operator)}`:''}</p>
+    <p class="trip-booking"><span class="chip-book ${mode}">${t('book_'+mode)}</span><strong>${priceText(cost,mode,a)}</strong>${cost&&group.members.length>1?`<small>${t('priceFor',group.members.filter(p=>p.kind!=='dog').length)}</small>`:''}</p>
     <p class="trip-chips">${chips}</p>
     ${o.likes.length?`<p class="trip-likes">${o.likes.map(l=>`<span>♥ ${shortName(l.person)} <small>${l.keys.map(k=>t(k)).join(', ')}</small></span>`).join('')}</p>`:`<p class="trip-likes none">${t('noLikes')}</p>`}
     ${o.access.length?`<p class="access-line">${o.access.map(({key:k,status})=>`<span class="access-chip ${status}">${status==='yes'?'✓':status==='limited'?'≈':'?'} ${t('access_'+k)}: ${t('accessStatus_'+status)}</span>`).join('')}</p>${o.access.some(item=>item.status!=='yes')?`<p class="trip-note">${t('accessAsk')}</p>`:''}`:''}
-    <div class="trip-actions"><a href="${html(a.sources[0])}" target="_blank" rel="noopener">${t('provider')} ↗</a>
+    ${info.length?`<details class="trip-info"><summary>${t('moreInfo')}</summary>${info.map(note=>`<p>${html(note)}</p>`).join('')}</details>`:''}
+    <div class="trip-actions">${ticket?`<a class="book-now" href="${html(ticket)}" target="_blank" rel="noopener">${t('bookNow')} ↗</a>`:''}<a href="${html(a.sources[0])}" target="_blank" rel="noopener">${t('provider')} ↗</a>
       ${a.checked?`<small>${t('checkedOn',dayText(a.checked))}</small>`:''}
       ${alternatives.length?`<button type="button" class="small" data-alt="${html(key)}" aria-expanded="${open}">⇄ ${t('swap')}</button>`:''}
       <button type="button" class="small" data-drop="${html(key)}">${t('removeItem')}</button></div>
     ${alternativesList}
   </article>`;
+}
+const money=value=>new Intl.NumberFormat(locale(),{style:'currency',currency:'EUR'}).format(value);
+// Mountain meeting points (as in Familienzeit's region.js): free entry, but the cable car costs extra.
+const mountainMeetings=new Set(['hoeg','komperdell','moeseralm']);
+function priceText(cost,mode,activity){
+  if(mode!=='pass'&&cost===0&&mountainMeetings.has(activity?.meeting)) return t('priceLift');
+  if(mode==='free'||cost===0) return t(mode==='pass'?'priceCard':'priceFree');
+  return cost===null?t('priceAtProvider'):money(cost);
+}
+const bookingOrder=['online','office','onsite','pass','free','provider'];
+// "So kommt ihr zu euren Tickets": every planned activity grouped by how to book it, with an estimated total.
+function bookingOverview(days){
+  const rows=days.flatMap(day=>day.slots.flatMap(slot=>slot.entries.filter(entry=>entry.chosen).map(entry=>{
+    const a=entry.chosen.activity, rule=cardRule(a,day.date,state.guestCard);
+    return {day,entry,a,rule,mode:bookingMode(a,rule),cost:groupPrice(a,entry.group.members,rule)};
+  })));
+  if(!rows.length) return '';
+  const known=rows.filter(row=>row.cost!==null).reduce((sum,row)=>sum+row.cost,0);
+  const groups=bookingOrder.map(mode=>{
+    const list=rows.filter(row=>row.mode===mode);
+    return list.length?`<section class="booking-group"><h4><span class="chip-book ${mode}">${t('book_'+mode)}</span></h4>${list.map(({day,entry,a,rule,cost})=>{
+      const link=mode==='online'?ticketLink(a,day.date):'';
+      return `<div class="booking-row"><div><strong>${html(activityTitle(a))}</strong>
+        <small>${html(dayText(day.date))} · ${timeRange(entry.chosen.time.start,entry.chosen.time.end)} · ${html(a.address||a.location[0])}${entry.group.id==='all'?'':' · '+html(entry.group.label)}</small>
+        ${rule?`<small>${html(rule.note)}</small>`:a.bookingNote?`<small>${html(a.bookingNote)}</small>`:''}</div>
+        <div class="booking-side"><strong>${priceText(cost,mode,a)}</strong>${link?`<a class="book-now" href="${html(link)}" target="_blank" rel="noopener">${t('bookNow')} ↗</a>`:
+          mode==='provider'?`<a href="${html(a.sources[0])}" target="_blank" rel="noopener">${t('provider')} ↗</a>`:''}</div></div>`;
+    }).join('')}</section>`:'';
+  }).join('');
+  return `<section class="booking-overview" aria-labelledby="booking-title"><h3 id="booking-title">${t('bookingTitle')}</h3>
+    <p class="trip-note">${t('bookingIntro')}</p>${groups}
+    <div class="booking-total"><span>${t(rows.some(row=>row.cost===null)?'totalKnown':'totalEstimated')}</span><strong>${money(known)}</strong></div></section>`;
 }
 function renderResults(focus){
   resultStatus='';
@@ -626,6 +667,7 @@ function renderResults(focus){
       <a href="${isWinter(dates[0])?'https://www.serfaus-fiss-ladis.at/de/winterurlaub/familienwinter/murmlis-und-bertas-winterwelt':'https://www.serfaus-fiss-ladis.at/de/sommerurlaub/familiensommer/murmlis-und-bertas-bergabenteuer'}" target="_blank" rel="noopener">${t('mascotWorldLink')} ↗</a></p></aside>
     ${fairness}
     <div class="trip-days">${dayCards}</div>
+    ${bookingOverview(days)}
     <p class="trip-note">${t('tripSources')}</p>`;
   if(focus) target.querySelector(focus)?.focus({preventScroll:true});
   saveState();
@@ -698,7 +740,7 @@ const storeKey='familienzeit-canvas-state';
 function saveState(){
   try{
     localStorage.setItem(storeKey,JSON.stringify({v:1,nextId,step:state.step,visited:state.visited,place:state.place,
-      start:state.start,end:state.end,period:state.period,seed:state.seed,general:[...state.general],picks:[...state.picks],
+      start:state.start,end:state.end,period:state.period,guestCard:state.guestCard,seed:state.seed,general:[...state.general],picks:[...state.picks],
       family:state.family.map(p=>({...p,wishes:[...p.wishes],needs:p.needs&&[...p.needs]})),
       groups:Object.fromEntries(Object.entries(state.groups).map(([key,group])=>[key,{split:group.split,assignments:[...group.assignments]}]))}));
   }catch{}
@@ -707,7 +749,7 @@ function loadState(){
   try{
     const saved=JSON.parse(localStorage.getItem(storeKey));
     if(saved?.v!==1||!saved.family.length) return false;
-    Object.assign(state,{step:saved.step,visited:saved.visited,place:saved.place,start:saved.start,end:saved.end,period:saved.period,
+    Object.assign(state,{step:saved.step,visited:saved.visited,place:saved.place,start:saved.start,end:saved.end,period:saved.period,guestCard:Boolean(saved.guestCard),
       seed:saved.seed,general:new Set(saved.general),picks:new Map(saved.picks),
       family:saved.family.map(p=>({...p,wishes:new Set(p.wishes),needs:p.needs?new Set(p.needs):undefined})),
       groups:Object.fromEntries(Object.entries(saved.groups).map(([key,group])=>[key,{split:group.split,assignments:new Map(group.assignments)}]))});

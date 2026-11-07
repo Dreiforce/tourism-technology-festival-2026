@@ -276,3 +276,31 @@ dialog.mii{width:min(1040px,calc(100% - 20px));height:min(740px,calc(100dvh - 20
   #print-sheet{display:block}
   #print-sheet svg{display:block;width:210mm;height:297mm}
 }
+
+/* booking (from Familienzeit) */
+.card-toggle{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:13px;font-weight:700}
+.card-toggle input{width:20px;height:20px;accent-color:var(--green)}
+.card-toggle a{color:var(--green);font-weight:750}
+.trip-meta a{color:var(--green);font-weight:750}
+.trip-booking{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.trip-booking strong{font-size:14px}
+.trip-booking small{color:var(--muted);font-size:11px}
+.chip-book{display:inline-block;border-radius:999px;padding:2px 9px;font-size:11px;font-weight:800;background:#eef0ea;color:var(--muted)}
+.chip-book.online{background:#dcebf7;color:#1f5a8a}
+.chip-book.onsite,.chip-book.office{background:#fff0c2;color:#7a5418}
+.chip-book.free,.chip-book.pass{background:var(--mint);color:var(--green)}
+.trip-info{font-size:12px;color:var(--muted);margin-top:4px}
+.trip-info summary{cursor:pointer;font-weight:800;color:var(--green)}
+.trip-info p{font-size:12px!important}
+.trip-actions .book-now,.booking-side .book-now{display:inline-flex;align-items:center;min-height:34px;padding:4px 12px;border-radius:999px;background:var(--green);color:#fff!important;text-decoration:none;font-weight:800;font-size:12px}
+.booking-overview{background:var(--white);border:1px solid var(--line);border-radius:18px;padding:14px 16px;margin-top:14px}
+.booking-overview h3{font:700 21px/1.15 'Fraunces',Georgia,serif;margin:0 0 4px}
+.booking-group{margin-top:12px}
+.booking-group h4{margin:0 0 6px}
+.booking-row{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid #eef0e8}
+.booking-row small{display:block;color:var(--muted);font-size:12px}
+.booking-side{display:grid;justify-items:end;gap:5px;text-align:right;flex:none}
+.booking-side a{color:var(--green);font-weight:750;font-size:12px}
+.booking-total{display:flex;justify-content:space-between;align-items:baseline;margin-top:12px;padding-top:10px;border-top:2px solid var(--ink);font-weight:800}
+.booking-total strong{font-size:20px}
+@media(max-width:690px){.booking-row{flex-direction:column}.booking-side{justify-items:start;text-align:left}}

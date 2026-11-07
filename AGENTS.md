@@ -52,7 +52,7 @@ Plain classic `<script defer>` files that share one global scope. **Load order m
 7. `mii.js`: the Mii-style character editor dialog (opened by tapping any figure on any step).
 8. `wallet.js`: "Plan mitnehmen" on the last step. It sends the trip plan (`currentTrip()`) to the wallet worker. The pass format only knows `am`/`pm`, so evening entries travel as `pm`.
 
-`catalog.json` holds the activities. Fields: `hours` rules with `from`/`to`/`days`/`open`/`close`/`last`, `min`/`max` age, `pets`, `category`, optional `interests`, `accessibility` (`stroller`/`stepFree`/…: `yes|limited|no`), `weather` (`sun` = fair weather only, `both`), `coords`, `checked`. Accessibility, weather and coordinates were copied by title from `familienzeit/static/catalog.json`.
+`catalog.json` holds the activities. Fields: `hours` rules with `from`/`to`/`days`/`open`/`close`/`last`, `min`/`max` age, `pets`, `category`, optional `interests`, `accessibility` (`stroller`/`stepFree`/…: `yes|limited|no`), `weather` (`sun` = fair weather only, `both`), `coords`, `checked`. Accessibility, weather, coordinates and the **booking layer** (`booking`: `online|onsite|office|free`, `bookingLink`, per-date `hours[].ticketUrl`, `bookingNote`, prices `adult`/`child`/`youth` with `childFrom`/`childTo`/`youthFrom`, `dogPrice`, `priceKnown`, `priceNote`, `operator`, `address`, `meeting`, `notes`, guest-card `passes`) were copied by title from `familienzeit/static/catalog.json`. Booking helpers (`cardRule`, `groupPrice`, `ticketLink`, `mapLink`) live at the end of `planner.js` and follow the Familienzeit rules. Keep both catalogues in sync when you edit activities.
 
 ### Trip planner in short
 
