@@ -137,9 +137,9 @@ test('serves the canvas files', async () => {
 
 test('status reports configuration and image sizes', async () => {
   assert.deepEqual(await (await get({}, '/api/wallet/status')).json(),
-    {apple: false, google: false, strip: [[30, 8], [60, 16], [90, 24]], hero: [40, 30]});
+    {apple: false, appleSigner: null, google: false, strip: [[30, 8], [60, 16], [90, 24]], hero: [40, 30]});
   assert.deepEqual(await (await get(configured(), '/api/wallet/status')).json(),
-    {apple: true, google: true, strip: [[30, 8], [60, 16], [90, 24]], hero: [40, 30]});
+    {apple: true, appleSigner: 'certificate', google: true, strip: [[30, 8], [60, 16], [90, 24]], hero: [40, 30]});
   assert.equal((await get({}, '/api/wallet/status', {method: 'POST'})).status, 405);
 });
 
@@ -227,22 +227,71 @@ test('stored postcards feed both passes and expire', async () => {
   assert.equal(env.BUCKET.objects.size, 0, 'expired postcards are deleted when touched');
 });
 
-test('the real build uses the builders’ image sizes', async () => {
+// A copy built from the real wallet modules (not the stubs above).
+async function realBuild() {
   const realDir = mkdtempSync(join(tmpdir(), 'canvas-real-'));
+  cpSync(join(app, 'dist'), join(realDir, 'dist'), {recursive: true, filter: source => !/[\\/]dist[\\/]server([\\/]|$)/.test(source)});
+  cpSync(join(app, 'server'), join(realDir, 'server'), {recursive: true});
+  cpSync(join(app, 'scripts/build.mjs'), join(realDir, 'scripts/build.mjs'));
+  execFileSync(process.execPath, [join(realDir, 'scripts/build.mjs')], {stdio: 'pipe'});
+  return {realDir, real: (await import(pathToFileURL(join(realDir, 'dist/server/index.js')).href)).default};
+}
+
+test('the real build uses the builders’ image sizes and WalletWallet without a certificate', async () => {
+  const {realDir, real} = await realBuild();
   try {
-    for (const entry of readdirSync(join(app, 'dist'), {withFileTypes: true})) {
-      if (entry.isFile()) cpSync(join(app, 'dist', entry.name), join(realDir, 'dist', entry.name));
-    }
-    cpSync(join(app, 'server'), join(realDir, 'server'), {recursive: true});
-    cpSync(join(app, 'scripts/build.mjs'), join(realDir, 'scripts/build.mjs'));
-    execFileSync(process.execPath, [join(realDir, 'scripts/build.mjs')], {stdio: 'pipe'});
-    const real = (await import(pathToFileURL(join(realDir, 'dist/server/index.js')).href)).default;
     const status = await (await real.fetch(new Request(origin + '/api/wallet/status'), {})).json();
-    const {APPLE_STRIP_SIZES} = await import(pathToFileURL(join(app, 'server/wallet-apple.mjs')).href);
     const {GOOGLE_HERO_SIZE} = await import(pathToFileURL(join(app, 'server/wallet-google.mjs')).href);
-    assert.deepEqual(status, {apple: false, google: false,
-      strip: APPLE_STRIP_SIZES ?? [[375, 98], [750, 196], [1125, 294]], hero: GOOGLE_HERO_SIZE ?? [1032, 336]});
+    const {WALLETWALLET_STRIP_SIZES} = await import(pathToFileURL(join(app, 'server/wallet-walletwallet.mjs')).href);
+    assert.deepEqual(status, {apple: true, appleSigner: 'walletwallet', google: false, strip: WALLETWALLET_STRIP_SIZES, hero: GOOGLE_HERO_SIZE});
+    assert.equal((await real.fetch(new Request(origin + '/fonts/fonts.css'), {})).status, 200, 'subfolders of dist/ are served');
   } finally {
+    rmSync(realDir, {recursive: true, force: true});
+  }
+});
+
+test('Apple passes go through WalletWallet with the postcard as strip', async () => {
+  const {realDir, real} = await realBuild();
+  const originalFetch = globalThis.fetch;
+  const calls = [];
+  const fakePass = Buffer.from('PK\u0003\u0004fake-pkpass');
+  globalThis.fetch = async (url, init) => {
+    calls.push({url: String(url), headers: init.headers, body: JSON.parse(init.body)});
+    return Response.json({serialNumber: 'x', applePass: fakePass.toString('base64'), googleSaveUrl: 'https://pay.google.com/x'});
+  };
+  try {
+    const {WALLETWALLET_STRIP_SIZES} = await import(pathToFileURL(join(app, 'server/wallet-walletwallet.mjs')).href);
+    const {GOOGLE_HERO_SIZE} = await import(pathToFileURL(join(app, 'server/wallet-google.mjs')).href);
+    const env = {BUCKET: memoryBucket(), WALLETWALLET_API_KEY: 'ww_live_fromtheenvironment'};
+    const form = new FormData();
+    const files = {strip: WALLETWALLET_STRIP_SIZES[0], 'strip@2x': WALLETWALLET_STRIP_SIZES[1], 'strip@3x': WALLETWALLET_STRIP_SIZES[2], hero: GOOGLE_HERO_SIZE};
+    for (const [name, [width, height]] of Object.entries(files)) form.append(name, new Blob([png(width, height)], {type: 'image/png'}), name + '.png');
+    form.append('end', '2027-07-12');
+    const uploaded = await real.fetch(new Request(origin + '/api/wallet/postcard', {method: 'POST', body: form, headers: {Origin: origin}}), env);
+    assert.equal(uploaded.status, 201, 'store-card sizes are accepted');
+    const {id} = await uploaded.json();
+
+    const apple = await real.fetch(new Request(`${origin}/api/wallet/apple?l=de&p=${id}&t=${plan}`), env);
+    assert.equal(apple.status, 200);
+    assert.equal(apple.headers.get('content-type'), 'application/vnd.apple.pkpass');
+    assert.deepEqual(Buffer.from(await apple.arrayBuffer()), fakePass, 'the signed pass from WalletWallet is passed on');
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0].url, 'https://api.walletwallet.dev/api/passes');
+    assert.equal(calls[0].headers.Authorization, 'Bearer ww_live_fromtheenvironment', 'the secret overrides the built-in key');
+    const body = calls[0].body;
+    assert.equal(body.stripURL, 'data:image/png;base64,' + png(...WALLETWALLET_STRIP_SIZES[2]).toString('base64'));
+    assert.match(body.logoURL, /^data:image\/png;base64,/);
+    assert.equal(body.barcodeValue, undefined, 'no barcode');
+    assert.equal(body.organizationName, 'Familienzeit');
+    assert.deepEqual(body.headerFields.map(field => field.label), ['URLAUB']);
+    assert.ok(body.backFields.some(field => /SA\., 10\.7\./.test(field.label)), 'the planned day is on the back');
+
+    globalThis.fetch = async () => new Response('upstream down', {status: 500});
+    const failed = await real.fetch(new Request(`${origin}/api/wallet/apple?l=de&t=${plan}`), env);
+    assert.equal(failed.status, 500);
+    assert.match(await failed.text(), /Apple Wallet konnte gerade nicht erstellt werden/);
+  } finally {
+    globalThis.fetch = originalFetch;
     rmSync(realDir, {recursive: true, force: true});
   }
 });

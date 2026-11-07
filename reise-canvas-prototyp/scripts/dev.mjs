@@ -54,7 +54,7 @@ function memoryBucket() {
 
 const env = {BUCKET: memoryBucket()};
 const secrets = ['APPLE_PASS_TYPE_ID', 'APPLE_TEAM_ID', 'APPLE_PASS_CERT', 'APPLE_PASS_KEY', 'APPLE_WWDR_CERT',
-  'GOOGLE_ISSUER_ID', 'GOOGLE_SA_EMAIL', 'GOOGLE_SA_KEY'];
+  'GOOGLE_ISSUER_ID', 'GOOGLE_SA_EMAIL', 'GOOGLE_SA_KEY', 'WALLETWALLET_API_KEY'];
 for (const name of secrets) {
   const file = process.env[name + '_FILE'];
   const value = process.env[name] || (file && readFileSync(file, 'utf8'));
@@ -87,13 +87,15 @@ http.createServer(async (req, res) => {
     res.writeHead(500, {'Content-Type': 'text/plain; charset=utf-8'});
     res.end('Lokaler Serverfehler – siehe Terminal.');
   }
-}).listen(port, '0.0.0.0', () => {
+}).listen(port, '0.0.0.0', async () => {
   const lan = Object.values(os.networkInterfaces()).flat()
     .filter(entry => entry && entry.family === 'IPv4' && !entry.internal).map(entry => `http://${entry.address}:${port}`);
-  const ready = names => names.every(name => env[name]);
+  const status = await (await worker.fetch(new Request(`http://localhost:${port}/api/wallet/status`), env)).json();
   console.log(`\nReise-Canvas läuft auf http://localhost:${port}`);
   if (lan.length) console.log(`Im selben WLAN (z. B. am Handy): ${lan.join('  ')}`);
-  console.log(`Apple Wallet:  ${ready(secrets.slice(0, 5)) ? 'eingerichtet (' + env.APPLE_PASS_TYPE_ID + ')' : 'nicht eingerichtet'}`);
-  console.log(`Google Wallet: ${ready(secrets.slice(5)) ? 'eingerichtet (Issuer ' + env.GOOGLE_ISSUER_ID + ')' : 'nicht eingerichtet'}`);
+  console.log(`Apple Wallet:  ${status.appleSigner === 'certificate' ? 'eigenes Zertifikat (' + env.APPLE_PASS_TYPE_ID + ')'
+    : status.appleSigner === 'walletwallet' ? 'über WalletWallet' + (env.WALLETWALLET_API_KEY ? '' : ' (Prototyp-Schlüssel aus server/wallet-walletwallet.mjs)')
+    : 'nicht eingerichtet'}`);
+  console.log(`Google Wallet: ${status.google ? 'eingerichtet (Issuer ' + env.GOOGLE_ISSUER_ID + ')' : 'nicht eingerichtet'}`);
   console.log('Beenden mit Strg+C.\n');
 });
