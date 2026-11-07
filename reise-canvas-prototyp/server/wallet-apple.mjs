@@ -8,7 +8,8 @@
 //    primary fields; we leave the primary row empty so the postcard stays readable, and Wallet doesn't allow a
 //    thumbnail or background next to a strip, so those images are dropped.
 //  - Without a strip: style `generic` with the fixed mountain thumbnail.
-// No barcode: the pass is the family's overview, not a ticket.
+// Not a ticket. With config.barcodeUrl the pass gets a QR code that opens the Reise-Canvas home page (for the pitch),
+// captioned as such so nobody mistakes it for an entry code.
 
 // Event-ticket strip image: 375 × 98 points (1x/2x/3x pixels). The browser renders the postcard crop in these sizes.
 export const APPLE_STRIP_SIZES = [[375, 98], [750, 196], [1125, 294]];
@@ -21,6 +22,8 @@ const appleText = {
     description: 'Familienzeit Urlaubsplan',
     holiday: 'URLAUB', familyTimeIn: 'FAMILIENZEIT IN', place: 'ORT', family: 'FAMILIE', activities: 'ERLEBNISSE',
     firstStop: 'ERSTER STOPP', wishes: 'WÜNSCHE', guestCard: 'GÄSTEKARTE', plan: 'EUER URLAUBSPLAN', note: 'HINWEIS',
+    booking: 'BUCHUNG', openCanvas: 'Reise-Canvas öffnen',
+    demoBooking: ref => `${ref} – im Reise-Canvas gebucht (Demo): nichts ist reserviert oder bezahlt.`,
     about: (place, range, members) => `Familienzeit in ${place}, ${range}. ${members}. Diese Karte ist eure Übersicht und kein Ticket.`,
     nothingPlanned: 'Noch nichts geplant',
     adult: 'Erwachsene Person', child: 'Kind', dog: 'Hund', underOne: 'unter 1',
@@ -35,6 +38,8 @@ const appleText = {
     description: 'Familienzeit holiday plan',
     holiday: 'HOLIDAY', familyTimeIn: 'FAMILY TIME IN', place: 'PLACE', family: 'FAMILY', activities: 'ACTIVITIES',
     firstStop: 'FIRST STOP', wishes: 'WISHES', guestCard: 'GUEST CARD', plan: 'YOUR HOLIDAY PLAN', note: 'NOTE',
+    booking: 'BOOKING', openCanvas: 'Open the Travel Canvas',
+    demoBooking: ref => `${ref} – booked in the Travel Canvas (demo): nothing is reserved or paid.`,
     about: (place, range, members) => `Family time in ${place}, ${range}. ${members}. This card is your overview, not a ticket.`,
     nothingPlanned: 'Nothing planned yet',
     adult: 'Adult', child: 'Child', dog: 'Dog', underOne: 'under 1',
@@ -87,7 +92,9 @@ export function buildApplePassJson(trip, config) {
   const activities = stops.filter(stop => stop.kind !== 'care');
   const first = activities[0];
   const firstField = first && {key: 'first', label: text.firstStop, value: `${appleWeekday(first.day)} ${first.start} · ${first.title}`};
-  const extraField = trip.card
+  const extraField = trip.booking
+    ? {key: 'booking', label: text.booking, value: trip.booking.ref}
+    : trip.card
     ? {key: 'card', label: text.guestCard, value: trip.card.name}
     : trip.wishes?.length ? {key: 'wishes', label: text.wishes, value: trip.wishes.join(' · ')} : null;
   const header = [{key: 'dates', label: text.holiday, value: appleShortRange(trip.start, trip.end, text)}];
@@ -125,6 +132,9 @@ export function buildApplePassJson(trip, config) {
     expirationDate: appleTimestamp(trip.end, 23 * 60 + 59),
     [withStrip ? 'eventTicket' : 'generic']: {...fields, backFields: appleBackFields(trip, text)}
   };
+  if (config.barcodeUrl && /^https?:\/\//.test(config.barcodeUrl)) {
+    pass.barcodes = [{format: 'PKBarcodeFormatQR', message: String(config.barcodeUrl), messageEncoding: 'iso-8859-1', altText: text.openCanvas}];
+  }
   // Lock screen relevance. With date AND location relevance the system shows the pass when both match; one interval
   // per planned day (each under 24 h, iOS 18+ `relevantDates`) keeps location relevance alive on every trip day.
   // The deprecated single `relevantDate` is left out on purpose: on older iOS it would restrict location relevance to
@@ -160,6 +170,7 @@ function appleBackFields(trip, text) {
     {key: 'about', label: text.plan, value: text.about(trip.place.name, appleLongRange(trip.start, trip.end, text), trip.family.summary)},
     {key: 'members', label: text.family, value: appleMembers(trip, text)}
   ];
+  if (trip.booking) fields.push({key: 'booking-info', label: text.booking, value: text.demoBooking(trip.booking.ref)});
   if (trip.wishes?.length) fields.push({key: 'wish-list', label: text.wishes, value: trip.wishes.join(' · ')});
   for (const day of trip.days) {
     const stops = [...day.stops].sort((a, b) => appleMinutes(a.start) - appleMinutes(b.start));

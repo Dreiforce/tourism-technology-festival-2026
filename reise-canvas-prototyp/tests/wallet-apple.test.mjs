@@ -316,3 +316,20 @@ test('PKCS#1 keys are accepted; EC, encrypted and mismatched keys get clear erro
   const {['icon.png']: _icon, ...noIcon} = images;
   await assert.rejects(buildApplePass(trip, {...config, images: noIcon}), /icon\.png/);
 });
+
+test('QR code to the Reise-Canvas home page and the demo booking number', () => {
+  const trip0 = trip;
+  const booked = {...trip0, booking: {ref: 'FZ-AB12CD'},
+    days: trip0.days.map((day, i) => ({...day, stops: day.stops.map((stop, j) => i === 0 && j === 0
+      ? {...stop, booked: true, booking: 'booked', bookingLabel: 'Gebucht (Demo)'} : stop)}))};
+  const pass = buildApplePassJson(booked, {passTypeIdentifier: 'pass.test', teamIdentifier: 'T', images: {'strip.png': new Uint8Array(1)},
+    barcodeUrl: 'https://dreiforce.github.io/tourism-technology-festival-2026/reise-canvas-prototyp/'});
+  assert.deepEqual(pass.barcodes, [{format: 'PKBarcodeFormatQR', message: 'https://dreiforce.github.io/tourism-technology-festival-2026/reise-canvas-prototyp/',
+    messageEncoding: 'iso-8859-1', altText: 'Reise-Canvas öffnen'}]);
+  assert.deepEqual(pass.eventTicket.auxiliaryFields.at(-1), {key: 'booking', label: 'BUCHUNG', value: 'FZ-AB12CD'});
+  assert.match(pass.eventTicket.backFields.find(field => field.key === 'booking-info').value, /FZ-AB12CD – im Reise-Canvas gebucht \(Demo\)/);
+  assert.match(pass.eventTicket.backFields.find(field => field.key === 'day-2027-07-10').value, /Gebucht \(Demo\)/);
+  const keys = [...Object.values(pass.eventTicket).flat().map(field => field.key)];
+  assert.equal(new Set(keys).size, keys.length, 'field keys stay unique');
+  assert.equal(buildApplePassJson(trip0, {images: {}}).barcodes, undefined, 'no QR code without a home address');
+});

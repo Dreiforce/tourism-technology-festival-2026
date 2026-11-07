@@ -5,7 +5,8 @@
 // a wallet without credentials on the server says so on tap.
 // The static GitHub Pages copy has no worker. scripts/build-pages.mjs publishes the pass modules next to it and
 // marks the page with <meta name="wallet-direct">; then the browser builds the pass content itself, sends it to
-// WalletWallet and opens WalletWallet's install page (Apple) or Google's save page. Without a worker and without
+// WalletWallet and opens the pass (Apple devices), WalletWallet's install page (Apple button elsewhere) or Google's
+// save page. Without a worker and without
 // that marker (e.g. dist/ served as plain files) no buttons appear.
 let walletStatusRequest, walletStatusValue=null, walletBusy=false, walletModules;
 const walletDirect=document.querySelector('meta[name="wallet-direct"]');
@@ -20,11 +21,14 @@ function walletStatus(){
   return walletStatusRequest;
 }
 // iPhone, iPad and Safari on the Mac get Apple Wallet, Android gets Google Wallet, everything else both.
-function walletTargets(status){
+function walletAppleDevice(){
   const ua=navigator.userAgent;
-  const appleDevice=/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1)||
+  return /iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1)||
     (/Macintosh/.test(ua)&&/Version\/[\d.]+.*Safari\//.test(ua)&&!/Chrome|Chromium|CriOS|Edg|Firefox|FxiOS/.test(ua));
-  const android=/Android/.test(ua);
+}
+function walletTargets(status){
+  const appleDevice=walletAppleDevice();
+  const android=/Android/.test(navigator.userAgent);
   if(!status) return [];
   return ['apple','google'].filter(kind=>appleDevice?kind==='apple':android?kind==='google':true);
 }
@@ -45,6 +49,22 @@ $('controls').addEventListener('click',event=>{
   const button=event.target.closest('[data-wallet]');
   if(button) walletExport(button.dataset.wallet);
 });
+// The same buttons in the booking confirmation (booking.js), next to the calendar file. The pass then shows the
+// booked times and the booking number.
+function walletBookingButtons(){
+  const targets=walletTargets(walletStatusValue);
+  return targets.length?`<div class="wallet-actions wallet-booking">${targets.map(kind=>
+    `<button type="button" class="small wallet-button" data-wallet="${kind}">${t(kind==='apple'?'walletApple':'walletGoogle')}</button>`).join('')}</div>
+    <p class="wallet-booking-status" role="status"></p>`:'';
+}
+$('book-form')?.addEventListener('click',event=>{
+  const button=event.target.closest('[data-wallet]');
+  if(button) walletExport(button.dataset.wallet);
+});
+function walletNote(key){
+  showExportStatus(key);
+  for(const status of document.querySelectorAll('.wallet-booking-status')) status.textContent=t(key);
+}
 
 function walletBase64(text){
   let binary='';
@@ -52,7 +72,8 @@ function walletBase64(text){
   return btoa(binary).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 }
 // Compact plan for ?t= (format documented in server/wallet-trip.mjs). The server looks every activity up in its
-// own catalog by index, so only ids, times and group labels travel.
+// own catalog by index, so only ids, times and group labels travel. Activities booked in the canvas' demo booking
+// (booking.js) travel with their booked time and a booked flag, plus the trip's booking number.
 function walletPayload(){
   const kinds={adult:'a',child:'c',dog:'d'};
   const family=state.family.map(p=>[kinds[p.kind],p.kind==='dog'||!Number.isInteger(p.age)?null:p.age,String(p.name||'').trim().slice(0,24)]);
@@ -60,23 +81,29 @@ function walletPayload(){
   const entries=[];
   // The trip plan (planner.js) has an extra evening slot; the pass format knows am/pm, so evening travels as pm.
   if(catalog) for(const day of currentTrip().days) for(const slot of day.slots) for(const entry of slot.entries){
-    if(entry.chosen) entries.push([day.date,slot.period==='am'?'am':'pm',entry.group.id==='all'?'':entry.group.label,
-      entry.chosen.time.start,entry.chosen.time.end,entry.chosen.index]);
+    if(!entry.chosen) continue;
+    const booking=typeof bookingFor==='function'?bookingFor(entry):null;
+    entries.push([day.date,slot.period==='am'?'am':'pm',entry.group.id==='all'?'':entry.group.label,
+      booking?booking.start:entry.chosen.time.start,booking?booking.end:entry.chosen.time.end,entry.chosen.index,booking?1:0]);
   }
-  return walletBase64(JSON.stringify({v:1,l:language,p:state.place,s:state.start,e:state.end||'',f:family,w:wishes,r:entries.slice(0,60)}));
+  const ref=/^FZ-[A-Z0-9]{4,12}$/.test(state.tripRef||'')&&entries.some(entry=>entry[6])?state.tripRef:'';
+  return walletBase64(JSON.stringify({v:1,l:language,p:state.place,s:state.start,e:state.end||'',f:family,w:wishes,r:entries.slice(0,60),...(ref&&{b:ref})}));
 }
-// Renders the 1920×1080 postcard at width×height. Wider formats (the Apple strip) are cover-cropped around the
-// family figures in the lower part; taller formats (Google's hero) show the whole card on the canvas paper
-// colour, so the place name and date stamp are not cut in half.
-function walletCrop(img,width,height,focusY=.7){
+// Renders the whole 1920×1080 postcard into width×height, never cropped. Wider formats (the Apple strip) show the
+// card centred on the pass's dark green, like a framed postcard; taller formats (Google's hero) show it on the
+// canvas paper colour.
+function walletCrop(img,width,height){
   const canvas=document.createElement('canvas');
   canvas.width=width;canvas.height=height;
   const context=canvas.getContext('2d');
   context.imageSmoothingQuality='high';
   if(width/height>=1920/1080){
-    const scale=width/1920, cropHeight=height/scale;
-    const y=Math.min(Math.max(focusY*1080-cropHeight/2,0),1080-cropHeight);
-    context.drawImage(img,0,y,1920,cropHeight,0,0,width,height);
+    const pad=Math.round(height*.07);
+    const scale=(height-2*pad)/1080, cardWidth=1920*scale, cardHeight=1080*scale;
+    context.fillStyle='#294e41';
+    context.fillRect(0,0,width,height);
+    context.shadowColor='rgba(0,0,0,.28)';context.shadowBlur=Math.round(height*.05);context.shadowOffsetY=Math.round(height*.015);
+    context.drawImage(img,(width-cardWidth)/2,(height-cardHeight)/2,cardWidth,cardHeight);
   }else{
     const margin=Math.round(width*.04);
     const scale=Math.min((width-2*margin)/1920,(height-2*margin)/1080);
@@ -106,22 +133,23 @@ async function walletRender(sizes){
 async function walletExport(kind){
   if(walletBusy||state.step!==finalStep) return;
   if(!walletStatusValue?.[kind]){
-    showExportStatus(kind==='apple'?'walletAppleMissing':'walletGoogleMissing');
+    walletNote(kind==='apple'?'walletAppleMissing':'walletGoogleMissing');
     return;
   }
   walletBusy=true;
   const buttons=[...document.querySelectorAll('[data-wallet]')];
   buttons.forEach(button=>{button.disabled=true});
-  // Google (and on the static copy also WalletWallet's install page) opens in a new tab so the canvas stays as it
-  // is. The tab has to be opened right away, inside the tap.
+  // Google (and on the static copy WalletWallet's install page for other devices) opens in a new tab so the canvas
+  // stays as it is. The tab has to be opened right away, inside the tap. On Apple devices the .pkpass opens Apple's
+  // "Add to Wallet" sheet on top of the canvas, so no tab is needed.
   const direct=walletStatusValue.mode==='direct';
-  const tab=kind==='google'||direct?window.open('','_blank'):null;
+  const tab=kind==='google'||(direct&&!walletAppleDevice())?window.open('','_blank'):null;
   if(tab) tab.document.write(`<title>Google Wallet</title><p style="font:16px system-ui;padding:24px">${html(t('walletPreparing'))}</p>`);
-  showExportStatus('walletPreparing');
+  walletNote('walletPreparing');
   try{
     if(direct){
       const target=await walletDirectTarget(kind);
-      showExportStatus('walletOpening');
+      walletNote('walletOpening');
       if(tab) tab.location.href=target;else location.href=target;
       return;
     }
@@ -135,12 +163,12 @@ async function walletExport(kind){
     if(!response.ok) throw Error('upload failed: '+response.status);
     const {id}=await response.json();
     const target=new URL(`api/wallet/${kind}?l=${language}&p=${encodeURIComponent(id)}&t=${plan}`,location.href).href;
-    showExportStatus('walletOpening');
+    walletNote('walletOpening');
     if(tab) tab.location.href=target;else location.href=target;
   }catch(error){
     console.error('Wallet export failed',error);
     tab?.close();
-    showExportStatus('walletFailed');
+    walletNote('walletFailed');
   }finally{
     walletBusy=false;
     setTimeout(()=>buttons.forEach(button=>{button.disabled=false}),1200);
@@ -163,10 +191,14 @@ async function walletDirectTarget(kind){
     .then(buffer=>buffer&&new Uint8Array(buffer)).catch(()=>null);
   const [strip,logo,icon]=await Promise.all([
     walletRender({strip:walletwallet.WALLETWALLET_STRIP_SIZES[2]}).then(images=>bytes(images.strip)),asset('logo.png'),asset('icon.png')]);
-  const passJson=apple.buildApplePassJson(trip,{images:{'strip.png':strip}});
+  // QR code on the pass: the home page of this Reise-Canvas (for the pitch).
+  const home=location.origin+location.pathname;
+  const passJson=apple.buildApplePassJson(trip,{images:{'strip.png':strip},barcodeUrl:home});
   const result=await walletwallet.createWalletWalletPass(trip,passJson,{apiKey:walletwallet.WALLETWALLET_API_KEY,
-    images:{strip3x:strip,logo,icon},barcodeUrl:location.href.split('#')[0]});
-  const target=kind==='google'?result.googleSaveUrl:result.shareUrl;
+    images:{strip3x:strip,logo,icon},barcodeUrl:home});
+  // iPhone, iPad and Mac Safari: straight to the pass file, so Apple's "Add to Wallet" sheet opens without the install
+  // page in between. Other devices get the install page (with a QR code for the phone).
+  const target=kind==='google'?result.googleSaveUrl:(walletAppleDevice()&&result.appleUrl)||result.shareUrl;
   if(!target) throw Error('WalletWallet returned no link');
   return target;
 }

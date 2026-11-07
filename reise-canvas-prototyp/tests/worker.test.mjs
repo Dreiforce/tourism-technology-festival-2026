@@ -281,7 +281,8 @@ test('Apple passes go through WalletWallet with the postcard as strip', async ()
     const body = calls[0].body;
     assert.equal(body.stripURL, 'data:image/png;base64,' + png(...WALLETWALLET_STRIP_SIZES[2]).toString('base64'));
     assert.match(body.logoURL, /^data:image\/png;base64,/);
-    assert.equal(body.barcodeValue, undefined, 'no barcode');
+    assert.equal(body.barcodeValue, origin + '/', 'QR code opens the Reise-Canvas home page');
+    assert.equal(body.barcodeAltText, 'Reise-Canvas öffnen');
     assert.equal(body.organizationName, 'Familienzeit');
     assert.deepEqual(body.headerFields.map(field => field.label), ['URLAUB']);
     assert.ok(body.backFields.some(field => /SA\., 10\.7\./.test(field.label)), 'the planned day is on the back');

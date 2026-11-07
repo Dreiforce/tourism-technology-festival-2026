@@ -170,3 +170,27 @@ test('rejects activities the catalog does not have', () => {
   assert.throws(() => resolve(sample({r: [['2027-07-10', 'am', '', 540, 600, catalog.length]]})), /gibt es im Katalog nicht mehr/);
   assert.throws(() => resolve(sample({l: 'en', r: [['2027-07-10', 'am', '', 540, 600, 9999]]})), /no longer in the catalogue/);
 });
+
+test('bookings from the canvas: booked times, booked flag and the trip booking number', async () => {
+  const catalog = JSON.parse(readFileSync(new URL('../dist/catalog.json', import.meta.url), 'utf8'));
+  const index = catalog.findIndex(a => a.region === 'sfl' && a.location[0].startsWith('Serfaus'));
+  const raw = {v: 1, l: 'de', p: 'Serfaus', s: '2027-07-10', e: '', f: [['a', null, '']], w: [], b: 'FZ-AB12CD',
+    r: [['2027-07-10', 'am', '', 600, 690, index, 1], ['2027-07-10', 'pm', '', 840, 900, index, 0]]};
+  const t = Buffer.from(JSON.stringify(raw)).toString('base64url');
+  const compact = decodeTripParam(t);
+  assert.equal(compact.b, 'FZ-AB12CD');
+  const trip = resolveTrip(compact, {catalog, id: 'x'});
+  assert.deepEqual(trip.booking, {ref: 'FZ-AB12CD'});
+  const [booked, open] = trip.days[0].stops;
+  assert.equal(booked.booked, true);
+  assert.equal(booked.booking, 'booked');
+  assert.equal(booked.bookingLabel, 'Gebucht (Demo)');
+  assert.equal(booked.start, '10:00');
+  assert.equal(open.booked, false);
+  // A booking number without any booked stop is dropped.
+  const none = resolveTrip(decodeTripParam(Buffer.from(JSON.stringify({...raw, r: [raw.r[1]]})).toString('base64url')), {catalog, id: 'y'});
+  assert.equal(none.booking, null);
+  for (const bad of [{...raw, b: 'XX-123456'}, {...raw, b: 'FZ-<script>'}, {...raw, r: [['2027-07-10', 'am', '', 600, 690, index, 2]]}]) {
+    assert.throws(() => decodeTripParam(Buffer.from(JSON.stringify(bad)).toString('base64url')));
+  }
+});

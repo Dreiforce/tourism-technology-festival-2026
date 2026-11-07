@@ -11,7 +11,8 @@
 //   'auto' – (default) 'jwt' when the fat JWT fits into 1800 characters, otherwise 'api'; if the API call fails,
 //            it falls back to the fat JWT so the family still gets a (possibly too long) link instead of an error.
 //
-// The pass is an overview for the family, not a ticket: no barcode, and a guest card is shown as information only.
+// The pass is an overview for the family, not a ticket; a guest card is shown as information only. With
+// config.barcodeUrl it gets a QR code that opens the Reise-Canvas home page, captioned as such.
 // The hero image is the family's own postcard when config.heroImageUrl is given (uploaded by the browser), otherwise
 // the fixed mountain artwork served by the worker at /wallet/hero.png.
 
@@ -44,7 +45,9 @@ const googleTexts = {
     adult: 'Erwachsene Person', child: 'Kind', dog: 'Hund', underOne: 'unter 1', namedDog: name => `Hund ${name}`,
     link: {advance: 'anmelden', info: 'Infos', care: 'Infos', online: 'buchen', pass: 'Infos', office: 'Infos', onsite: 'Infos', free: 'Infos'},
     cardConditions: 'Bedingungen',
-    logo: 'familienzeit. Logo', postcard: 'Eure Reisepostkarte', mountains: 'Berge mit Sonne'
+    logo: 'familienzeit. Logo', postcard: 'Eure Reisepostkarte', mountains: 'Berge mit Sonne',
+    booking: 'Buchung', openCanvas: 'Reise-Canvas öffnen',
+    demoBooking: ref => `Buchung ${ref} – im Reise-Canvas gebucht (Demo), nichts ist reserviert oder bezahlt.`
   },
   en: {
     months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
@@ -59,7 +62,9 @@ const googleTexts = {
     adult: 'Adult', child: 'Child', dog: 'Dog', underOne: 'under 1', namedDog: name => `${name} (dog)`,
     link: {advance: 'register', info: 'info', care: 'info', online: 'book', pass: 'info', office: 'info', onsite: 'info', free: 'info'},
     cardConditions: 'conditions',
-    logo: 'familienzeit. logo', postcard: 'Your travel postcard', mountains: 'Mountains with sun'
+    logo: 'familienzeit. logo', postcard: 'Your travel postcard', mountains: 'Mountains with sun',
+    booking: 'Booking', openCanvas: 'Open the Travel Canvas',
+    demoBooking: ref => `Booking ${ref} – booked in the Travel Canvas (demo), nothing is reserved or paid.`
   }
 };
 
@@ -90,6 +95,8 @@ export function buildGooglePass(trip, config) {
     prices
       ? {id: 'row2right', header: text.entry,
         body: trip.total === null || trip.total === undefined ? text.atProvider : googleEuro(trip.total) + (unknownPrice ? text.open : '')}
+      : trip.booking
+        ? {id: 'row2right', header: text.booking, body: trip.booking.ref}
       : wishes
         ? {id: 'row2right', header: text.wishes, body: googleCut(wishes, 60)}
         : {id: 'row2right', header: text.days, body: String(trip.days.length)}
@@ -97,6 +104,7 @@ export function buildGooglePass(trip, config) {
   const notes = [
     `${text.family}: ${googleMembers(trip, text)}`,
     wishes && `${text.wishes}: ${wishes}`,
+    trip.booking && text.demoBooking(trip.booking.ref),
     trip.card ? text.card(trip.card.name) : text.notTicket,
     prices && trip.total !== null && trip.total !== undefined && trip.totalLabel ? `${trip.totalLabel}: ${googleEuro(trip.total)}` : '',
     trip.estimateNote
@@ -144,6 +152,9 @@ export function buildGooglePass(trip, config) {
     textModulesData: [...front, ...dayModules, closing],
     ...(links.length && {linksModuleData: {uris: links}})
   };
+  if (config?.barcodeUrl && /^https?:\/\//.test(config.barcodeUrl)) {
+    genericObject.barcode = {type: 'QR_CODE', value: String(config.barcodeUrl), alternateText: googleCut(text.openCanvas, 40)};
+  }
   // Google loads images from public https URLs only.
   if (googleHttps(origin)) {
     genericObject.logo = {sourceUri: {uri: `${origin}/wallet/logo.png`}, contentDescription: localized(text.logo)};

@@ -53,6 +53,7 @@ const tripText = {
     info: 'Infos beim Anbieter',
     careTitle: 'Kinderbetreuung',
     careLabel: 'Betreuungszeit selbst eingetragen',
+    booked: 'Gebucht (Demo)',
     estimateNote: 'Zeiten sind Vorschläge aus dem Reise-Canvas. Öffnungszeiten und Anmeldung bitte beim Anbieter prüfen.',
     locale: 'de-AT',
     dayFormat: {weekday: 'short', day: 'numeric', month: 'numeric', timeZone: 'UTC'}
@@ -70,6 +71,7 @@ const tripText = {
     info: 'Details from the provider',
     careTitle: 'Childcare',
     careLabel: 'Childcare hours you entered',
+    booked: 'Booked (demo)',
     estimateNote: 'Times are suggestions from the Travel Canvas. Please check opening hours and booking with the provider.',
     locale: 'en-GB',
     dayFormat: {weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC'}
@@ -152,16 +154,22 @@ export function decodeTripParam(t, lang = 'de') {
 
   if (!Array.isArray(data.r) || data.r.length > tripMaxEntries) throw fail();
   const entries = data.r.map(entry => {
-    if (!Array.isArray(entry) || entry.length !== 6) throw fail();
-    const [date, period, rawGroup, start, finish, index] = entry;
+    // Six fields, or seven with the booked flag (1 = booked in the canvas' demo booking, 0 = not booked).
+    if (!Array.isArray(entry) || (entry.length !== 6 && entry.length !== 7)) throw fail();
+    const [date, period, rawGroup, start, finish, index, booked = 0] = entry;
+    if (booked !== 0 && booked !== 1) throw fail();
     if (!dates.includes(date) || !['am', 'pm'].includes(period)) throw fail();
     const group = tripCleanText(rawGroup, 40);
     if (group === null) throw fail();
     if (!Number.isInteger(start) || !Number.isInteger(finish) || start < 0 || finish > 1440 || start >= finish) throw fail();
     if (!Number.isInteger(index) || index < -1) throw fail();
-    return [date, period, group, start, finish, index];
+    return entry.length === 7 ? [date, period, group, start, finish, index, booked] : [date, period, group, start, finish, index];
   });
-  return {v: 1, l, p: data.p, s: data.s, e: data.e, f: family, w: [...data.w], r: entries};
+  // Optional booking number of the whole trip (demo booking in the canvas, e.g. "FZ-AB12CD").
+  if (data.b !== undefined && data.b !== '' && !(typeof data.b === 'string' && /^FZ-[A-Z0-9]{4,12}$/.test(data.b))) throw fail();
+  const compact = {v: 1, l, p: data.p, s: data.s, e: data.e, f: family, w: [...data.w], r: entries};
+  if (data.b) compact.b = data.b;
+  return compact;
 }
 
 function tripClock(minutes) {
@@ -209,7 +217,7 @@ export function resolveTrip(compact, {catalog, id}) {
   }));
   const byDate = new Map(days.map(day => [day.date, day]));
 
-  for (const [date, period, group, start, finish, index] of compact.r) {
+  for (const [date, period, group, start, finish, index, booked = 0] of compact.r) {
     const order = {period, kind: index === -1 ? 0 : 1};
     if (index === -1) {
       byDate.get(date).stops.push({order, stop: {
@@ -218,7 +226,7 @@ export function resolveTrip(compact, {catalog, id}) {
         address: compact.p, place: compact.p,
         latitude: villageLat, longitude: villageLon,
         group: group || text.careTitle,
-        booking: 'care', bookingLabel: text.careLabel,
+        booking: 'care', bookingLabel: text.careLabel, booked: false,
         bookingLink: tripChildcareLinks[tripIsWinter(date) ? 'winter' : 'summer'][lang],
         note: '', price: null
       }});
@@ -237,8 +245,9 @@ export function resolveTrip(compact, {catalog, id}) {
       address: location, place: location,
       latitude, longitude,
       group: group || null,
-      booking: activity.advanceBooking ? 'advance' : 'info',
-      bookingLabel: activity.advanceBooking ? text.advance : text.info,
+      booking: booked ? 'booked' : activity.advanceBooking ? 'advance' : 'info',
+      bookingLabel: booked ? text.booked : activity.advanceBooking ? text.advance : text.info,
+      booked: booked === 1,
       bookingLink: tripHttps(activity.sources?.[0]),
       note: String(description).slice(0, 200), price: null
     }});
@@ -260,6 +269,8 @@ export function resolveTrip(compact, {catalog, id}) {
     family: {adults, ages, dogs, summary, members},
     wishes,
     card: null,
+    // Demo booking of the whole trip in the canvas (one booking number); booked stops carry booked: true.
+    booking: compact.b && days.some(day => day.stops.some(stop => stop.booked)) ? {ref: compact.b} : null,
     prices: false,
     days,
     total: null,
