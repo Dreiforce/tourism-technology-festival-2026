@@ -15,12 +15,6 @@ if (!active.length || ids.size !== active.length || active.some(entry => !entry.
 }
 
 const siteUrl = process.env.PAGES_BASE_URL;
-// Optional: the ChatGPT-Sites worker that signs wallet passes, e.g. https://familienzeit.example/api/wallet.
-// Without it the static edition hides the "Plan mitnehmen" wallet buttons.
-const walletUrl = process.env.PAGES_WALLET_URL?.trim() || '';
-if (walletUrl && (!URL.canParse(walletUrl) || new URL(walletUrl).protocol !== 'https:')) {
-  throw new Error('PAGES_WALLET_URL must be an https URL.');
-}
 const canonical = siteUrl
   ? new URL('familienzeit/', siteUrl.endsWith('/') ? siteUrl : siteUrl + '/').href
   : '';
@@ -36,15 +30,18 @@ for (const file of ['app.js', 'accessibility.js', 'guest-cards.js', 'planning.js
 const html = (await readFile(new URL('index.html', source), 'utf8'))
   .replace(/<a\b[^>]*\bdata-backend-only[^>]*>[^<]*<\/a>/g, '')
   .replace(/<link rel="canonical"[^>]*>/, canonical ? `<link rel="canonical" href="${canonical}">` : '')
-  .replace('</head>', '<meta name="catalog-url" content="./catalog.json">' +
-    (walletUrl ? `<meta name="wallet-url" content="${walletUrl.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}">` : '') + '</head>');
+  .replace('</head>', '<meta name="catalog-url" content="./catalog.json"></head>');
 await writeFile(new URL('index.html', main), html);
 
 // Pages caches files for 10 minutes. Version the prototypes' scripts and styles per deploy,
 // so a browser never mixes an old index.html with new scripts (or the other way round).
 const version = (process.env.GITHUB_SHA || Date.now().toString(36)).slice(0, 8);
 for (const prototype of prototypes) {
-  await cp(new URL(prototype + '/dist/', root), new URL(prototype + '/', output), { recursive: true });
+  // dist/server/ holds a locally built worker bundle (Reise-Canvas), which a static site cannot run.
+  await cp(new URL(prototype + '/dist/', root), new URL(prototype + '/', output), {
+    recursive: true,
+    filter: source => !/[\\/]dist[\\/]server([\\/]|$)/.test(source)
+  });
   const page = new URL(prototype + '/index.html', output);
   const markup = await readFile(page, 'utf8');
   await writeFile(page, markup.replace(/((?:src|href)=")((?!https?:|\/\/)[^"?#]+\.(?:js|css))"/g, `$1$2?v=${version}"`));

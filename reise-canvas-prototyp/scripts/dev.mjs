@@ -1,8 +1,8 @@
-// Runs the Familienzeit worker locally, including the wallet routes:
-//   node familienzeit/scripts/dev.mjs [port]        → http://localhost:8787
-// The catalog comes from server/catalog.json (read-only, no D1 needed); photos uploaded in the admin are not available.
+// Runs the Reise-Canvas worker locally, including the wallet export:
+//   node reise-canvas-prototyp/scripts/dev.mjs [port]        → http://localhost:8788
+// Postcards are kept in memory (instead of R2) until the server stops.
 //
-// Wallet credentials are optional. Without them the wallet buttons open a "noch nicht eingerichtet" page.
+// Wallet credentials are optional. Without them no wallet buttons appear on the last step.
 //   Apple:  APPLE_PASS_CERT_FILE, APPLE_PASS_KEY_FILE, APPLE_WWDR_CERT_FILE  (PEM files, see docs/wallet.md)
 //           APPLE_PASS_TYPE_ID / APPLE_TEAM_ID are read from the certificate when not set.
 //   Google: GOOGLE_SA_JSON_FILE (service-account JSON key) and GOOGLE_ISSUER_ID
@@ -15,28 +15,44 @@ import {X509Certificate} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 
 const root = new URL('../', import.meta.url);
-const port = Number(process.argv[2] || process.env.PORT || 8787);
+const port = Number(process.argv[2] || process.env.PORT || 8788);
 
 execFileSync(process.execPath, [fileURLToPath(new URL('scripts/build.mjs', root))], {stdio: 'inherit'});
 const worker = (await import(new URL('dist/server/index.js', root).href)).default;
 
-const catalog = JSON.parse(readFileSync(new URL('server/catalog.json', root), 'utf8')).filter(entry => entry.region === 'sfl');
-const rows = catalog.map(({id, ...details}) => ({id, revision: 'local', active: details.active === false ? 0 : 1, details: JSON.stringify(details)}));
-const DB = {
-  prepare(sql) {
-    const statement = {
-      bind: () => statement,
-      // Pretend the catalog imports already ran, so the worker never writes.
-      first: async () => (/catalog_imports/.test(sql) ? {name: 'local'} : null),
-      all: async () => ({results: /active=1/.test(sql) ? rows.filter(row => row.active) : rows}),
-      run: async () => { throw new Error('Der lokale Katalog ist schreibgeschützt.'); }
-    };
-    return statement;
-  },
-  batch: async () => []
-};
+// Minimal in-memory stand-in for the R2 bucket binding (put, get, head, delete).
+function memoryBucket() {
+  const objects = new Map();
+  const toBytes = async value => {
+    if (value instanceof Uint8Array) return new Uint8Array(value);
+    if (value instanceof ArrayBuffer) return new Uint8Array(value.slice(0));
+    if (typeof value === 'string') return new TextEncoder().encode(value);
+    return new Uint8Array(await new Response(value).arrayBuffer());
+  };
+  const describe = (key, item) => ({key, size: item.bytes.length, httpMetadata: {...item.httpMetadata}, customMetadata: {...item.customMetadata}});
+  return {
+    objects,
+    async put(key, value, options = {}) {
+      objects.set(key, {bytes: await toBytes(value), httpMetadata: options.httpMetadata || {}, customMetadata: options.customMetadata || {}});
+      return describe(key, objects.get(key));
+    },
+    async head(key) {
+      const item = objects.get(key);
+      return item ? describe(key, item) : null;
+    },
+    async get(key) {
+      const item = objects.get(key);
+      if (!item) return null;
+      return {...describe(key, item), get body() { return new Response(item.bytes).body; },
+        arrayBuffer: async () => item.bytes.slice().buffer, text: async () => new TextDecoder().decode(item.bytes)};
+    },
+    async delete(keys) {
+      for (const key of [].concat(keys)) objects.delete(key);
+    }
+  };
+}
 
-const env = {DB, BUCKET: {get: async () => null}};
+const env = {BUCKET: memoryBucket()};
 const secrets = ['APPLE_PASS_TYPE_ID', 'APPLE_TEAM_ID', 'APPLE_PASS_CERT', 'APPLE_PASS_KEY', 'APPLE_WWDR_CERT',
   'GOOGLE_ISSUER_ID', 'GOOGLE_SA_EMAIL', 'GOOGLE_SA_KEY'];
 for (const name of secrets) {
@@ -75,7 +91,7 @@ http.createServer(async (req, res) => {
   const lan = Object.values(os.networkInterfaces()).flat()
     .filter(entry => entry && entry.family === 'IPv4' && !entry.internal).map(entry => `http://${entry.address}:${port}`);
   const ready = names => names.every(name => env[name]);
-  console.log(`\nFamilienzeit läuft auf http://localhost:${port}`);
+  console.log(`\nReise-Canvas läuft auf http://localhost:${port}`);
   if (lan.length) console.log(`Im selben WLAN (z. B. am Handy): ${lan.join('  ')}`);
   console.log(`Apple Wallet:  ${ready(secrets.slice(0, 5)) ? 'eingerichtet (' + env.APPLE_PASS_TYPE_ID + ')' : 'nicht eingerichtet'}`);
   console.log(`Google Wallet: ${ready(secrets.slice(5)) ? 'eingerichtet (Issuer ' + env.GOOGLE_ISSUER_ID + ')' : 'nicht eingerichtet'}`);

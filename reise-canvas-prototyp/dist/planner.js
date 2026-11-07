@@ -115,8 +115,10 @@ function slotOptions(catalog,{date,period,group,place,general,weather,used,day,f
       dog&&activity.pets!=='yes'||access.some(key=>activity.accessibility?.[key]==='no')) continue;
     const time=suggestedTime(activity,date,window);
     if(!time||period==='evening'&&time.start<17*60) continue;
-    const outdoorOnly=activity.weather==='sun';
-    if(outdoorOnly&&badWeather.has(weather?.kind)) continue;
+    // Only a forecast thunderstorm rules out fair-weather activities; forecast rain costs a lot,
+    // last year's rain (no forecast yet) only a little.
+    const outdoorOnly=activity.weather==='sun', bad=badWeather.has(weather?.kind), forecast=weather?.source==='forecast';
+    if(outdoorOnly&&bad&&forecast&&weather.kind==='storm') continue;
     const likes=people.map(person=>({person,keys:personLikes(person,activity)})).filter(item=>item.keys.length);
     const today=datedEvent(activity,date);
     if(period==='evening'&&!today&&!likes.length) continue;
@@ -124,7 +126,8 @@ function slotOptions(catalog,{date,period,group,place,general,weather,used,day,f
     score+=.7*personLikes({wishes:general},activity).length;
     score+=access.filter(key=>activity.accessibility?.[key]==='yes').length;
     if(today) score+=1.5;
-    if(badWeather.has(weather?.kind)&&activity.weather==='both') score+=1;
+    if(outdoorOnly&&bad) score-=forecast?2.5:.5;
+    if(bad&&activity.weather==='both') score+=forecast?1:.3;
     if(weather?.kind==='sun'&&outdoorOnly) score+=.5;
     if(outdoorOnly&&weather&&weather.tmax<=2) score-=1.5;
     if(ages.length&&/murmli|berta/i.test(activity.title)) score+=.5;

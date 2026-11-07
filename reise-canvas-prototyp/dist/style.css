@@ -256,3 +256,4 @@ dialog.mii{width:min(1040px,calc(100% - 20px));height:min(740px,calc(100dvh - 20
 .alt:hover{border-color:var(--green);background:var(--mint)}
 .alt small{color:var(--muted);font-size:11px}
 @media(max-width:690px){.trip-slot{grid-template-columns:1fr;gap:4px}.slot-label{padding-top:0}}
+.wallet-export{margin-top:12px;padding-top:11px;border-top:1px dashed var(--line)}.controls .wallet-hint{font-size:13px;margin:0 0 8px}.wallet-hint strong{color:var(--green)}.wallet-actions{display:flex;flex-wrap:wrap;gap:8px}.wallet-button{background:var(--ink);border-color:var(--ink);color:var(--white)}.wallet-button:disabled{opacity:.55}

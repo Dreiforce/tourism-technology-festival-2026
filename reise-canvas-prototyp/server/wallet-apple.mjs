@@ -1,19 +1,60 @@
-// Apple Wallet export: turns a normalized Familienzeit trip into a signed .pkpass.
+// Apple Wallet export: turns a normalized Reise-Canvas trip into a signed .pkpass.
 // Dependency-free on purpose (the worker build has no npm step): WebCrypto for hashing and RSA signing,
 // CompressionStream for deflate, and a small hand-written DER encoder for the PKCS#7 signature.
 // Runs in Workers-style runtimes and in Node 22.
+//
+// Two layouts:
+//  - With 'strip.png' in config.images (the family's own postcard): style `eventTicket`. The strip sits behind the
+//    primary fields; we leave the primary row empty so the postcard stays readable, and Wallet doesn't allow a
+//    thumbnail or background next to a strip, so those images are dropped.
+//  - Without a strip: style `generic` with the fixed mountain thumbnail.
+// No barcode: the pass is the family's overview, not a ticket.
+
+// Event-ticket strip image: 375 × 98 points (1x/2x/3x pixels). The browser renders the postcard crop in these sizes.
+export const APPLE_STRIP_SIZES = [[375, 98], [750, 196], [1125, 294]];
 
 const appleUtf8 = new TextEncoder();
-const appleMonths = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
 const appleColors = {background:'rgb(41, 78, 65)', foreground:'rgb(248, 247, 241)', label:'rgb(230, 186, 142)'};
+const appleText = {
+  de: {
+    months: ['Jänner','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'],
+    description: 'Familienzeit Urlaubsplan',
+    holiday: 'URLAUB', familyTimeIn: 'FAMILIENZEIT IN', place: 'ORT', family: 'FAMILIE', activities: 'ERLEBNISSE',
+    firstStop: 'ERSTER STOPP', wishes: 'WÜNSCHE', guestCard: 'GÄSTEKARTE', plan: 'EUER URLAUBSPLAN', note: 'HINWEIS',
+    about: (place, range, members) => `Familienzeit in ${place}, ${range}. ${members}. Diese Karte ist eure Übersicht und kein Ticket.`,
+    nothingPlanned: 'Noch nichts geplant',
+    adult: 'Erwachsene Person', child: 'Kind', dog: 'Hund', underOne: 'unter 1',
+    namedDog: name => `Hund ${name}`,
+    priceAtProvider: 'Preis beim Anbieter', estimated: amount => `${amount} geschätzt`, freeEntry: 'Eintritt frei',
+    pricesAtProvider: 'Preise beim Anbieter',
+    cardInfo: (name, source) => `${name} – laut eurer Angabe dabei. Zeigt bei Bergbahnen und Partnern bitte die ` +
+      `Originalkarte vor, diese Wallet-Karte ersetzt sie nicht.\nBedingungen: ${source}`
+  },
+  en: {
+    months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+    description: 'Familienzeit holiday plan',
+    holiday: 'HOLIDAY', familyTimeIn: 'FAMILY TIME IN', place: 'PLACE', family: 'FAMILY', activities: 'ACTIVITIES',
+    firstStop: 'FIRST STOP', wishes: 'WISHES', guestCard: 'GUEST CARD', plan: 'YOUR HOLIDAY PLAN', note: 'NOTE',
+    about: (place, range, members) => `Family time in ${place}, ${range}. ${members}. This card is your overview, not a ticket.`,
+    nothingPlanned: 'Nothing planned yet',
+    adult: 'Adult', child: 'Child', dog: 'Dog', underOne: 'under 1',
+    namedDog: name => `${name} (dog)`,
+    priceAtProvider: 'Price at the provider', estimated: amount => `${amount} estimated`, freeEntry: 'Free entry',
+    pricesAtProvider: 'Prices at the provider',
+    cardInfo: (name, source) => `${name} – you said you have it. Please show the original card at lifts and partners; ` +
+      `this Wallet card doesn't replace it.\nConditions: ${source}`
+  }
+};
+
+function appleLang(trip) {
+  return appleText[trip.lang] || appleText.de;
+}
 
 export async function buildApplePass(trip, config) {
   appleCheckConfig(config);
-  const files = new Map([['pass.json', appleUtf8.encode(JSON.stringify(buildApplePassJson(trip, config), null, 2))]]);
-  for (const [name, data] of Object.entries(config.images || {})) {
-    if (!/^[a-z0-9]+(@[23]x)?\.png$/i.test(name)) throw new Error(`Apple Wallet: unexpected image name "${name}".`);
-    files.set(name, appleBytes(data));
-  }
+  const images = appleImages(config.images);
+  const files = new Map([['pass.json', appleUtf8.encode(JSON.stringify(buildApplePassJson(trip, {...config, images}), null, 2))]]);
+  for (const [name, data] of Object.entries(images)) files.set(name, appleBytes(data));
   if (!files.has('icon.png')) throw new Error('Apple Wallet: icon.png is required.');
   const manifest = {};
   for (const [name, bytes] of files) manifest[name] = appleHex(await crypto.subtle.digest('SHA-1', bytes));
@@ -23,44 +64,72 @@ export async function buildApplePass(trip, config) {
   return appleZip(files);
 }
 
+// Wallet ignores unknown files but a strip can't be combined with a thumbnail or background image.
+function appleImages(images = {}) {
+  const names = Object.keys(images);
+  for (const name of names) {
+    if (!/^(icon|logo|thumbnail|strip|background|footer)(@[23]x)?\.png$/.test(name)) {
+      throw new Error(`Apple Wallet: unexpected image name "${name}".`);
+    }
+  }
+  const strip = names.includes('strip.png');
+  return Object.fromEntries(Object.entries(images)
+    .filter(([name]) => !strip || !/^(thumbnail|background)(@[23]x)?\.png$/.test(name))
+    .filter(([name]) => strip || !/^strip@[23]x\.png$/.test(name)));
+}
+
 export function buildApplePassJson(trip, config) {
+  const text = appleLang(trip);
+  const withStrip = Boolean(config.images && Object.hasOwn(config.images, 'strip.png'));
   const stops = trip.days.flatMap(day => [...day.stops]
     .sort((a, b) => appleMinutes(a.start) - appleMinutes(b.start))
     .map(stop => ({...stop, day})));
-  const first = stops[0];
+  const activities = stops.filter(stop => stop.kind !== 'care');
+  const first = activities[0];
+  const firstField = first && {key: 'first', label: text.firstStop, value: `${appleWeekday(first.day)} ${first.start} · ${first.title}`};
+  const extraField = trip.card
+    ? {key: 'card', label: text.guestCard, value: trip.card.name}
+    : trip.wishes?.length ? {key: 'wishes', label: text.wishes, value: trip.wishes.join(' · ')} : null;
+  const header = [{key: 'dates', label: text.holiday, value: appleShortRange(trip.start, trip.end, text)}];
+  // At most four secondary + auxiliary fields together, so every layout stays within Wallet's front limits.
+  const fields = withStrip
+    ? {
+      headerFields: header,
+      primaryFields: [], // keep the postcard strip free of text
+      secondaryFields: [
+        {key: 'place', label: text.place, value: trip.place.name},
+        {key: 'family', label: text.family, value: trip.family.summary}
+      ],
+      auxiliaryFields: [firstField || {key: 'stops', label: text.activities, value: '0'}, extraField].filter(Boolean)
+    }
+    : {
+      headerFields: header,
+      primaryFields: [{key: 'place', label: text.familyTimeIn, value: trip.place.name}],
+      secondaryFields: [
+        {key: 'family', label: text.family, value: trip.family.summary},
+        {key: 'stops', label: text.activities, value: String(activities.length)}
+      ],
+      auxiliaryFields: [firstField, extraField].filter(Boolean)
+    };
   const pass = {
     formatVersion: 1,
     passTypeIdentifier: config.passTypeIdentifier,
     teamIdentifier: config.teamIdentifier,
     serialNumber: trip.id,
     organizationName: 'Familienzeit',
-    description: 'Familienzeit Urlaubsplan',
+    description: text.description,
     logoText: 'familienzeit.',
     backgroundColor: appleColors.background,
     foregroundColor: appleColors.foreground,
     labelColor: appleColors.label,
     expirationDate: appleTimestamp(trip.end, 23 * 60 + 59),
-    generic: {
-      headerFields: [{key: 'dates', label: 'URLAUB', value: appleShortRange(trip.start, trip.end)}],
-      primaryFields: [{key: 'place', label: 'FAMILIENZEIT IN', value: trip.place.name}],
-      secondaryFields: [
-        {key: 'family', label: 'FAMILIE', value: trip.family.summary},
-        {key: 'stops', label: 'ERLEBNISSE', value: String(stops.length)}
-      ],
-      auxiliaryFields: [
-        ...(first ? [{key: 'first', label: 'ERSTER STOPP', value: `${appleWeekday(first.day)} ${first.start} · ${first.title}`}] : []),
-        ...(trip.card ? [{key: 'card', label: 'GÄSTEKARTE', value: trip.card.name}] : [])
-      ],
-      backFields: appleBackFields(trip)
-    }
+    [withStrip ? 'eventTicket' : 'generic']: {...fields, backFields: appleBackFields(trip, text)}
   };
-  // Lock screen relevance. Generic passes that carry date relevance must also carry locations, and the
-  // system shows the pass only when date AND a location match. One interval per planned day (each
-  // under 24 h, iOS 18+ `relevantDates`) keeps location relevance alive on every trip day. The
-  // deprecated single `relevantDate` is left out on purpose: on older iOS it would restrict
-  // location relevance to the first day; without it those devices fall back to location-only
-  // relevance, bounded by expirationDate.
-  const locations = appleLocations(stops);
+  // Lock screen relevance. With date AND location relevance the system shows the pass when both match; one interval
+  // per planned day (each under 24 h, iOS 18+ `relevantDates`) keeps location relevance alive on every trip day.
+  // The deprecated single `relevantDate` is left out on purpose: on older iOS it would restrict location relevance to
+  // the first day; without it those devices fall back to location-only relevance, bounded by expirationDate.
+  const locations = appleLocations(activities);
   if (locations.length) {
     pass.locations = locations;
     pass.relevantDates = trip.days.filter(day => day.stops.length).map(day => {
@@ -74,49 +143,58 @@ export function buildApplePassJson(trip, config) {
   return pass;
 }
 
-function appleBackFields(trip) {
-  const ages = trip.family.ages.length
-    ? ` (${appleJoin(trip.family.ages.map(String))} ${trip.family.ages.length === 1 && trip.family.ages[0] === 1 ? 'Jahr' : 'Jahre'})`
-    : '';
-  const fields = [{
-    key: 'about', label: 'EUER URLAUBSPLAN',
-    value: `Familienzeit ab ${trip.place.name}, ${appleLongRange(trip.start, trip.end)}. ${trip.family.summary}${ages}. ` +
-      'Diese Karte ist eure Übersicht und kein Ticket.'
-  }];
+function appleMembers(trip, text) {
+  const members = trip.family.members || [];
+  if (!members.length) return trip.family.summary;
+  return members.map(member => {
+    const name = String(member.name || '').trim();
+    if (member.kind === 'dog') return name ? text.namedDog(name) : text.dog;
+    const age = member.age === null || member.age === undefined ? '' : ` (${member.age === 0 ? text.underOne : member.age})`;
+    return (name || (member.kind === 'child' ? text.child : text.adult)) + age;
+  }).join(' · ');
+}
+
+function appleBackFields(trip, text) {
+  const prices = trip.prices !== false;
+  const fields = [
+    {key: 'about', label: text.plan, value: text.about(trip.place.name, appleLongRange(trip.start, trip.end, text), trip.family.summary)},
+    {key: 'members', label: text.family, value: appleMembers(trip, text)}
+  ];
+  if (trip.wishes?.length) fields.push({key: 'wish-list', label: text.wishes, value: trip.wishes.join(' · ')});
   for (const day of trip.days) {
     const stops = [...day.stops].sort((a, b) => appleMinutes(a.start) - appleMinutes(b.start));
     fields.push({
       key: `day-${day.date}`,
       label: day.label.toUpperCase(),
-      value: stops.length ? stops.map(appleStopText).join('\n\n') : 'Freier Tag'
+      value: stops.length ? stops.map(stop => appleStopText(stop, text, prices, trip.lang)).join('\n\n') : text.nothingPlanned
     });
   }
-  fields.push({
-    key: 'total', label: trip.totalLabel.toUpperCase(),
-    value: trip.total === null || trip.total === undefined ? 'Preise beim Anbieter' : appleMoney(trip.total)
-  });
-  if (trip.card) {
+  if (prices && trip.totalLabel) {
     fields.push({
-      key: 'card-info', label: 'GÄSTEKARTE',
-      value: `${trip.card.name} – laut eurer Angabe dabei. Zeigt bei Bergbahnen und Partnern bitte die ` +
-        `Originalkarte vor, diese Wallet-Karte ersetzt sie nicht.\nBedingungen: ${trip.card.source}`
+      key: 'total', label: trip.totalLabel.toUpperCase(),
+      value: trip.total === null || trip.total === undefined ? text.pricesAtProvider : appleMoney(trip.total, trip.lang)
     });
   }
-  fields.push({key: 'note', label: 'HINWEIS', value: trip.estimateNote});
+  if (trip.card) fields.push({key: 'card-info', label: text.guestCard, value: text.cardInfo(trip.card.name, trip.card.source)});
+  if (trip.estimateNote) fields.push({key: 'note', label: text.note, value: trip.estimateNote});
   return fields;
 }
 
-function appleStopText(stop) {
+function appleStopText(stop, text, prices, lang) {
+  if (stop.kind === 'care') {
+    return [`${stop.title} ${stop.start}–${stop.end}`, stop.bookingLabel, stop.note, stop.bookingLink].filter(Boolean).join('\n');
+  }
   // Price only where it adds something: card-covered and ticket-free stops already say so in the label.
-  const price = stop.price === null || stop.price === undefined ? 'Preis beim Anbieter'
-    : stop.price > 0 ? `${appleMoney(stop.price)} geschätzt`
-    : ['pass', 'free'].includes(stop.booking) ? '' : 'Eintritt frei';
+  const price = !prices ? ''
+    : stop.price === null || stop.price === undefined ? text.priceAtProvider
+    : stop.price > 0 ? text.estimated(appleMoney(stop.price, lang))
+    : ['pass', 'free'].includes(stop.booking) ? '' : text.freeEntry;
   return [
     `${stop.start}–${stop.end} ${stop.title}`,
-    [stop.group && `Gruppe ${stop.group}`, stop.address].filter(Boolean).join(' · '),
+    [stop.group, stop.address].filter(Boolean).join(' · '),
     [stop.bookingLabel, price].filter(Boolean).join(' · '),
     stop.note,
-    stop.booking === 'online' && stop.bookingLink
+    stop.bookingLink
   ].filter(Boolean).join('\n');
 }
 
@@ -124,6 +202,7 @@ function appleLocations(stops) {
   const seen = new Set();
   const locations = [];
   for (const stop of stops) {
+    if (!Number.isFinite(Number(stop.latitude)) || !Number.isFinite(Number(stop.longitude))) continue;
     const key = `${Number(stop.latitude).toFixed(5)},${Number(stop.longitude).toFixed(5)}`;
     if (seen.has(key)) continue;
     seen.add(key);
@@ -174,33 +253,34 @@ function appleParts(date) {
   return {year, month, day};
 }
 
-function appleShortRange(start, end) {
+// de: "10.–12. Juli", en: "10–12 July"
+function appleShortRange(start, end, text) {
   const a = appleParts(start), b = appleParts(end);
-  if (start === end) return `${a.day}. ${appleMonths[a.month - 1]}`;
-  if (a.year === b.year && a.month === b.month) return `${a.day}.–${b.day}. ${appleMonths[b.month - 1]}`;
-  return `${a.day}.${a.month}.–${b.day}.${b.month}.`;
+  const en = text === appleText.en;
+  const month = p => text.months[p.month - 1];
+  if (start === end) return en ? `${a.day} ${month(a)}` : `${a.day}. ${month(a)}`;
+  if (a.year === b.year && a.month === b.month) return en ? `${a.day}–${b.day} ${month(b)}` : `${a.day}.–${b.day}. ${month(b)}`;
+  return en ? `${a.day} ${month(a).slice(0, 3)} – ${b.day} ${month(b).slice(0, 3)}` : `${a.day}.${a.month}.–${b.day}.${b.month}.`;
 }
 
-function appleLongRange(start, end) {
+function appleLongRange(start, end, text) {
   const a = appleParts(start), b = appleParts(end);
-  const full = p => `${p.day}. ${appleMonths[p.month - 1]} ${p.year}`;
+  const en = text === appleText.en;
+  const dayMonth = p => en ? `${p.day} ${text.months[p.month - 1]}` : `${p.day}. ${text.months[p.month - 1]}`;
+  const full = p => `${dayMonth(p)} ${p.year}`;
   if (start === end) return full(a);
-  if (a.year === b.year && a.month === b.month) return `${a.day}.–${full(b)}`;
-  if (a.year === b.year) return `${a.day}. ${appleMonths[a.month - 1]} – ${full(b)}`;
+  if (a.year === b.year && a.month === b.month) return en ? `${a.day}–${full(b)}` : `${a.day}.–${full(b)}`;
+  if (a.year === b.year) return `${dayMonth(a)} – ${full(b)}`;
   return `${full(a)} – ${full(b)}`;
 }
 
 function appleWeekday(day) {
-  // day.label looks like "Sa., 10.7." – keep the weekday part.
+  // day.label looks like "Sa., 10.7." or "Sat, 10 Jul" – keep the weekday part.
   return day.label.split(',')[0];
 }
 
-function appleJoin(items) {
-  return items.length < 2 ? items.join('') : `${items.slice(0, -1).join(', ')} und ${items.at(-1)}`;
-}
-
-function appleMoney(value) {
-  return new Intl.NumberFormat('de-AT', {style: 'currency', currency: 'EUR', maximumFractionDigits: 2}).format(value);
+function appleMoney(value, lang) {
+  return new Intl.NumberFormat(lang === 'en' ? 'en-GB' : 'de-AT', {style: 'currency', currency: 'EUR', maximumFractionDigits: 2}).format(value);
 }
 
 // ---------- signing (CMS / PKCS#7 SignedData, detached, SHA-256) ----------

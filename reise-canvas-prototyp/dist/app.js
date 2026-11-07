@@ -198,6 +198,7 @@ function renderControls(){
     if(dateError) $('date-error').textContent=t(dateError);
   }
   if(index===finalStep&&exportStatus) $('export-status').textContent=t(exportStatus);
+  if(index===finalStep&&typeof renderWallet==='function') renderWallet();
 }
 function render(added,focus=false){
   draw(added);
