@@ -5,7 +5,7 @@ const finalStep=steps.length-1;
 const journey=$('journey');
 const state={step:0,visited:0,flipped:false,weather:null,place:'Serfaus',start:todayDate(),end:'',family:[],general:new Set(),
   period:'am',groups:{am:{split:false,assignments:new Map()},pm:{split:false,assignments:new Map()}},
-  picks:new Map(),seed:0,openAlternatives:'',tripWeather:{},guestCard:false,bookings:new Map()};
+  picks:new Map(),seed:0,openAlternatives:'',tripWeather:{},guestCard:false,bookings:new Map(),tripRef:''};
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 let nextId=1, pending=null, catalogRequest, catalog;
 let dateError='', exportStatus='', resultStatus='';
@@ -639,7 +639,9 @@ function bookingOverview(days){
   }).join('');
   return `<section class="booking-overview" aria-labelledby="booking-title"><h3 id="booking-title">${t('bookingTitle')}</h3>
     <p class="trip-note">${t('bookingIntro')}</p>
-    ${rows.some(row=>!bookingFor(row.entry))?`<button type="button" class="primary book-all" data-book-all>${t('bookAll',rows.filter(row=>!bookingFor(row.entry)).length)}</button>`:`<p class="chip-booked">✓ ${t('allBooked')}</p>`}${groups}
+    <div class="trip-booking-bar">${state.tripRef?`<span class="chip-booked">✓ ${t('tripBooked',html(state.tripRef))}</span>`:''}
+      ${rows.some(row=>!bookingFor(row.entry))?`<button type="button" class="primary book-all" data-book-all>${t(state.tripRef?'bookMore':'bookTrip',rows.filter(row=>!bookingFor(row.entry)).length)}</button>`:''}
+      ${state.tripRef?`<button type="button" class="small" data-cancel-trip>${t('cancelTrip')}</button>`:''}</div>${groups}
     <div class="booking-total"><span>${t(rows.some(row=>row.cost===null)?'totalKnown':'totalEstimated')}</span><strong>${money(known)}</strong></div></section>`;
 }
 function renderResults(focus){
@@ -741,7 +743,7 @@ const storeKey='familienzeit-canvas-state';
 function saveState(){
   try{
     localStorage.setItem(storeKey,JSON.stringify({v:1,nextId,step:state.step,visited:state.visited,place:state.place,
-      start:state.start,end:state.end,period:state.period,guestCard:state.guestCard,bookings:[...state.bookings],seed:state.seed,general:[...state.general],picks:[...state.picks],
+      start:state.start,end:state.end,period:state.period,guestCard:state.guestCard,bookings:[...state.bookings],tripRef:state.tripRef,seed:state.seed,general:[...state.general],picks:[...state.picks],
       family:state.family.map(p=>({...p,wishes:[...p.wishes],needs:p.needs&&[...p.needs]})),
       groups:Object.fromEntries(Object.entries(state.groups).map(([key,group])=>[key,{split:group.split,assignments:[...group.assignments]}]))}));
   }catch{}
@@ -750,7 +752,7 @@ function loadState(){
   try{
     const saved=JSON.parse(localStorage.getItem(storeKey));
     if(saved?.v!==1||!saved.family.length) return false;
-    Object.assign(state,{step:saved.step,visited:saved.visited,place:saved.place,start:saved.start,end:saved.end,period:saved.period,guestCard:Boolean(saved.guestCard),bookings:new Map(saved.bookings||[]),
+    Object.assign(state,{step:saved.step,visited:saved.visited,place:saved.place,start:saved.start,end:saved.end,period:saved.period,guestCard:Boolean(saved.guestCard),bookings:new Map(saved.bookings||[]),tripRef:saved.tripRef||'',
       seed:saved.seed,general:new Set(saved.general),picks:new Map(saved.picks),
       family:saved.family.map(p=>({...p,wishes:new Set(p.wishes),needs:p.needs?new Set(p.needs):undefined})),
       groups:Object.fromEntries(Object.entries(saved.groups).map(([key,group])=>[key,{split:group.split,assignments:new Map(group.assignments)}]))});

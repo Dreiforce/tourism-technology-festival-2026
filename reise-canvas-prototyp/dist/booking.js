@@ -1,5 +1,6 @@
-// In-site booking (DEMO): time slots, tickets, contact and payment choice, confirmation with booking
-// numbers and a calendar file. Nothing is reserved or paid anywhere; the provider links stay available.
+// In-site booking (DEMO): one booking for the whole itinerary — a time slot per activity, tickets, contact
+// (prefilled from an imaginary linked account), payment choice, one booking number and a calendar file.
+// Nothing is reserved or paid anywhere; the provider links stay available.
 // Also the OpenStreetMap day maps of the trip plan.
 
 // ---------- OpenStreetMap day map (no library: OSM tiles + an SVG overlay) ----------
@@ -47,13 +48,13 @@ const bookingFor=entry=>{
 };
 const people=members=>({adults:members.filter(p=>p.kind==='adult').length,children:members.filter(p=>p.kind==='child'),
   dogs:members.filter(p=>p.kind==='dog').length});
+// Booking status of one plan item; booking itself happens once for the whole trip (bookingOverview).
 function bookButton(entry){
   const booking=bookingFor(entry);
-  if(booking) return `<span class="chip-booked">✓ ${t('bookedAt',timeText(booking.start))} · ${html(booking.ref)}</span>
-    <button type="button" class="small" data-cancel-booking="${html(entry.key)}">${t('cancelBooking')}</button>`;
-  const mode=bookingMode(entry.chosen.activity,null);
-  return `<button type="button" class="book-now" data-book="${html(entry.key)}">${t(mode==='free'||mode==='provider'?'reserveSlot':'bookTickets')}</button>`;
+  return booking?`<span class="chip-booked">✓ ${t('bookedAt',timeText(booking.start))}</span>`:'';
 }
+// The imaginary account the family is signed in with (demo data, editable in the dialog).
+const mockAccount={name:'Familie Huber',email:'familie.huber@example.com',phone:'+43 660 1234567'};
 // Time slots from the opening hours of that day (every 30 min until the last start); dated events have
 // their fixed start. Free places are invented but stable (demo).
 function timeSlots(activity,date,planned,size){
@@ -67,9 +68,9 @@ function timeSlots(activity,date,planned,size){
   if(!slots.some(slot=>slot.start===planned.start)) slots.push({start:planned.start,free:Math.max(size,6)});
   return slots.sort((a,b)=>a.start-b.start);
 }
-function bookingItems(keys){
+function bookingItems(){
   return currentTrip().days.flatMap(day=>day.slots.flatMap(slot=>slot.entries
-    .filter(entry=>entry.chosen&&!bookingFor(entry)&&(!keys||keys.includes(entry.key)))
+    .filter(entry=>entry.chosen&&!bookingFor(entry))
     .map(entry=>{
       const a=entry.chosen.activity, rule=cardRule(a,day.date,state.guestCard);
       const size=entry.group.members.filter(p=>p.kind!=='dog').length;
@@ -80,12 +81,13 @@ function bookingItems(keys){
 
 // ---------- Dialog ----------
 let bookingDraft=[];
-function openBooking(keys){
-  bookingDraft=bookingItems(keys);
+function openBooking(){
+  bookingDraft=bookingItems();
   if(!bookingDraft.length) return;
   const total=bookingDraft.reduce((sum,item)=>sum+(item.cost||0),0);
-  const contact=(()=>{try{return JSON.parse(localStorage.getItem('familienzeit-contact'))||{}}catch{return {}}})();
-  $('book-content').innerHTML=`<h2 id="book-title">${t(bookingDraft.length>1?'bookAllTitle':'bookOneTitle')}</h2>
+  const contact=(()=>{try{return JSON.parse(localStorage.getItem('familienzeit-contact'))||mockAccount}catch{return mockAccount}})();
+  $('book-content').innerHTML=`<h2 id="book-title">${t(state.tripRef?'bookMoreTitle':'bookAllTitle')}</h2>
+    ${state.tripRef?`<p>${t('bookMoreIntro',html(state.tripRef))}</p>`:''}
     <p class="demo-banner">${t('demoBanner')}</p>
     ${bookingDraft.map((item,i)=>{
       const {adults,children,dogs}=people(item.entry.group.members);
@@ -99,6 +101,7 @@ function openBooking(keys){
       </fieldset>`;
     }).join('')}
     <fieldset class="book-contact"><legend>${t('contactTitle')}</legend>
+      <p class="account-card"><span aria-hidden="true">👤</span> ${t('accountLinked')}</p>
       <label>${t('contactName')}<input name="name" autocomplete="name" required value="${html(contact.name||'')}"></label>
       <label>${t('contactEmail')}<input name="email" type="email" autocomplete="email" required value="${html(contact.email||'')}"></label>
       <label>${t('contactPhone')}<input name="phone" type="tel" autocomplete="tel" value="${html(contact.phone||'')}"></label>
@@ -115,10 +118,12 @@ function confirmBooking(form){
   const data=new FormData(form);
   const contact={name:data.get('name').trim(),email:data.get('email').trim(),phone:data.get('phone').trim()};
   try{localStorage.setItem('familienzeit-contact',JSON.stringify(contact))}catch{}
+  // One booking number for the whole itinerary; activities added later join the same booking.
+  state.tripRef||='FZ-'+Math.random().toString(36).slice(2,8).toUpperCase();
   const done=bookingDraft.map((item,i)=>{
     const start=Number(data.get('slot-'+i));
     const booking={index:item.entry.chosen.index,start,end:start+(item.entry.chosen.time.end-item.entry.chosen.time.start),
-      ref:'FZ-'+Math.random().toString(36).slice(2,8).toUpperCase(),payment:data.get('payment')||'',name:contact.name,date:item.day.date};
+      ref:state.tripRef,payment:data.get('payment')||'',name:contact.name,date:item.day.date};
     state.bookings.set(item.entry.key,booking);
     state.picks.set(item.entry.key,item.entry.chosen.index);   // booked activities stay put when the plan is shuffled
     return {...item,booking};
@@ -128,8 +133,9 @@ function confirmBooking(form){
   $('book-content').innerHTML=`<h2 id="book-title">${t('bookedTitle')}</h2>
     <p class="demo-banner">${t('demoBanner')}</p>
     <p>${t('bookedIntro',html(contact.email))}</p>
+    <p class="trip-ref">${t('bookingNumber')} <code>${html(state.tripRef)}</code></p>
     <ul class="booked-list">${done.map(({a,day,booking})=>`<li><strong>${html(activityTitle(a))}</strong>
-      <span>${html(dayText(day.date))} · ${timeText(booking.start)} · ${html(a.address||a.location[0])}</span><code>${html(booking.ref)}</code></li>`).join('')}</ul>
+      <span>${html(dayText(day.date))} · ${timeText(booking.start)} · ${html(a.address||a.location[0])}</span></li>`).join('')}</ul>
     <div class="dialog-actions"><button type="button" class="small" data-ics>📅 ${t('calendarFile')}</button>
       <button type="button" class="primary" data-book-close>${t('done')}</button></div>`;
   bookingDraft=done;
@@ -167,12 +173,12 @@ $('book-form').addEventListener('click',event=>{
   else if(button?.hasAttribute('data-ics')) downloadCalendar();
 });
 $('results').addEventListener('click',event=>{
-  const button=event.target.closest('[data-book],[data-book-all],[data-cancel-booking]');
+  const button=event.target.closest('[data-book-all],[data-cancel-trip]');
   if(!button) return;
-  if(button.dataset.book) openBooking([button.dataset.book]);
-  else if(button.hasAttribute('data-book-all')) openBooking();
+  if(button.hasAttribute('data-book-all')) openBooking();
   else{
-    state.bookings.delete(button.dataset.cancelBooking);
+    state.bookings.clear();
+    state.tripRef='';
     saveState();
     renderResults();
     $('announcement').textContent=t('bookingCancelled');
