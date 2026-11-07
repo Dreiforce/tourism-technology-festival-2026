@@ -1,7 +1,7 @@
 const messages={
-  pageTitle:['Reise-Canvas · Familienzeit','Travel Canvas · Familienzeit'],
-  pageDescription:['Ein interaktiver Reise-Canvas für Familien in Serfaus, Fiss und Ladis.','An interactive travel canvas for families in Serfaus, Fiss and Ladis.'],
-  canvas:['Reise-Canvas','Travel Canvas'],
+  pageTitle:['Familienzeit'],
+  pageDescription:['Ein interaktiver Reise-Planer für Familien in Serfaus, Fiss und Ladis.','An interactive travel planer for families in Serfaus, Fiss and Ladis.'],
+  canvas:['Travel Planer'],
   prototype:['Prototyp','Prototype'],
   exit:['Startseite','Home'],
   welcomeTitle:['Euer Urlaub','Your holiday'],
