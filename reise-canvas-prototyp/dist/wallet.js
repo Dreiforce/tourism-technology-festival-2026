@@ -1,14 +1,16 @@
 // Wallet export for the Reise-Canvas: on the last step, next to the PNG export, families can add their postcard
 // with family, village, dates and day plan to Apple Wallet or Google Wallet. Nothing is sent until a button is
 // tapped. Then the front of the postcard is rendered in the sizes the wallets need, uploaded to the worker
-// (api/wallet/postcard) and the pass is opened. Without a wallet server (e.g. the GitHub Pages copy) the
-// status request fails and no buttons appear.
-let walletStatusRequest, walletBusy=false;
+// (api/wallet/postcard) and the pass is opened. The buttons show whenever the Reise-Canvas worker answers;
+// a wallet without credentials on the server says so on tap. Without a worker (e.g. the GitHub Pages copy)
+// the status request fails and no buttons appear.
+let walletStatusRequest, walletStatusValue=null, walletBusy=false;
 function walletStatus(){
   walletStatusRequest ||= fetch('api/wallet/status',{headers:{Accept:'application/json'}})
     .then(response=>response.ok?response.json():null)
     .then(status=>status&&Array.isArray(status.strip)&&Array.isArray(status.hero)?status:null)
-    .catch(()=>null);
+    .catch(()=>null)
+    .then(status=>(walletStatusValue=status));
   return walletStatusRequest;
 }
 // iPhone, iPad and Safari on the Mac get Apple Wallet, Android gets Google Wallet, everything else both.
@@ -17,7 +19,8 @@ function walletTargets(status){
   const appleDevice=/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1)||
     (/Macintosh/.test(ua)&&/Version\/[\d.]+.*Safari\//.test(ua)&&!/Chrome|Chromium|CriOS|Edg|Firefox|FxiOS/.test(ua));
   const android=/Android/.test(ua);
-  return ['apple','google'].filter(kind=>status?.[kind]&&(appleDevice?kind==='apple':android?kind==='google':true));
+  if(!status) return [];
+  return ['apple','google'].filter(kind=>appleDevice?kind==='apple':android?kind==='google':true);
 }
 async function renderWallet(){
   if(state.step!==finalStep) return;
@@ -94,6 +97,10 @@ async function walletImages(status){
 }
 async function walletExport(kind){
   if(walletBusy||state.step!==finalStep) return;
+  if(!walletStatusValue?.[kind]){
+    showExportStatus(kind==='apple'?'walletAppleMissing':'walletGoogleMissing');
+    return;
+  }
   walletBusy=true;
   const buttons=[...document.querySelectorAll('[data-wallet]')];
   buttons.forEach(button=>{button.disabled=true});

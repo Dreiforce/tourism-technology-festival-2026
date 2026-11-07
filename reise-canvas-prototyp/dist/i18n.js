@@ -253,6 +253,8 @@ const messages={
   walletGoogle:['Zu Google Wallet hinzufügen','Add to Google Wallet'],
   walletPreparing:['Wallet-Karte wird vorbereitet …','Preparing your Wallet pass …'],
   walletOpening:['Wallet-Karte wird geöffnet …','Opening your Wallet pass …'],
+  walletAppleMissing:['Apple Wallet ist auf diesem Server noch nicht eingerichtet – es fehlen die Zugangsdaten (siehe docs/wallet.md).','Apple Wallet isn’t set up on this server yet – its credentials are missing (see docs/wallet.md).'],
+  walletGoogleMissing:['Google Wallet ist auf diesem Server noch nicht eingerichtet – es fehlen die Zugangsdaten (siehe docs/wallet.md).','Google Wallet isn’t set up on this server yet – its credentials are missing (see docs/wallet.md).'],
   walletFailed:['Die Wallet-Karte konnte gerade nicht erstellt werden. Bitte versucht es noch einmal.','The Wallet pass couldn’t be created right now. Please try again.'],
   results:['Euer Reiseplan','Your trip plan'],
   loading:['Der regionale Katalog wird geladen …','Loading the local activity catalogue …'],
