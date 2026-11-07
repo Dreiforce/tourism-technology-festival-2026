@@ -261,7 +261,7 @@ A family should not need to understand the technology behind a destination to en
 
 | Name | Role |
 |---|---|
-| Felix | TBD |
+| Felix | CSO (Chief Slop Operator) |
 | Eva | TBD |
 | Jakob | TBD |
 | Niki | TBD |
