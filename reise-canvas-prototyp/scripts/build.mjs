@@ -1,6 +1,7 @@
 // Builds the Reise-Canvas worker: node reise-canvas-prototyp/scripts/build.mjs → dist/server/index.js
 // The site sources stay in dist/ (that is where the canvas is edited). The worker embeds every file directly in
-// dist/, the wallet modules from server/ and the wallet images, and serves them all itself.
+// dist/ (with subfolders such as fonts/, without dist/server/), the wallet modules from server/ and the wallet images,
+// and serves them all itself.
 import {mkdir, readFile, readdir, writeFile} from 'node:fs/promises';
 
 const root = new URL('../', import.meta.url);
@@ -16,19 +17,28 @@ const types = {
 const textual = type => /^text\/|json|svg|manifest/.test(type);
 
 const siteAssets = {};
-for (const entry of (await readdir(site, {withFileTypes: true})).sort((a, b) => a.name.localeCompare(b.name))) {
-  if (!entry.isFile() || entry.name.startsWith('.')) continue;
-  const extension = entry.name.slice(entry.name.lastIndexOf('.')).toLowerCase();
-  const type = types[extension];
-  if (!type) {
-    console.warn(`Skipping dist/${entry.name}: unknown file type.`);
-    continue;
+// Every file in dist/ and its subfolders (e.g. fonts/), except the worker bundle in dist/server/.
+async function collectSite(dir, prefix) {
+  for (const entry of (await readdir(dir, {withFileTypes: true})).sort((a, b) => a.name.localeCompare(b.name))) {
+    if (entry.name.startsWith('.')) continue;
+    if (entry.isDirectory()) {
+      if (!(prefix === '' && entry.name === 'server')) await collectSite(new URL(entry.name + '/', dir), prefix + entry.name + '/');
+      continue;
+    }
+    if (!entry.isFile()) continue;
+    const extension = entry.name.slice(entry.name.lastIndexOf('.')).toLowerCase();
+    const type = types[extension];
+    if (!type) {
+      console.warn(`Skipping dist/${prefix}${entry.name}: unknown file type.`);
+      continue;
+    }
+    const bytes = await readFile(new URL(entry.name, dir));
+    const asset = textual(type) ? {type, body: bytes.toString('utf8')} : {type, base64: bytes.toString('base64')};
+    siteAssets['/' + prefix + entry.name] = asset;
+    if (prefix === '' && entry.name === 'index.html') siteAssets['/'] = asset;
   }
-  const bytes = await readFile(new URL(entry.name, site));
-  const asset = textual(type) ? {type, body: bytes.toString('utf8')} : {type, base64: bytes.toString('base64')};
-  siteAssets['/' + entry.name] = asset;
-  if (entry.name === 'index.html') siteAssets['/'] = asset;
 }
+await collectSite(site, '');
 if (!siteAssets['/']) throw new Error('dist/index.html is missing.');
 if (!siteAssets['/catalog.json']) throw new Error('dist/catalog.json is missing.');
 

@@ -7,9 +7,10 @@ hours). It is an overview, **not a ticket, and has no barcode**. Language follow
 
 ## How it works
 
-1. On the last step the page asks `api/wallet/status`. Buttons only appear for wallets the server has
-   credentials for, and only for fitting devices: iPhone/iPad/Safari on the Mac → Apple, Android → Google,
-   everything else both. Nothing about the trip is sent before a button is tapped.
+1. On the last step the page asks `api/wallet/status`. The buttons appear whenever the worker answers (not on the
+   static GitHub Pages copy), for fitting devices: iPhone/iPad/Safari on the Mac → Apple, Android → Google,
+   everything else both. A wallet without credentials says so on tap. Nothing about the trip is sent before a
+   button is tapped.
 2. On tap, `dist/wallet.js` renders the **front** of the postcard in the sizes the wallets need (from the status
    response) and uploads them to `POST api/wallet/postcard`. The Apple strip is cropped around the family; the
    Google image shows the whole card on the canvas paper colour.
@@ -29,6 +30,7 @@ No npm dependencies: zipping, PKCS#7 signing and JWTs use the runtime's WebCrypt
 | `server/worker.mjs` | Serves the canvas and the wallet routes |
 | `server/wallet-trip.mjs` | Compact plan format → normalized trip |
 | `server/wallet-apple.mjs`, `server/wallet-google.mjs` | Pass builders |
+| `server/wallet-walletwallet.mjs` | Apple passes signed by WalletWallet (when there is no own Apple certificate) |
 | `server/wallet-assets/` | Fixed pass images (icon, logo, Google logo) |
 | `scripts/build.mjs` | Builds the worker bundle `dist/server/index.js` |
 | `scripts/dev.mjs` | Local server with in-memory postcard storage |
@@ -80,13 +82,42 @@ The Reise-Canvas used to be a static site. It is now a worker:
 | `GOOGLE_ISSUER_ID` | Issuer ID from the Google Pay & Wallet Console |
 | `GOOGLE_SA_EMAIL` | service account `client_email` |
 | `GOOGLE_SA_KEY` | service account `private_key` |
+| `WALLETWALLET_API_KEY` | optional; overrides the prototype key in `server/wallet-walletwallet.mjs` |
 
 PEM values can be pasted as PEM, with escaped `\n`, or base64-encoded. Store them as hosted secrets in the Site
 settings, never in `hosting.json` or the repository.
 
-## Apple setup
+## Apple via WalletWallet (no Apple Developer account needed)
 
-Needs a paid Apple Developer account. Exact commands are in the header of `scripts/sample-apple-pass.mjs`.
+Without an own Apple certificate, Apple passes are signed by [WalletWallet](https://walletwallet.dev), which uses its
+own Pass Type ID certificate. This is the current setup of the prototype.
+
+1. The family taps "Zu Apple Wallet hinzufügen". The browser renders the postcard as a store-card strip
+   (1125 × 369 px) and uploads it, as above.
+2. The worker builds the same content as our own Apple pass (`buildApplePassJson`), maps it onto WalletWallet's
+   request (`POST https://api.walletwallet.dev/api/passes`, Bearer key, postcard and logo as PNG data URIs) and
+   passes the signed `.pkpass` that comes back straight to Safari. The family only sees Apple's "Add" sheet.
+3. Their limits are respected: ≤ 10 fields per area, ≤ 256 characters per value (days become one line per stop;
+   long trips merge neighbouring days), ≤ 10 locations, request ≤ 2 MB.
+4. Fallbacks: if the plan doesn't allow Pro fields (custom colour, images), the pass is requested again without
+   them (free plan: green preset, no postcard picture). If WalletWallet insists on a barcode, it gets a link to the
+   canvas. The older `/api/pkpass` endpoint is used if `/api/passes` doesn't exist.
+
+The key: the prototype key sits at the top of `server/wallet-walletwallet.mjs`; the secret `WALLETWALLET_API_KEY`
+overrides it. **Anyone who can read the repository can use that key** (free plan: 1,000 passes a month) – if the
+repository is public, rotate the key at walletwallet.dev and keep it only as a secret. The family's plan, names and
+postcard are sent to WalletWallet to build the pass. Compared with our own signing, WalletWallet passes use the
+store-card layout and have no date-based lock-screen relevance (locations only).
+
+Real test from your own machine (the WalletWallet API must be reachable):
+
+```sh
+node reise-canvas-prototyp/scripts/sample-walletwallet-pass.mjs   # writes familienzeit-walletwallet.pkpass to the temp folder
+```
+
+## Apple setup (own certificate)
+
+Needs a paid Apple Developer account; when the five `APPLE_*` secrets are set, they take precedence over WalletWallet. Exact commands are in the header of `scripts/sample-apple-pass.mjs`.
 
 1. Certificates, Identifiers & Profiles → Identifiers → Pass Type IDs → new ID.
 2. Create a key + CSR with openssl, upload the CSR to create the certificate, convert the `.cer` to PEM
@@ -118,7 +149,7 @@ API and redirects to a short link; this needs outbound HTTPS to `oauth2.googleap
 node reise-canvas-prototyp/scripts/dev.mjs            # → http://localhost:8788
 ```
 
-Without credentials no wallet buttons appear. With credentials:
+Apple works right away through WalletWallet (prototype key). Google needs credentials:
 
 ```sh
 APPLE_PASS_CERT_FILE=pass-cert.pem APPLE_PASS_KEY_FILE=pass-key.pem APPLE_WWDR_CERT_FILE=wwdr.pem \
@@ -131,6 +162,8 @@ until the server stops.
 
 ## Not verified yet
 
+- A real WalletWallet round trip: the cloud sandbox this was built in cannot reach `api.walletwallet.dev`, so the
+  WalletWallet path is tested against a fake API only. Run `scripts/sample-walletwallet-pass.mjs` once.
 - A pass signed with a real Apple certificate on a real iPhone (the strip image and lock-screen relevance).
 - Google API inserts with a real issuer account, and how the postcard picture renders on Android.
 - The ChatGPT Sites deploy as a worker with R2 (the setup mirrors the Familienzeit project).

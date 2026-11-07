@@ -1,6 +1,7 @@
 // Reise-Canvas worker: serves the canvas (embedded from dist/ by scripts/build.mjs) and the wallet export.
 // Globals provided by the build: siteAssets, walletAssets, and the exports of server/wallet-*.mjs
-// (decodeTripParam, resolveTrip, buildApplePass, buildGoogleSaveUrl, APPLE_STRIP_SIZES, GOOGLE_HERO_SIZE).
+// (decodeTripParam, resolveTrip, buildApplePass, buildApplePassJson, buildGoogleSaveUrl, buildWalletWalletPass,
+// APPLE_STRIP_SIZES, GOOGLE_HERO_SIZE, WALLETWALLET_STRIP_SIZES, WALLETWALLET_API_KEY).
 
 const securityHeaders = {'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'strict-origin-when-cross-origin'};
 const json = (data, status = 200) => Response.json(data, {status, headers: {'Cache-Control': 'no-store', ...securityHeaders}});
@@ -75,19 +76,36 @@ function googleWalletConfig(env, origin) {
   };
   return Object.values(config).every(Boolean) ? config : null;
 }
+// Without an own Apple certificate, Apple passes can be signed by WalletWallet (server/wallet-walletwallet.mjs).
+// Its key comes from the worker secret WALLETWALLET_API_KEY, otherwise from the prototype key in that module.
+function walletWalletConfig(env) {
+  if (typeof buildWalletWalletPass !== 'function' || typeof buildApplePassJson !== 'function') return null;
+  const apiKey = env.WALLETWALLET_API_KEY?.trim() || (typeof WALLETWALLET_API_KEY === 'string' ? WALLETWALLET_API_KEY : '');
+  if (!apiKey) return null;
+  const image = name => walletAsset('apple/' + name + '@3x.png') || walletAsset('apple/' + name + '@2x.png') || walletAsset('apple/' + name + '.png');
+  return {apiKey, images: {logo: image('logo'), icon: image('icon')}};
+}
+// How Apple passes are signed here: with our own certificate if one is configured, otherwise through WalletWallet.
+function appleMode(env) {
+  if (appleWalletConfig(env)) return 'certificate';
+  return walletWalletConfig(env) ? 'walletwallet' : null;
+}
 
 // Image sizes the browser renders from the postcard. The builders define them; the fallbacks keep the worker
 // usable if a builder module is missing.
 const validSize = size => Array.isArray(size) && size.length === 2 && size.every(n => Number.isInteger(n) && n > 0 && n <= 4096);
-function walletSizes() {
-  const strip = typeof APPLE_STRIP_SIZES !== 'undefined' && Array.isArray(APPLE_STRIP_SIZES) &&
-    APPLE_STRIP_SIZES.length === 3 && APPLE_STRIP_SIZES.every(validSize)
-    ? APPLE_STRIP_SIZES : [[375, 98], [750, 196], [1125, 294]];
+const validSizes = sizes => Array.isArray(sizes) && sizes.length === 3 && sizes.every(validSize);
+function walletSizes(env = {}) {
+  // WalletWallet lays a strip out as a store card (375 × 123 pt), our own pass as an event ticket (375 × 98 pt).
+  const viaWalletWallet = appleMode(env) === 'walletwallet';
+  const strip = viaWalletWallet
+    ? (typeof WALLETWALLET_STRIP_SIZES !== 'undefined' && validSizes(WALLETWALLET_STRIP_SIZES) ? WALLETWALLET_STRIP_SIZES : [[375, 123], [750, 246], [1125, 369]])
+    : (typeof APPLE_STRIP_SIZES !== 'undefined' && validSizes(APPLE_STRIP_SIZES) ? APPLE_STRIP_SIZES : [[375, 98], [750, 196], [1125, 294]]);
   const hero = typeof GOOGLE_HERO_SIZE !== 'undefined' && validSize(GOOGLE_HERO_SIZE) ? GOOGLE_HERO_SIZE : [1032, 336];
   return {strip, hero};
 }
-function postcardFiles() {
-  const {strip, hero} = walletSizes();
+function postcardFiles(env) {
+  const {strip, hero} = walletSizes(env);
   return {strip: strip[0], 'strip@2x': strip[1], 'strip@3x': strip[2], hero};
 }
 
@@ -148,7 +166,7 @@ async function uploadPostcard(request, env) {
   if (request.headers.get('Origin') !== new URL(request.url).origin) return json({error: 'Cross-origin uploads are not allowed.'}, 403);
   if (!request.headers.get('Content-Type')?.toLowerCase().startsWith('multipart/form-data')) return json({error: 'Expected multipart/form-data.'}, 415);
   if (!env.BUCKET) return json({error: 'Postcard storage is not configured.'}, 503);
-  if (!appleWalletConfig(env) && !googleWalletConfig(env, new URL(request.url).origin)) return json({error: 'No wallet is configured.'}, 503);
+  if (!appleMode(env) && !googleWalletConfig(env, new URL(request.url).origin)) return json({error: 'No wallet is configured.'}, 503);
   if (Number(request.headers.get('Content-Length')) > maxUploadBytes) return json({error: 'Upload too large.'}, 413);
 
   let form;
@@ -173,7 +191,7 @@ async function uploadPostcard(request, env) {
   const expires = new Date(Date.parse(end + 'T23:59:59Z') + retentionDays * 86400000).toISOString();
 
   const files = {};
-  for (const [name, [width, height]] of Object.entries(postcardFiles())) {
+  for (const [name, [width, height]] of Object.entries(postcardFiles(env))) {
     const file = form.get(name);
     if (!(file instanceof File)) return json({error: `Missing image "${name}".`}, 400);
     if (file.size > maxImageBytes) return json({error: `Image "${name}" is larger than 1 MB.`}, 413);
@@ -203,7 +221,7 @@ async function postcardObject(env, id, name) {
   const object = await env.BUCKET.get(`postcards/${id}/${name}.png`);
   if (!object) return null;
   if (expired(object)) {
-    await env.BUCKET.delete(Object.keys(postcardFiles()).map(file => `postcards/${id}/${file}.png`)).catch(() => {});
+    await env.BUCKET.delete(Object.keys(postcardFiles(env)).map(file => `postcards/${id}/${file}.png`)).catch(() => {});
     return null;
   }
   return object;
@@ -232,7 +250,7 @@ async function walletPass(request, env, kind) {
   let lang = url.searchParams.get('l') === 'en' ? 'en' : 'de';
   const label = kind === 'apple' ? 'Apple Wallet' : 'Google Wallet';
   if (request.method !== 'GET') return walletPage(405, walletText[lang].method, lang);
-  const config = kind === 'apple' ? appleWalletConfig(env) : googleWalletConfig(env, url.origin);
+  const config = kind === 'apple' ? appleWalletConfig(env) || walletWalletConfig(env) : googleWalletConfig(env, url.origin);
   if (!config || typeof decodeTripParam !== 'function') return walletPage(503, walletText[lang].notConfigured(label), lang);
 
   let trip;
@@ -250,7 +268,12 @@ async function walletPass(request, env, kind) {
     if (kind === 'apple') {
       const strip = postcard ? await postcardStrip(env, postcard) : null;
       if (postcard && !strip) console.warn('Postcard missing or expired, building the pass without it', postcard);
-      const pass = await buildApplePass(trip, {...config, images: {...config.images, ...strip}});
+      const pass = appleMode(env) === 'certificate'
+        ? await buildApplePass(trip, {...config, images: {...config.images, ...strip}})
+        : await buildWalletWalletPass(trip, buildApplePassJson(trip, {images: strip ? {'strip.png': strip['strip.png']} : {}}), {
+          apiKey: config.apiKey, barcodeUrl: url.origin + '/',
+          images: {...config.images, ...(strip && {strip: strip['strip.png'], strip2x: strip['strip@2x.png'], strip3x: strip['strip@3x.png']})}
+        });
       return new Response(pass, {headers: {
         'Content-Type': 'application/vnd.apple.pkpass',
         'Content-Disposition': 'attachment; filename="familienzeit.pkpass"',
@@ -275,7 +298,7 @@ export default {
     try {
       if (pathname === '/api/wallet/status') {
         if (request.method !== 'GET') return json({error: 'Method not allowed.'}, 405);
-        return json({apple: Boolean(appleWalletConfig(env)), google: Boolean(googleWalletConfig(env, url.origin)), ...walletSizes()});
+        return json({apple: Boolean(appleMode(env)), appleSigner: appleMode(env), google: Boolean(googleWalletConfig(env, url.origin)), ...walletSizes(env)});
       }
       if (pathname === '/api/wallet/postcard') return await uploadPostcard(request, env);
       if (pathname === '/api/wallet/apple' || pathname === '/api/wallet/google') {
