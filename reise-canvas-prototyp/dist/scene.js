@@ -31,6 +31,27 @@ function snowfall(animated){
   }
   return `<g fill="#fff" opacity=".9" aria-hidden="true">${flakes}</g>`;
 }
+function rainfall(animated,heavy){
+  let drops='';
+  for(let i=0;i<(heavy?72:50);i++){
+    const x=Math.round((i*97.3)%990-10), len=14+(i%3)*5;
+    drops+=animated
+      ?`<path class="drop" d="M${x}-24l-5 ${len}" style="animation-duration:${(.7+(i%5)*.12).toFixed(2)}s;animation-delay:-${((i*.37)%1.3).toFixed(2)}s"/>`
+      :`<path d="M${x} ${Math.round((i*53.7)%540)}l-5 ${len}"/>`;
+  }
+  return `<g stroke="#eef4f9" stroke-width="1.6" stroke-linecap="round" opacity=".75" aria-hidden="true">${drops}</g>`;
+}
+// Weather on the postcard: a darker sky and cloud cover, fog bands, rain, snow or lightning.
+function skyWeather(kind){
+  if(kind==='sun') return '';
+  if(kind==='partly') return `<g fill="#fbfaf2" opacity=".95" aria-hidden="true"><path class="drift" d="M600 160q6-22 30-20 10-24 38-14 18-12 36 6 26-2 30 28Z"/><path class="drift" style="animation-delay:-8s" d="M300 96q5-16 22-14 8-18 28-10 14-8 26 6 20 0 22 18Z"/></g>`;
+  const shade={cloud:.14,fog:.06,rain:.28,snow:.16,storm:.42}[kind];
+  const bank=kind==='fog'?'':`<path d="M-10-10H970V130q-30 26-70 6-30 30-80 8-40 28-90 0-36 30-86 4-40 26-84 2-44 30-92 4-40 24-82 0-46 26-92 2-40 24-86 0-36 20-80-2-34 18-70 0Z" fill="${kind==='storm'?'#7c8693':'#e4e9ee'}" opacity=".96"/>`;
+  const fog=kind==='fog'?'<rect y="190" width="960" height="100" fill="#f4f6f7" opacity=".55"/><rect y="290" width="960" height="150" fill="#f4f6f7" opacity=".4"/>':'';
+  const bolt=kind==='storm'?'<path class="flash" d="M600 120 572 196h24l-30 86 66-112h-26l24-50Z" fill="#fff4b8"/>':'';
+  return `<g aria-hidden="true"><rect width="960" height="540" fill="#4d5a68" opacity="${shade}"/>${bank}${fog}${bolt}</g>`;
+}
+const precipitation=(kind,animated)=>kind==='snow'?snowfall(animated):kind==='rain'||kind==='storm'?rainfall(animated,kind==='storm'):'';
 const palette=['#dfaa46','#d1745a','#7a9cae','#a08cb7','#6c9b84'];
 const tones=['#e7b482','#b77859','#f2c299','#925f46','#fbdcbd','#6b4433'];
 const html=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
@@ -234,23 +255,25 @@ function groupedArt(family,groups){
     return team;
   }).join('');
 }
-function poster({place,family,date,general=new Set(),id='card',interactive=false,groups=[],periodLabel='',season='summer'}){
+function poster({place,family,date,general=new Set(),id='card',interactive=false,groups=[],periodLabel='',season='summer',weather=null}){
   sceneSeason=season;
   const winter=season==='winter';
+  const sky=weather?.kind||(winter?'snow':'sun');
   const count=family.length;
   const spacing=count>7?72:Math.min(107,550/Math.max(count,1));
   const scale=count>7?.76:1;
   const split=groups.length>1;
   const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" ${interactive?'':'role="img"'} aria-label="${t(interactive?'interactivePostcard':'illustratedPostcard')}" font-family="system-ui, sans-serif">
     ${landscape(place,id)}
+    ${skyWeather(sky)}
     <text x="41" y="51" font-size="15" font-weight="800" fill="#21483e" letter-spacing="4">${t('postcardTitle')}</text>
     <text x="38" y="108" font-size="56" font-weight="700" font-family="Fraunces, Georgia, serif" fill="#173c3c">${place}</text>
     <text x="42" y="138" font-size="15" font-weight="650" fill="#234a45">${t('motif'+place)}</text>
-    ${date?`<g transform="translate(694 34)"><rect width="223" height="63" rx="9" fill="#fff6db" stroke="#9f9a77" stroke-dasharray="4 3"/><text x="13" y="21" fill="#86602e" font-size="10" font-weight="800" letter-spacing="2">${t('postcardDate')} · ${t(winter?'seasonWinter':'seasonSummer')}</text><text x="13" y="45" font-size="18" font-weight="750" fill="#21483e">${html(date)}</text></g>`:''}
+    ${date?`<g transform="translate(694 34)"><rect width="223" height="63" rx="9" fill="#fff6db" stroke="#9f9a77" stroke-dasharray="4 3"/><text x="13" y="21" fill="#86602e" font-size="10" font-weight="800" letter-spacing="2">${t('postcardDate')}</text><text x="210" y="21" text-anchor="end" fill="#86602e" font-size="11" font-weight="800">${weather?`${weatherIcons[weather.kind]} ${weather.tmax}°`:t(winter?'seasonWinter':'seasonSummer')}</text><text x="13" y="45" font-size="18" font-weight="750" fill="#21483e">${html(date)}</text></g>`:''}
     ${periodLabel?`<g transform="translate(694 105)"><rect width="223" height="25" rx="6" fill="#21483e"/><text x="111.5" y="17" text-anchor="middle" font-size="13" font-weight="750" fill="#fff5d9">${html(periodLabel)}</text></g>`:''}
     ${split?groupedArt(family,groups):family.map((p,i)=>personArt(p,peopleArea.x+peopleArea.width/2+(i-(count-1)/2)*spacing,463,scale,interactive)).join('')}
     ${mascotScene()}
-    ${winter?snowfall(id!=='export-art'):''}
+    ${precipitation(sky,id!=='export-art')}
     ${general.size?`<g><text x="918" y="${split?166:467}" text-anchor="end" font-size="12" font-weight="800" fill="${split||winter?'#21483e':'#fff5d9'}" letter-spacing="1.4">${t('postcardInterests')}</text>${[...general].map((key,i)=>badge(key,906-(general.size-1-i)*27,split?185:496)).join('')}</g>`:''}
     ${split?'':`<text x="44" y="505" font-size="14" letter-spacing="2.4" font-weight="750" fill="${winter?'#21483e':'#fff5d9'}">SERFAUS · FISS · LADIS</text>`}
   </svg>`;
@@ -266,12 +289,13 @@ function wrapText(text,max){
   }
   return lines;
 }
-function postcardBack({place,family,date,general=new Set(),season='summer'}){
+function postcardBack({place,family,date,general=new Set(),season='summer',weather=null}){
   const names=family.filter(p=>p.kind!=='dog').map(p=>p.name||avatarName(p));
   const dogs=family.filter(p=>p.kind==='dog').length;
   const who=new Intl.ListFormat(locale(),{type:'conjunction'}).format(dogs?[...names,dogs>1?t('backDogs',dogs):t('backDog')]:names);
   const wishes=[...new Set([...general,...family.flatMap(p=>[...p.wishes])])].slice(0,8);
-  const lines=wrapText([t('backWho',who),date?t('backWhen',date):'',t(season==='winter'?'backWinter':'backSummer')].filter(Boolean).join(' '),36).slice(0,6);
+  const forecast=weather&&t(weather.source==='forecast'?'backWeather':'backWeatherLastYear',t('weather_'+weather.kind),weather.tmax,weather.year);
+  const lines=wrapText([t('backWho',who),date?t('backWhen',date):'',forecast||'',t(season==='winter'?'backWinter':'backSummer')].filter(Boolean).join(' '),36).slice(0,7);
   const hand='font-family="Caveat, \'Segoe Print\', \'Comic Sans MS\', cursive"';
   const ink='#3d4f7a';
   const wishY=176+lines.length*40+14;

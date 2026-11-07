@@ -184,3 +184,9 @@ dialog.mii{width:min(1040px,calc(100% - 20px));height:min(740px,calc(100dvh - 20
   .flip.flipped .back .hand,.flip.flipped .back .stamp,.flip.flipped .back .postmark{animation:none;opacity:1}
 }
 .experience{overflow-x:clip}
+.weather-note{margin-top:6px;color:var(--green)!important;font-weight:650}
+.board .drop{animation:rain linear infinite}
+@keyframes rain{to{transform:translate(-36px,585px)}}
+.board .flash{opacity:0;animation:flash 6s infinite}
+@keyframes flash{0%,86%,90%,94%,100%{opacity:0}88%,92%{opacity:1}}
+@media(prefers-reduced-motion:reduce){.board .drop{animation:none}.board .flash{animation:none;opacity:1}}

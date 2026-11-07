@@ -3,7 +3,7 @@ const steps=['family','place','dates','wishes','groups','done'];
 const groupStep=steps.indexOf('groups');
 const finalStep=steps.length-1;
 const journey=$('journey');
-const state={step:0,visited:0,flipped:false,place:'Serfaus',start:'',end:'',family:[],general:new Set(),
+const state={step:0,visited:0,flipped:false,weather:null,place:'Serfaus',start:'',end:'',family:[],general:new Set(),
   period:'am',groups:{am:{split:false,assignments:new Map()},pm:{split:false,assignments:new Map()}},
   plan:new Map(),care:new Map(),resultDate:''};
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
@@ -69,7 +69,31 @@ function posterData(){
   const groups=state.step>=groupStep?groupSet(state.family,state.groups[state.period]):[];
   const periodLabel=groups.length&&hasSplit()?t(state.period)+' · '+t(groups.length>1?'splitStatus':'togetherStatus'):'';
   const season=isWinter(validStart()?state.start:todayDate())?'winter':'summer';
-  return {place:state.place,family:state.family,date:stamp(),general:state.general,groups,periodLabel,season};
+  return {place:state.place,family:state.family,date:stamp(),general:state.general,groups,periodLabel,season,weather:state.weather};
+}
+// Weather for the first trip day (today until dates are picked); the postcard redraws when it arrives.
+const weatherCache=new Map();
+const weatherDate=()=>validStart()?state.start:todayDate();
+function requestWeather(){
+  const key=state.place+'|'+weatherDate();
+  state.weather=weatherCache.get(key)||null;
+  if(weatherCache.has(key)) return;
+  weatherCache.set(key,null);
+  fetchWeather(state.place,weatherDate()).then(weather=>{
+    weatherCache.set(key,weather);
+    if(key!==state.place+'|'+weatherDate()) return;
+    state.weather=weather;
+    draw();
+    updateWeatherNote();
+  }).catch(()=>weatherCache.delete(key));
+}
+function updateWeatherNote(){
+  const note=$('weather-note');
+  if(!note) return;
+  const weather=state.weather;
+  note.textContent=weather&&validStart()
+    ?`${weatherIcons[weather.kind]} ${t('weatherNote',dayText(state.start),t('weather_'+weather.kind),weather.tmin,weather.tmax)} ${weather.source==='forecast'?t('weatherForecast'):t('weatherLastYear',weather.year)}`
+    :'';
 }
 function draw(added,move=false){
   const board=$('board');
@@ -150,7 +174,7 @@ function renderControls(){
       `<div class="options">${Object.keys(towns).map(town=>`<button type="button" class="place" data-place="${town}" aria-pressed="${town===state.place}"><strong>${town}</strong><small>${t('motif'+town)}</small></button>`).join('')}</div>`;
   }else if(index===2){
     content=header(t('datesHeading'),t('datesHint'))+
-      `<div class="date-fields"><label>${t('dateFrom')}<input id="date-start" type="date" value="${state.start}" aria-describedby="date-error"></label><label>${t('dateTo')}<input id="date-end" type="date" value="${state.end}" aria-describedby="date-error"></label></div><p id="date-error" role="alert"></p>`;
+      `<div class="date-fields"><label>${t('dateFrom')}<input id="date-start" type="date" value="${state.start}" aria-describedby="date-error"></label><label>${t('dateTo')}<input id="date-end" type="date" value="${state.end}" aria-describedby="date-error"></label></div><p id="date-error" role="alert"></p><p id="weather-note" class="weather-note" role="status"></p>`;
   }else if(index===3){
     content=header(t('wishesHeading'),t('wishesHint'))+
       (children.length?children.map(p=>`<fieldset class="wish-group"><legend>${memberLabel(p)}</legend><div class="options">${wishButtons(p.wishes,p.id)}</div></fieldset>`).join('')
@@ -168,6 +192,7 @@ function renderControls(){
   $('controls').innerHTML=content+`<div class="control-bottom">${index?`<button type="button" class="small" data-back>← ${t('back')}</button>`:''}${index<finalStep?`<button type="button" class="primary" data-next ${disabled?'disabled':''}>${t('next')} <span aria-hidden="true">→</span></button>`:''}</div>`;
   if(index===2){
     syncDateFields();
+    updateWeatherNote();
     if(dateError) $('date-error').textContent=t(dateError);
   }
   if(index===finalStep&&exportStatus) $('export-status').textContent=t(exportStatus);
@@ -179,6 +204,7 @@ function render(added,focus=false){
   if(focus) $('prompt').focus({preventScroll:true});
 }
 function start(){
+  requestWeather();
   $('welcome').hidden=true;
   $('experience').hidden=false;
   $('exit').hidden=false;
@@ -365,7 +391,7 @@ $('controls').addEventListener('click',event=>{
   else if(kind==='grandparent') add('adult',70,kind);
   else if(kind) add(kind);
   else if(place){
-    state.place=place;draw();
+    state.place=place;requestWeather();draw();
     for(const option of $('controls').querySelectorAll('[data-place]')) option.setAttribute('aria-pressed',String(option===target));
   }else if(wish){
     const picked=person==='family'?state.general:state.family.find(p=>p.id===Number(person)).wishes;
@@ -394,6 +420,7 @@ $('controls').addEventListener('change',event=>{
     syncDateFields();
     if(state.end&&(!validStart()||state.end<=state.start)){state.end='';$('date-end').value=''}
     state.family.filter(p=>p.birth).forEach(applyAge);
+    requestWeather();
   }else if(event.target.id==='date-end') state.end=event.target.value;
   else return;
   dateError='';
