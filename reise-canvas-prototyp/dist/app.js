@@ -3,7 +3,7 @@ const steps=['family','place','dates','wishes','groups','done'];
 const groupStep=steps.indexOf('groups');
 const finalStep=steps.length-1;
 const journey=$('journey');
-const state={step:0,visited:0,place:'Serfaus',start:'',end:'',family:[],general:new Set(),
+const state={step:0,visited:0,flipped:false,place:'Serfaus',start:'',end:'',family:[],general:new Set(),
   period:'am',groups:{am:{split:false,assignments:new Map()},pm:{split:false,assignments:new Map()}},
   plan:new Map(),care:new Map(),resultDate:''};
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
@@ -68,7 +68,8 @@ function stamp(){
 function posterData(){
   const groups=state.step>=groupStep?groupSet(state.family,state.groups[state.period]):[];
   const periodLabel=groups.length&&hasSplit()?t(state.period)+' · '+t(groups.length>1?'splitStatus':'togetherStatus'):'';
-  return {place:state.place,family:state.family,date:stamp(),general:state.general,groups,periodLabel};
+  const season=isWinter(validStart()?state.start:todayDate())?'winter':'summer';
+  return {place:state.place,family:state.family,date:stamp(),general:state.general,groups,periodLabel,season};
 }
 function draw(added,move=false){
   const board=$('board');
@@ -76,7 +77,9 @@ function draw(added,move=false){
     el.dataset.member,getComputedStyle(el).transform
   ])):null;
   const interactive=state.step===0;
-  board.innerHTML=poster({...posterData(),id:'board-art',interactive});
+  const data={...posterData(),id:'board-art',interactive};
+  const final=state.step===finalStep;
+  board.innerHTML=`<div class="flip${final&&state.flipped?' flipped':''}"><div class="face front">${poster(data)}</div>${final?`<div class="face back">${postcardBack(data)}</div>`:''}</div>`;
   board.classList.toggle('drag-enabled',canDrag());
   if(added) board.querySelector(`[data-figure="${added}"]`)?.classList.add('avatar-enter');
   if(!old) return;
@@ -90,7 +93,7 @@ function draw(added,move=false){
   }
 }
 function renderSteps(){
-  $('steps').innerHTML=steps.map((label,i)=>`<button type="button" data-go="${i}" ${i===state.step?'aria-current="step"':''} ${i>state.visited?'disabled':''}><b>0${i+1}</b>${t(label)}</button>`).join('');
+  $('steps').innerHTML=steps.map((label,i)=>`<button type="button" data-go="${i}" ${i===state.step?'aria-current="step"':''} ${i<state.step?'class="done"':''} ${i>state.visited?'disabled':''}><b aria-hidden="true">${i<state.step?'✓':i+1}</b>${t(label)}</button>`).join('');
 }
 function wishButtons(selected,id,keys=Object.keys(choices)){
   return keys.map(key=>`<button type="button" class="choice-button" data-wish="${key}" data-person="${id}" aria-pressed="${selected.has(key)}">${t(key)}</button>`).join('');
@@ -138,7 +141,10 @@ function renderControls(){
   if(index===0){
     const count=state.family.length;
     content=header(t('familyHeading'),count?t(count===1?'figureOne':'figureMany',count):t('familyHint'))+
-      `<div class="options"><button class="small" type="button" data-add="adult" ${count>=10?'disabled':''}>+ ${t('adult')}</button><button class="small" type="button" data-add="child" ${count>=10?'disabled':''}>+ ${t('child')}</button><button class="small" type="button" data-add="grandparent" ${count>=10?'disabled':''}>+ ${t('grandparent')}</button><button class="small" type="button" data-add="dog" ${count>=10?'disabled':''}>+ ${t('dog')}</button></div>`;
+      `<div class="add-tiles">${[['adult',{id:2,kind:'adult',look:0}],['child',{id:3,kind:'child',age:7,look:0}],['grandparent',{id:1,kind:'adult',age:72,look:2}],['dog',{id:1,kind:'dog',look:0}]].map(([kind,sample])=>{
+        const figure=avatarFigure({...sample,wishes:new Set()});
+        return `<button class="add-tile" type="button" data-add="${kind}" ${count>=10?'disabled':''}><svg viewBox="-44 ${-figure.height-8} 88 ${figure.height+14}" aria-hidden="true">${figure.svg}</svg><span>+ ${t(kind)}</span></button>`;
+      }).join('')}</div>`;
   }else if(index===1){
     content=header(t('placeHeading'),t('placeHint'))+
       `<div class="options">${Object.keys(towns).map(town=>`<button type="button" class="place" data-place="${town}" aria-pressed="${town===state.place}"><strong>${town}</strong><small>${t('motif'+town)}</small></button>`).join('')}</div>`;
@@ -156,7 +162,7 @@ function renderControls(){
   }else{
     content=header(t('doneHeading'),t('doneHint'))+
       (hasSplit()?periodPicker():'')+
-      `<div class="summary-actions"><button class="small" type="button" id="export">${t('export')}</button><button class="primary" type="button" id="search">${t('find')} <span aria-hidden="true">↓</span></button></div><p id="export-status" role="status"></p>`;
+      `<div class="summary-actions"><button class="small" type="button" id="flip" aria-pressed="${state.flipped}"><span aria-hidden="true">↻</span> ${t('flipCard')}</button><button class="small" type="button" id="export">${t('export')}</button><button class="primary" type="button" id="search">${t('find')} <span aria-hidden="true">↓</span></button></div><p id="export-status" role="status"></p>`;
   }
   const disabled=index===0&&!state.family.some(p=>p.kind==='adult');
   $('controls').innerHTML=content+`<div class="control-bottom">${index?`<button type="button" class="small" data-back>← ${t('back')}</button>`:''}${index<finalStep?`<button type="button" class="primary" data-next ${disabled?'disabled':''}>${t('next')} <span aria-hidden="true">→</span></button>`:''}</div>`;
@@ -195,11 +201,42 @@ function go(index){
     $(validStart()?'date-end':'date-start').focus();
     return;
   }
+  const arriving=index===finalStep&&state.step!==finalStep;
+  if(index!==finalStep) state.flipped=false;
   state.step=index;
   state.visited=Math.max(state.visited,index);
   $('experience').classList.remove('show-results');
   $('results').hidden=true;
   render(undefined,true);
+  // The finale: arriving at the last step turns the postcard over to its stamped back.
+  if(arriving) setTimeout(()=>flipCard(true),reduced.matches?0:650);
+}
+function flipCard(on){
+  if(state.step!==finalStep) return;
+  state.flipped=on;
+  $('board').querySelector('.flip')?.classList.toggle('flipped',on);
+  $('flip')?.setAttribute('aria-pressed',String(on));
+  $('announcement').textContent=t(on?'backShown':'frontShown');
+  if(on&&!reduced.matches) setTimeout(celebrate,1250);
+}
+function celebrate(){
+  const board=$('board');
+  if(!state.flipped||!board.querySelector('.flipped')) return;
+  const {width,height}=board.getBoundingClientRect();
+  const colours=['#dfaa46','#d1745a','#7a9cae','#a08cb7','#6c9b84','#efc66d','#ffffff'];
+  for(let i=0;i<40;i++){
+    const bit=document.createElement('i');
+    bit.className='confetti';
+    bit.style.cssText=`left:${width*.77}px;top:${height*.31}px;background:${colours[i%colours.length]};${i%3?'':'border-radius:50%;'}`;
+    board.append(bit);
+    const angle=Math.random()*Math.PI*2, distance=70+Math.random()*230;
+    const dx=Math.cos(angle)*distance, dy=Math.sin(angle)*distance*.7;
+    bit.animate([
+      {transform:'translate(0,0) rotate(0)',opacity:1},
+      {transform:`translate(${dx}px,${dy}px) rotate(${Math.random()*540}deg)`,opacity:1,offset:.55},
+      {transform:`translate(${dx*1.15}px,${dy+160}px) rotate(${Math.random()*900}deg)`,opacity:0}
+    ],{duration:1500+Math.random()*800,easing:'cubic-bezier(.15,.7,.3,1)'}).onfinish=()=>bit.remove();
+  }
 }
 $('steps').addEventListener('click',event=>{
   const button=event.target.closest('[data-go]');
@@ -342,6 +379,7 @@ $('controls').addEventListener('click',event=>{
   }else if(target.hasAttribute('data-next')) go(state.step+1);
   else if(target.hasAttribute('data-back')) go(state.step-1);
   else if(target.id==='export') exportPNG();
+  else if(target.id==='flip') flipCard(!state.flipped);
   else if(target.id==='search') search();
 });
 $('controls').addEventListener('change',event=>{
@@ -362,74 +400,6 @@ $('controls').addEventListener('change',event=>{
   $('date-error').textContent='';
   draw();
 });
-// Optional character editor, opened by tapping a figure. A birth date (if given) sets age and adult/child.
-let editing=null, hairTouched=false;
-const genderHair={m:2,w:3,d:1};
-function pick(name,count,item,current){
-  return `<div class="pick">${Array.from({length:count},(_,i)=>`<label><input type="radio" name="${name}" value="${i}" ${i===current?'checked':''} aria-label="${t(name)} ${i+1}"><span>${item(i)}</span></label>`).join('')}</div>`;
-}
-function openEditor(p){
-  editing=p;
-  hairTouched=p.hair!=null;
-  const v={name:'',birth:'',gender:'',...p,...lookOf(p)};
-  const field=(key,body)=>`<fieldset><legend>${t(key)}</legend>${body}</fieldset>`;
-  $('editor-title').textContent=t('editorEdit');
-  $('editor-fields').innerHTML=
-    `<label>${t('name')}<input name="name" type="text" maxlength="20" autocomplete="off" value="${html(v.name)}"></label>
-    <div class="editor-age"><label>${t('birth')}<input name="birth" type="date" min="1900-01-01" max="${todayDate()}" value="${v.birth}"></label>
-    <label>${t('age')}<input name="age" type="number" min="0" max="120" inputmode="numeric" value="${v.age??''}"></label></div>`+
-    field('gender',`<div class="pick">${['m','w','d'].map(g=>`<label><input type="radio" name="gender" value="${g}" ${v.gender===g?'checked':''}><span><b>${g.toUpperCase()}</b> ${t('gender'+g.toUpperCase())}</span></label>`).join('')}</div>`)+
-    field('interests',`<div class="pick">${Object.keys(choices).map(key=>`<label><input type="checkbox" name="wish" value="${key}" ${v.wishes.has(key)?'checked':''}><span><svg viewBox="-12 -12 24 24" aria-hidden="true"><path d="${choices[key].path}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>${t(key)}</span></label>`).join('')}</div>`)+
-    field('skin',pick('skin',tones.length,i=>`<i class="dot" style="--c:${tones[i]}"></i>`,v.skin))+
-    field('hair',pick('hair',hairShapes.length,i=>`<svg viewBox="-25 -27 50 50" aria-hidden="true"><circle r="19" style="fill:var(--skin)"/><path d="${hairShapes[i]}" style="fill:var(--hair)"/></svg>`,v.hair))+
-    field('hairColor',pick('hairColor',hairColors.length,i=>`<i class="dot" style="--c:${hairColors[i]}"></i>`,v.hairColor))+
-    field('shirt',pick('shirt',palette.length,i=>`<i class="dot" style="--c:${palette[i]}"></i>`,v.shirt));
-  updateEditor();
-  $('editor').showModal();
-  $('editor-form').elements.name.focus();
-}
-function readEditor(){
-  const f=new FormData($('editor-form'));
-  const age=f.get('age');
-  return {name:f.get('name').trim(),birth:f.get('birth'),age:age===''?editing.age:Math.min(120,Math.max(0,Math.round(age))),gender:f.get('gender')||'',wishes:new Set(f.getAll('wish')),
-    skin:Number(f.get('skin')),hair:Number(f.get('hair')),hairColor:Number(f.get('hairColor')),shirt:Number(f.get('shirt'))};
-}
-function updateEditor(){
-  const p={...editing,...readEditor()};
-  applyAge(p);
-  p.look=editing.kind===p.kind?editing.look:freeLook(p.kind,editing);
-  const figure=avatarFigure(p);
-  const h=figure.height+16, w=Math.max(110,h*.8);
-  $('editor-fields').style.cssText=`--skin:${tones[p.skin]};--hair:${hairColors[p.hairColor]}`;
-  $('editor-preview').innerHTML=`<svg viewBox="${-w/2} ${-figure.height-10} ${w} ${h}" aria-hidden="true">${figure.svg}</svg>
-    <output>${p.name?`<strong>${html(p.name)}</strong>`:''}${p.age!=null?ageText(p)+(p.birth?' '+t(validStart()?'ageOnTrip':'ageToday'):'')+' · ':''}${t(avatarStage(p))}</output>`;
-}
-$('editor-form').addEventListener('input',event=>{
-  const {name,value}=event.target;
-  const form=$('editor-form').elements;
-  if(name==='hair') hairTouched=true;
-  // Birth date and age stay in sync: a date fills in the age, typing an age drops the date.
-  if(name==='birth'&&value){const p={birth:value};applyAge(p);form.age.value=p.age}
-  if(name==='age') form.birth.value='';
-  if(name==='gender'&&!hairTouched) form.hair.value=genderHair[value];
-  updateEditor();
-});
-$('editor-cancel').addEventListener('click',()=>$('editor').close());
-$('editor-remove').addEventListener('click',()=>{
-  $('editor').close();
-  dialog('remove',editing);
-});
-$('editor-form').addEventListener('submit',event=>{
-  event.preventDefault();
-  const fields=readEditor();
-  $('editor').close();
-  Object.assign(editing,fields);
-  applyAge(editing);
-  if(state.family.some(p=>p!==editing&&p.kind===editing.kind&&p.look===editing.look)) editing.look=freeLook(editing.kind,editing);
-  render();
-  $('board').querySelector(`[data-avatar="${editing.id}"]`)?.focus();
-  $('announcement').textContent=t('avatarSaved',avatarName(editing));
-});
 function showExportStatus(key){
   exportStatus=key;
   const status=$('export-status');
@@ -437,7 +407,8 @@ function showExportStatus(key){
 }
 async function exportPNG(){
   showExportStatus('exporting');
-  const source=poster({...posterData(),id:'export-art'})
+  const data={...posterData(),id:'export-art'};
+  const source=(state.flipped?postcardBack(data):poster(data))
     .replace('viewBox="0 0 960 540"','width="1920" height="1080" viewBox="0 0 960 540"');
   const url=URL.createObjectURL(new Blob([source],{type:'image/svg+xml;charset=utf-8'}));
   try{
