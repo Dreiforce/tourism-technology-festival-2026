@@ -346,6 +346,8 @@ const messages={
   walletOpening:['Wallet-Karte wird geöffnet …','Opening your Wallet pass …'],
   walletAppleMissing:['Apple Wallet ist auf diesem Server noch nicht eingerichtet – es fehlen die Zugangsdaten (siehe docs/wallet.md).','Apple Wallet isn’t set up on this server yet – its credentials are missing (see docs/wallet.md).'],
   walletGoogleMissing:['Google Wallet ist auf diesem Server noch nicht eingerichtet – es fehlen die Zugangsdaten (siehe docs/wallet.md).','Google Wallet isn’t set up on this server yet – its credentials are missing (see docs/wallet.md).'],
+  walletAdded:['Nach „Hinzufügen“ ist die Karte in eurer Wallet.','After “Add”, the pass is in your Wallet.'],
+  walletOpenApp:['Wallet öffnen','Open Wallet'],
   walletFailed:['Die Wallet-Karte konnte gerade nicht erstellt werden. Bitte versucht es noch einmal.','The Wallet pass couldn’t be created right now. Please try again.'],
   results:['Euer Reiseplan','Your trip plan'],
   loading:['Murmli und Berta suchen die schönsten Erlebnisse für euch …','Murmli and Berta are finding the best activities for you …'],

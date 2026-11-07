@@ -65,6 +65,18 @@ function walletNote(key){
   showExportStatus(key);
   for(const status of document.querySelectorAll('.wallet-booking-status')) status.textContent=t(key);
 }
+// iOS adds the pass and stays in Safari; it never switches to the Wallet app by itself. After the Apple button we
+// offer a link to the Wallet app (shoebox:// – undocumented, but it has opened Apple's Wallet app for years).
+const walletIOS=()=>/iPhone|iPad|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1);
+function walletOfferOpen(){
+  for(const status of [$('export-status'),...document.querySelectorAll('.wallet-booking-status')]){
+    if(!status) continue;
+    status.textContent=t('walletAdded')+' ';
+    const link=document.createElement('a');
+    link.href='shoebox://';link.className='wallet-open';link.textContent=t('walletOpenApp');
+    status.append(link);
+  }
+}
 
 function walletBase64(text){
   let binary='';
@@ -151,6 +163,7 @@ async function walletExport(kind){
       const target=await walletDirectTarget(kind);
       walletNote('walletOpening');
       if(tab) tab.location.href=target;else location.href=target;
+      if(kind==='apple'&&walletIOS()) setTimeout(walletOfferOpen,1500);
       return;
     }
     const status=await walletStatus();
@@ -165,6 +178,7 @@ async function walletExport(kind){
     const target=new URL(`api/wallet/${kind}?l=${language}&p=${encodeURIComponent(id)}&t=${plan}`,location.href).href;
     walletNote('walletOpening');
     if(tab) tab.location.href=target;else location.href=target;
+    if(kind==='apple'&&walletIOS()) setTimeout(walletOfferOpen,1500);
   }catch(error){
     console.error('Wallet export failed',error);
     tab?.close();
