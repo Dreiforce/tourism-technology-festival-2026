@@ -46,8 +46,8 @@ const googleTexts = {
     link: {advance: 'anmelden', info: 'Infos', care: 'Infos', online: 'buchen', pass: 'Infos', office: 'Infos', onsite: 'Infos', free: 'Infos'},
     cardConditions: 'Bedingungen',
     logo: 'familienzeit. Logo', postcard: 'Eure Reisepostkarte', mountains: 'Berge mit Sonne',
-    booking: 'Buchung', openCanvas: 'Reise-Canvas öffnen',
-    demoBooking: ref => `Buchung ${ref} – im Reise-Canvas gebucht (Demo), nichts ist reserviert oder bezahlt.`
+    booking: 'Buchung', openCanvas: 'Familienzeit öffnen',
+    demoBooking: ref => `Buchung ${ref} – bei Familienzeit gebucht (Demo), nichts ist reserviert oder bezahlt.`
   },
   en: {
     months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
@@ -63,8 +63,8 @@ const googleTexts = {
     link: {advance: 'register', info: 'info', care: 'info', online: 'book', pass: 'info', office: 'info', onsite: 'info', free: 'info'},
     cardConditions: 'conditions',
     logo: 'familienzeit. logo', postcard: 'Your travel postcard', mountains: 'Mountains with sun',
-    booking: 'Booking', openCanvas: 'Open the Travel Canvas',
-    demoBooking: ref => `Booking ${ref} – booked in the Travel Canvas (demo), nothing is reserved or paid.`
+    booking: 'Booking', openCanvas: 'Open Familienzeit',
+    demoBooking: ref => `Booking ${ref} – booked with Familienzeit (demo), nothing is reserved or paid.`
   }
 };
 

@@ -65,8 +65,10 @@ function walletNote(key){
   showExportStatus(key);
   for(const status of document.querySelectorAll('.wallet-booking-status')) status.textContent=t(key);
 }
-// iOS adds the pass and stays in Safari; it never switches to the Wallet app by itself. After the Apple button we
-// offer a link to the Wallet app (shoebox:// – undocumented, but it has opened Apple's Wallet app for years).
+// iOS adds the pass and stays in Safari; it never switches to the Wallet app by itself, and the page is not told
+// whether "Hinzufügen" was tapped. So shortly after the Apple button a small popup opens underneath Apple's sheet;
+// once the sheet is gone it offers the Wallet app (shoebox:// – undocumented, but it has opened Apple's Wallet app for
+// years). The tap on that link counts as the user's own, so iOS opens Wallet right away. The status line keeps the link.
 const walletIOS=()=>/iPhone|iPad|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1);
 function walletOfferOpen(){
   for(const status of [$('export-status'),...document.querySelectorAll('.wallet-booking-status')]){
@@ -76,6 +78,43 @@ function walletOfferOpen(){
     link.href='shoebox://';link.className='wallet-open';link.textContent=t('walletOpenApp');
     status.append(link);
   }
+  const dialog=walletDialog();
+  dialog.innerHTML=`<h2 id="wallet-open-title">${t('walletAddedTitle')}</h2><p>${t('walletAddedText')}</p>
+    <div class="dialog-actions"><button type="button" class="small" data-wallet-close>${t('walletClose')}</button>
+      <a class="primary" href="shoebox://" data-wallet-open>${t('walletOpenApp')}</a></div>`;
+  dialog.querySelector('[data-wallet-close]').addEventListener('click',()=>dialog.close());
+  dialog.querySelector('[data-wallet-open]').addEventListener('click',()=>setTimeout(()=>dialog.close(),400));
+  if(!dialog.open) dialog.showModal();
+}
+function walletDialog(){
+  let dialog=$('wallet-open-dialog');
+  if(!dialog){
+    dialog=document.createElement('dialog');
+    dialog.id='wallet-open-dialog';dialog.className='wallet-open-dialog';
+    dialog.setAttribute('aria-labelledby','wallet-open-title');
+    document.body.append(dialog);
+  }
+  return dialog;
+}
+// Apple devices: the pass is prepared on the first tap, then our own popup shows it with a real link. Tapping that
+// link opens the .pkpass as the user's own navigation, so Safari shows Apple's "Add" sheet without first asking
+// whether the page may show a pass (which it does when a page opens it by itself after the preparation).
+function walletReady(target,preview){
+  walletNote('walletReadyNote');
+  const dialog=walletDialog();
+  const src=preview?URL.createObjectURL(preview):'';
+  dialog.innerHTML=`${src?`<img class="wallet-preview" src="${src}" alt="${html(t('walletPreviewAlt'))}">`:''}
+    <h2 id="wallet-open-title">${t('walletReadyTitle')}</h2><p>${t('walletReadyText')}</p>
+    <div class="dialog-actions"><button type="button" class="small" data-wallet-close>${t('cancel')}</button>
+      <a class="primary" href="${html(target)}" data-wallet-add>${t('walletApple')}</a></div>`;
+  dialog.querySelector('[data-wallet-close]').addEventListener('click',()=>dialog.close());
+  dialog.querySelector('[data-wallet-add]').addEventListener('click',()=>{
+    walletNote('walletOpening');
+    if(walletIOS()) setTimeout(walletOfferOpen,1500);else setTimeout(()=>dialog.close(),800);
+  });
+  if(src) dialog.addEventListener('close',()=>URL.revokeObjectURL(src),{once:true});
+  if(!dialog.open) dialog.showModal();
+  dialog.querySelector('[data-wallet-add]').focus();
 }
 
 function walletBase64(text){
@@ -160,25 +199,32 @@ async function walletExport(kind){
   walletNote('walletPreparing');
   try{
     if(direct){
-      const target=await walletDirectTarget(kind);
-      walletNote('walletOpening');
-      if(tab) tab.location.href=target;else location.href=target;
-      if(kind==='apple'&&walletIOS()) setTimeout(walletOfferOpen,1500);
+      const {target,preview}=await walletDirectTarget(kind);
+      if(tab){
+        walletNote('walletOpening');
+        tab.location.href=target;
+      }else walletReady(target,preview);
       return;
     }
     const status=await walletStatus();
     if(!status?.[kind]) throw Error('wallet not configured');
     const plan=walletPayload();
     const form=new FormData();
-    for(const [name,blob] of Object.entries(await walletImages(status))) form.append(name,blob,name+'.png');
+    const images=await walletImages(status);
+    for(const [name,blob] of Object.entries(images)) form.append(name,blob,name+'.png');
     form.append('end',state.end||state.start);
     const response=await fetch('api/wallet/postcard',{method:'POST',body:form});
     if(!response.ok) throw Error('upload failed: '+response.status);
     const {id}=await response.json();
     const target=new URL(`api/wallet/${kind}?l=${language}&p=${encodeURIComponent(id)}&t=${plan}`,location.href).href;
-    walletNote('walletOpening');
-    if(tab) tab.location.href=target;else location.href=target;
-    if(kind==='apple'&&walletIOS()) setTimeout(walletOfferOpen,1500);
+    if(tab){
+      walletNote('walletOpening');
+      tab.location.href=target;
+    }else if(kind==='apple'&&walletAppleDevice()) walletReady(target,images['strip@3x']);
+    else{
+      walletNote('walletOpening');
+      location.href=target;
+    }
   }catch(error){
     console.error('Wallet export failed',error);
     tab?.close();
@@ -214,5 +260,5 @@ async function walletDirectTarget(kind){
   // page in between. Other devices get the install page (with a QR code for the phone).
   const target=kind==='google'?result.googleSaveUrl:(walletAppleDevice()&&result.appleUrl)||result.shareUrl;
   if(!target) throw Error('WalletWallet returned no link');
-  return target;
+  return {target,preview:new Blob([strip],{type:'image/png'})};
 }
