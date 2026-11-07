@@ -4,7 +4,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {buildApplePassJson} from '../server/wallet-apple.mjs';
-import {buildWalletWalletPass, walletWalletBody, WALLETWALLET_API_KEY, WALLETWALLET_STRIP_SIZES} from '../server/wallet-walletwallet.mjs';
+import {buildWalletWalletPass, createWalletWalletPass, walletWalletBody, WALLETWALLET_API_KEY, WALLETWALLET_STRIP_SIZES} from '../server/wallet-walletwallet.mjs';
 
 const fixture = JSON.parse(readFileSync(new URL('./fixtures/trip.json', import.meta.url), 'utf8'));
 const now = Date.parse('2026-11-07T20:00:00Z');
@@ -122,4 +122,19 @@ test('clear errors for a wrong key, the monthly limit and broken answers', async
   await assert.rejects(buildWalletWalletPass(fixture, passJson, config({fetch: fakeApi([Response.json({applePass: btoa('not a zip')})]).fetch})), /no \.pkpass/);
   await assert.rejects(buildWalletWalletPass(fixture, passJson, config({fetch: fakeApi([new Response('boom', {status: 500})]).fetch})), /500 boom/);
   await assert.rejects(buildWalletWalletPass(fixture, passJson, {fetch: () => {}}), /API key missing/);
+});
+
+test('returns the install page and the Google link for the static copy', async () => {
+  const api = fakeApi([Response.json({serialNumber: 's', applePass: Buffer.from(fakePass).toString('base64'),
+    shareUrl: 'https://pass.walletwallet.dev/p/abc', googleSaveUrl: 'https://pay.google.com/gp/v/save/jwt', credentials: {}})]);
+  const result = await createWalletWalletPass(fixture, passJson, config({fetch: api.fetch}));
+  assert.deepEqual(result.pass, fakePass);
+  assert.equal(result.shareUrl, 'https://pass.walletwallet.dev/p/abc');
+  assert.equal(result.googleSaveUrl, 'https://pay.google.com/gp/v/save/jwt');
+
+  const legacy = fakeApi([new Response('Not found', {status: 404}), new Response(fakePass, {headers: {
+    'Content-Type': 'application/vnd.apple.pkpass', 'X-Pass-Url': 'https://pass.walletwallet.dev/p/old', 'X-Google-Save-Url': 'javascript:alert(1)'}})]);
+  const old = await createWalletWalletPass(fixture, passJson, config({fetch: legacy.fetch}));
+  assert.equal(old.shareUrl, 'https://pass.walletwallet.dev/p/old');
+  assert.equal(old.googleSaveUrl, null, 'only https links are passed on');
 });
