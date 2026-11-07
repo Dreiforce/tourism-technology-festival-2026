@@ -92,7 +92,7 @@ function openBooking(){
     ${bookingDraft.map((item,i)=>{
       const {adults,children,dogs}=people(item.entry.group.members);
       return `<fieldset class="book-item"><legend><strong>${html(activityTitle(item.a))}</strong>
-        <small>${html(dayText(item.day.date))} · ${html(item.a.address||item.a.location[0])}</small></legend>
+        <small>${html(dayText(item.day.date))} · ${html(localText(item.a,'address')||item.a.location[0])}</small></legend>
         <p class="book-who">${t('bookWho',adults,children.length)}${dogs?' · 🐕 '+dogs:''}${children.length?` <small>(${children.map(c=>ageText(c)).join(', ')})</small>`:''}
           · <span class="chip-book ${item.mode}">${t(item.mode==='free'||item.mode==='pass'?'slotNeeded':'book_'+item.mode)}</span> · <strong>${priceText(item.cost,item.mode,item.a)}</strong></p>
         <div class="slot-grid" role="radiogroup" aria-label="${t('chooseSlot')}">${item.slots.map(slot=>
@@ -135,7 +135,7 @@ function confirmBooking(form){
     <p>${t('bookedIntro',html(contact.email))}</p>
     <p class="trip-ref">${t('bookingNumber')} <code>${html(state.tripRef)}</code></p>
     <ul class="booked-list">${done.map(({a,day,booking})=>`<li><strong>${html(activityTitle(a))}</strong>
-      <span>${html(dayText(day.date))} · ${timeText(booking.start)} · ${html(a.address||a.location[0])}</span></li>`).join('')}</ul>
+      <span>${html(dayText(day.date))} · ${timeText(booking.start)} · ${html(localText(a,'address')||a.location[0])}</span></li>`).join('')}</ul>
     ${typeof walletBookingButtons==='function'?walletBookingButtons():''}
     <div class="dialog-actions"><button type="button" class="small" data-ics>📅 ${t('calendarFile')}</button>
       <button type="button" class="primary" data-book-close>${t('done')}</button></div>`;
@@ -153,7 +153,7 @@ function downloadCalendar(){
       const a=entry.chosen.activity;
       return ['BEGIN:VEVENT',`UID:${booking.ref}@familienzeit`,`DTSTAMP:${new Date().toISOString().replace(/[-:]/g,'').slice(0,15)}Z`,
         `DTSTART:${stamp(day.date)}T${time(booking.start)}`,`DTEND:${stamp(day.date)}T${time(booking.end)}`,
-        `SUMMARY:${esc(activityTitle(a))}`,`LOCATION:${esc(a.address||a.location[0])}`,
+        `SUMMARY:${esc(activityTitle(a))}`,`LOCATION:${esc(localText(a,'address')||a.location[0])}`,
         `DESCRIPTION:${esc(`${t('demoBanner')} ${booking.ref}`)}`,'END:VEVENT'].join('\r\n');
     });
   const file=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Familienzeit//Reise-Canvas//DE',...events,'END:VCALENDAR'].join('\r\n');

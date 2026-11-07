@@ -389,3 +389,5 @@ function setLanguage(value){
 }
 const activityTitle=activity=>language==='en'?activity.titleEn:activity.title;
 const activityDescription=activity=>language==='en'?activity.descriptionEn:activity.description;
+// Catalogue texts with an English twin (notes, bookingNote, priceNote, petNote, accessNote, passes[].note).
+const localText=(item,key)=>(language==='en'&&item?.[key+'En'])||item?.[key]||'';

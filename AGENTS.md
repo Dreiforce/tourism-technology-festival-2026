@@ -42,7 +42,7 @@ Pushing to `main` deploys GitHub Pages ([pages.yml](.github/workflows/pages.yml)
 
 Plain classic `<script defer>` files that share one global scope. **Load order matters** ([index.html](reise-canvas-prototyp/dist/index.html)):
 
-1. `i18n.js`: `messages` (`key: [de, en]`), `t(key, ...args)`, `language`, `locale()`. Every user-facing string goes here in both languages.
+1. `i18n.js`: `messages` (`key: [de, en]`), `t(key, ...args)`, `language`, `locale()`. Every user-facing string goes here in both languages. Catalogue texts have English twins (`titleEn`, `descriptionEn`, `notesEn`, `bookingNoteEn`, `priceNoteEn`, `petNoteEn`, `accessNoteEn`, `addressEn`, `passes[].noteEn`); read them with `localText(item, key)`.
 2. `scene.js`: SVG drawing. Landscapes, seasons (`sceneSeason`, `winterize`), weather sky (`skyWeather`, snow/rain), figures (`avatarFigure`, `humanArt`, wheelchair, pram and walking aids), mascots Murmli & Berta, `poster()` (front of the postcard) and `postcardBack()` (the finale).
 3. `face.js`: face parts for the Mii-style editor (`faceOf()` defaults reproduce the original look, `faceArt()`, `headSvg()`).
 4. `planner.js`: groups (`groupSet`, `adultGroups`, childcare), opening hours (`suggestedTime`), and the **trip planner** (`slotOptions`, `planTrip`).

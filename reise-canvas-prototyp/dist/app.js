@@ -597,7 +597,7 @@ function tripItem(entry,day){
   const rule=cardRule(a,day.date,state.guestCard), mode=bookingMode(a,rule), cost=groupPrice(a,group.members,rule);
   const ticket=mode==='online'?ticketLink(a,day.date):'';
   const map=mapLink(a);
-  const info=[a.notes,a.bookingNote,a.priceNote,a.petNote,rule&&`${superSommerCard.name}: ${rule.note}`].filter(Boolean);
+  const info=[localText(a,'notes'),localText(a,'bookingNote'),localText(a,'priceNote'),localText(a,'petNote'),localText(a,'accessNote'),rule&&`${superSommerCard.name}: ${localText(rule,'note')}`].filter(Boolean);
   // Card: the essentials only; everything else sits in "Details".
   const n=group.members.filter(p=>p.kind!=='dog').length;
   const unsure=o.dogCheck||o.access.some(item=>item.status!=='yes')||a.advanceBooking;
@@ -612,7 +612,7 @@ function tripItem(entry,day){
     ${o.likes.length?`<p class="trip-likes">${o.likes.map(l=>`<span title="${html(l.keys.map(k=>t(k)).join(', '))}">♥ ${shortName(l.person)}</span>`).join('')}</p>`:''}
     <details class="trip-info"><summary>${t('details')}</summary>
       <p>${html(activityDescription(a))}</p>
-      <p>📍 ${html(a.address||a.location[0])}${map?` · <a href="${html(map)}" target="_blank" rel="noopener">${t('mapLink')} ↗</a>`:''}</p>
+      <p>📍 ${html(localText(a,'address')||a.location[0])}${map?` · <a href="${html(map)}" target="_blank" rel="noopener">${t('mapLink')} ↗</a>`:''}</p>
       <p>🕘 ${t('liveOpen',openingOn(a,day.date))} · ${t(a.category)}${a.operator?` · ${html(a.operator)}`:''}</p>
       <p><span class="chip-book ${mode}">${t('book_'+mode)}</span>${cost&&n>1?` ${t('priceFor',n)}`:''}</p>
       ${o.likes.length?`<p>${o.likes.map(l=>`♥ ${shortName(l.person)}: ${l.keys.map(k=>t(k)).join(', ')}`).join(' · ')}</p>`:''}
@@ -648,7 +648,7 @@ function bookingOverview(days){
     return list.length?`<section class="booking-group"><h4><span class="chip-book ${mode}">${t('book_'+mode)}</span></h4>${list.map(({day,entry,a,rule,cost})=>{
       const link=mode==='online'?ticketLink(a,day.date):'';
       return `<div class="booking-row"><div><strong>${html(activityTitle(a))}</strong>
-        <small>${html(dayText(day.date))} · ${timeRange(entry.chosen.time.start,entry.chosen.time.end)} · ${html(a.address||a.location[0])}${entry.group.id==='all'?'':' · '+html(entry.group.label)}</small>
+        <small>${html(dayText(day.date))} · ${timeRange(entry.chosen.time.start,entry.chosen.time.end)} · ${html(localText(a,'address')||a.location[0])}${entry.group.id==='all'?'':' · '+html(entry.group.label)}</small>
 </div>
         <div class="booking-side"><strong>${priceText(cost,mode,a)}</strong>${bookButton(entry)}${link?`<a href="${html(link)}" target="_blank" rel="noopener">${t('provider')} ↗</a>`:''}</div></div>`;
     }).join('')}</section>`:'';
