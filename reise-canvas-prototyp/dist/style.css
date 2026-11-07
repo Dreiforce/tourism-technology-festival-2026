@@ -44,3 +44,42 @@ footer{align-items:baseline;flex-wrap:wrap}
 .result.is-featured{border-color:#9ab39c;background:#f2f7ed}
 .featured-badge{display:table;border-radius:6px;padding:3px 7px;margin-bottom:6px;background:var(--mint);color:var(--green);font-size:11px;font-weight:800}
 .result .featured-reason{color:var(--green);font-weight:650}
+
+dialog.editor{width:min(780px,calc(100% - 24px));max-height:calc(100dvh - 24px)}
+.editor-body{display:grid;grid-template-columns:230px minmax(0,1fr);gap:18px;align-items:start}
+.editor-stage{position:sticky;top:0;display:grid;justify-items:center;gap:8px;padding:12px;border:1px solid var(--line);border-radius:12px;background:radial-gradient(circle at 50% 78%,#fff8e3 0 34%,#d7e6d8 72%)}
+.editor-stage svg{width:100%;height:240px}
+.editor-stage output{font-size:13px;text-align:center;color:var(--muted)}
+.editor-stage output strong{display:block;font-size:17px;color:var(--ink);overflow-wrap:anywhere}
+.mascot-tip{display:flex;align-items:center;gap:10px;margin:4px 0 8px;padding:6px 12px 6px 6px;background:#fff6db;border:1px dashed #c9b47a;border-radius:10px}
+.mascot-tip svg{flex:none;width:44px;height:76px}
+.controls .mascot-tip p,.results .mascot-tip p{margin:0;font-size:13px;color:var(--ink)}
+.mascot-tip a{color:var(--green);font-weight:750;white-space:nowrap}
+.mascot-world{margin:12px 0}
+.mascot-world svg{width:88px}
+.mascot-badge{background:#fff0c2;color:#7a5418}
+.editor-fields{display:grid;gap:12px}
+.editor-age{display:grid;grid-template-columns:1fr 90px;gap:8px}
+.editor-age label{display:grid;gap:5px}
+.editor-age input{background:white;color:var(--ink);padding:8px;border:1px solid #9eada2;border-radius:5px;min-height:41px;width:100%}
+.editor-fields>label input{background:white;color:var(--ink);padding:8px;border:1px solid #9eada2;border-radius:5px;min-height:41px;width:100%}
+.editor fieldset{border:0;padding:0;margin:0;min-width:0}
+.editor legend{font-size:13px;font-weight:750;padding:0;margin-bottom:5px}
+.pick{display:flex;flex-wrap:wrap;gap:6px}
+dialog .pick label{display:block;position:relative;font-weight:750}
+.pick input{position:absolute;inset:0;margin:0;opacity:0;cursor:pointer}
+.pick span{display:flex;align-items:center;gap:5px;min-height:40px;padding:4px 9px;border:1px solid #9eada2;border-radius:8px;background:var(--white);color:var(--green);font-size:12px}
+.pick span svg{width:16px;height:16px}
+.pick span:has(.dot),.pick span:has(svg[viewBox^="-25"]){padding:3px}
+.pick span svg[viewBox^="-25"]{width:38px;height:38px}
+.pick .dot{display:block;width:32px;height:32px;border-radius:50%;background:var(--c);border:1px solid #0002}
+.pick input:checked+span{background:var(--mint);border-color:var(--green);box-shadow:inset 0 0 0 2px var(--green)}
+.pick input:focus-visible+span{outline:3px solid #297b85;outline-offset:2px}
+.editor .dialog-actions .editor-remove{margin-right:auto;color:#8e4328}
+@media(max-width:690px){.editor-body{grid-template-columns:1fr}.editor-stage{position:static}.editor-stage svg{height:160px}}
+
+.board.drag-enabled{touch-action:none}
+.board.drag-enabled [data-member]:not([data-member=care]){cursor:grab}
+.board [data-member].dragging{cursor:grabbing;opacity:.9}
+.board [data-team].drop-target rect{stroke:#173443;stroke-width:2.5}
+.controls .drag-hint{margin-top:4px}

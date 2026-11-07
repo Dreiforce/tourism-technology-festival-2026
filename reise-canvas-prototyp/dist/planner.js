@@ -8,16 +8,21 @@ function canSplit(family){
   return family.filter(p=>p.kind==='adult').length>1||family.some(p=>p.kind==='child');
 }
 
-function adultGroups(family,settings){
+// Each adult leads a group unless they were moved into another adult's group.
+function groupLeaders(family,settings){
   const adults=family.filter(p=>p.kind==='adult');
-  const dependents=family.filter(p=>p.kind!=='adult'&&!inCare(p,settings));
-  return adults.map((adult,index)=>({
+  return adults.filter(a=>!adults.some(p=>p!==a&&p.id===settings.assignments.get(a.id)));
+}
+function adultGroups(family,settings){
+  const leaders=groupLeaders(family,settings);
+  const dependents=family.filter(p=>!leaders.includes(p)&&!inCare(p,settings));
+  return leaders.map((adult,index)=>({
     id:adult.id,
     label:t('groupNumber',index+1),
     color:groupColors[index%groupColors.length],
     members:[adult,...dependents.filter((person,order)=>{
       const assigned=settings.assignments.get(person.id);
-      const owner=adults.some(p=>p.id===assigned)?assigned:adults[order%adults.length].id;
+      const owner=leaders.some(p=>p.id===assigned)?assigned:leaders[order%leaders.length].id;
       return owner===adult.id;
     })]
   }));

@@ -9,11 +9,26 @@ const state={step:0,visited:0,place:'Serfaus',start:'',end:'',family:[],general:
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 let nextId=1, pending=null, catalogRequest, catalog;
 let dateError='', exportStatus='', resultStatus='';
-function newPerson(kind,age){
-  const used=new Set(state.family.filter(person=>person.kind===kind).map(person=>person.look));
+function freeLook(kind,except){
+  const used=new Set(state.family.filter(person=>person.kind===kind&&person!==except).map(person=>person.look));
   let look=0;
   while(used.has(look)) look++;
-  return {id:nextId++,kind,age,look,wishes:new Set()};
+  return look;
+}
+function newPerson(kind,fields={}){
+  const p={id:nextId++,kind,wishes:new Set(),...fields};
+  if(p.birth) applyAge(p);
+  p.look=freeLook(p.kind);
+  return p;
+}
+// Age on the first trip day (or today before dates are chosen); 18+ counts as adult for planning.
+function ageOn(birth,date){
+  const [by,bm,bd]=birth.split('-').map(Number), [y,m,d]=date.split('-').map(Number);
+  return Math.max(0,y-by-(m<bm||m===bm&&d<bd?1:0));
+}
+function applyAge(p){
+  if(p.birth) p.age=ageOn(p.birth,validStart()?state.start:todayDate());
+  if(p.age!=null) p.kind=p.age>=18?'adult':'child';
 }
 const ageText=p=>p.age===0?t('underOne'):p.age===1?t('oneYear'):t('ageYears',p.age);
 const dayText=date=>new Intl.DateTimeFormat(locale(),{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'}).format(new Date(date+'T00:00:00Z'));
@@ -62,6 +77,7 @@ function draw(added,move=false){
   ])):null;
   const interactive=state.step===0;
   board.innerHTML=poster({...posterData(),id:'board-art',interactive});
+  board.classList.toggle('drag-enabled',canDrag());
   if(added) board.querySelector(`[data-figure="${added}"]`)?.classList.add('avatar-enter');
   if(!old) return;
   for(const el of board.querySelectorAll('[data-member]')){
@@ -76,7 +92,7 @@ function draw(added,move=false){
 function renderSteps(){
   $('steps').innerHTML=steps.map((label,i)=>`<button type="button" data-go="${i}" ${i===state.step?'aria-current="step"':''} ${i>state.visited?'disabled':''}><b>0${i+1}</b>${t(label)}</button>`).join('');
 }
-function wishButtons(selected,id,keys=['adventure','water','play','discover','calm']){
+function wishButtons(selected,id,keys=Object.keys(choices)){
   return keys.map(key=>`<button type="button" class="choice-button" data-wish="${key}" data-person="${id}" aria-pressed="${selected.has(key)}">${t(key)}</button>`).join('');
 }
 const hasSplit=()=>Object.values(state.groups).some(settings=>groupSet(state.family,settings).length>1);
@@ -85,33 +101,44 @@ function periodPicker(){
     `<button class="small" type="button" data-period="${key}" aria-pressed="${key===state.period}">${t(key)}</button>`).join('')}</div>`;
 }
 function memberLabel(person){
+  if(person.name) return html(person.name)+(person.age!=null?' · '+ageText(person):'');
   const order=state.family.filter(p=>p.kind===person.kind).indexOf(person)+1;
-  const label=t('member',t(person.kind),order);
-  return person.kind==='child'?label+' · '+ageText(person):label;
+  const label=t('member',t(avatarStage(person)==='senior'?'senior':person.kind),order);
+  return person.kind!=='dog'&&person.age!=null?label+' · '+ageText(person):label;
 }
 function groupControls(){
   if(!canSplit(state.family)) return `<p>${t('oneAdultHint')}</p>`;
   const settings=state.groups[state.period];
   const groups=adultGroups(state.family,settings);
-  const dependent=state.family.filter(p=>p.kind!=='adult');
+  const leaders=groups.map(g=>g.members[0]);
+  const movable=state.family.filter(p=>p.kind!=='adult'||state.family.filter(a=>a.kind==='adult').length>1);
   return periodPicker()+`<div class="segmented split-mode" role="group" aria-label="${t('grouping')}">
     <button class="small" type="button" data-mode="together" aria-pressed="${!settings.split}">${t('allTogether')}</button>
     <button class="small" type="button" data-mode="split" aria-pressed="${settings.split}">${t('split')}</button>
-  </div>`+(settings.split&&dependent.length?`<div class="assignments">${dependent.map(p=>
-    `<label>${memberLabel(p)}<select data-assignment="${p.id}">${groups.map(g=>
+  </div>`+(settings.split&&movable.length?`<p class="drag-hint">${t('groupsDragHint')}</p><div class="assignments">${movable.map(p=>
+    `<label>${memberLabel(p)}<select data-assignment="${p.id}">
+      ${p.kind==='adult'?`<option value="own" ${leaders.includes(p)?'selected':''}>${t('ownGroup')}</option>`:''}
+      ${groups.filter(g=>g.members[0]!==p).map(g=>
       `<option value="${g.id}" ${g.members.includes(p)?'selected':''}>${g.label} · ${memberLabel(g.members[0])}</option>`).join('')}
       ${p.kind==='child'?`<option value="care" ${inCare(p,settings)?'selected':''}>${t('care')}</option>`:''}</select></label>`
-    ).join('')}</div>${dependent.some(p=>inCare(p,settings))?`<p class="care-hint">${t('careAssignmentHint')}</p>`:''}`:'');
+    ).join('')}</div>${movable.some(p=>inCare(p,settings))?`<p class="care-hint">${t('careAssignmentHint')}</p>`:''}`:'');
 }
+// Murmli and Berta take turns giving a tip on each step.
+function mascotTip(index){
+  const mascot=mascots[index%2?'berta':'murmli'];
+  return `<div class="mascot-tip"><svg viewBox="-28 -90 56 96" aria-hidden="true">${mascot.art()}</svg><p><strong>${mascot.name}:</strong> ${t('tip'+steps[index])}</p></div>`;
+}
+const isWinter=date=>[11,12,1,2,3,4].includes(Number(date.slice(5,7)));
+const isMascotActivity=activity=>/murmli|berta/i.test(activity.title);
 function renderControls(){
   const index=state.step;
   const children=state.family.filter(p=>p.kind==='child');
-  const header=(title,description)=>`<div class="control-heading"><h2 id="prompt" tabindex="-1">${title}</h2><p class="kicker">0${index+1} / 0${steps.length}</p></div><p>${description}</p>`;
+  const header=(title,description)=>`<div class="control-heading"><h2 id="prompt" tabindex="-1">${title}</h2><p class="kicker">0${index+1} / 0${steps.length}</p></div><p>${description}</p>`+mascotTip(index);
   let content='';
   if(index===0){
     const count=state.family.length;
     content=header(t('familyHeading'),count?t(count===1?'figureOne':'figureMany',count):t('familyHint'))+
-      `<div class="options"><button class="small" type="button" data-add="adult" ${count>=10?'disabled':''}>+ ${t('adult')}</button><button class="small" type="button" data-add="child" ${count>=10?'disabled':''}>+ ${t('child')}</button><button class="small" type="button" data-add="dog" ${count>=10?'disabled':''}>+ ${t('dog')}</button></div>`;
+      `<div class="options"><button class="small" type="button" data-add="adult" ${count>=10?'disabled':''}>+ ${t('adult')}</button><button class="small" type="button" data-add="child" ${count>=10?'disabled':''}>+ ${t('child')}</button><button class="small" type="button" data-add="grandparent" ${count>=10?'disabled':''}>+ ${t('grandparent')}</button><button class="small" type="button" data-add="dog" ${count>=10?'disabled':''}>+ ${t('dog')}</button></div>`;
   }else if(index===1){
     content=header(t('placeHeading'),t('placeHint'))+
       `<div class="options">${Object.keys(towns).map(town=>`<button type="button" class="place" data-place="${town}" aria-pressed="${town===state.place}"><strong>${town}</strong><small>${t('motif'+town)}</small></button>`).join('')}</div>`;
@@ -123,7 +150,7 @@ function renderControls(){
       (children.length?children.map(p=>`<fieldset class="wish-group"><legend>${memberLabel(p)}</legend><div class="options">${wishButtons(p.wishes,p.id)}</div></fieldset>`).join('')
         :`<div class="options">${wishButtons(state.general,'family')}</div>`)+
       state.family.filter(p=>p.kind==='adult').map(p=>`<fieldset class="wish-group"><legend>${memberLabel(p)}</legend>
-        <div class="options">${wishButtons(p.wishes,p.id,['sport','wellness','food'])}</div></fieldset>`).join('');
+        <div class="options">${wishButtons(p.wishes,p.id)}</div></fieldset>`).join('');
   }else if(index===groupStep){
     content=header(t('groupsHeading'),t('groupsHint'))+groupControls();
   }else{
@@ -184,17 +211,17 @@ function dialog(kind,p){
   $('choice-title').textContent=t(kind==='age'?'ageHeading':'removeHeading');
   $('choice-content').innerHTML=kind==='age'
     ? `<label>${t('age')}<select id="child-age" required><option value="">${t('chooseAge')}</option>${Array.from({length:18},(_,age)=>`<option value="${age}">${ageText({age})}</option>`).join('')}</select></label>`
-    : `<p>${t('removeDescription',avatarName(p)+(p.kind==='child'?' · '+ageText(p):''))}</p>`;
+    : `<p>${t('removeDescription',html(avatarName(p))+(p.kind!=='dog'&&p.age!=null?' · '+ageText(p):''))}</p>`;
   $('choice-confirm').textContent=t(kind==='age'?'addChild':'remove');
   $('choice').showModal();
   if(kind==='age') $('child-age').focus();
 }
-function add(kind,age){
+function add(kind,age,button=kind){
   if(state.family.length>=10) return;
-  const p=newPerson(kind,age);
+  const p=newPerson(kind,{age});
   state.family.push(p);
   render(p.id);
-  $('controls').querySelector(`[data-add="${kind}"]`)?.focus();
+  $('controls').querySelector(`[data-add="${button}"]`)?.focus();
   $('announcement').textContent=t('avatarAdded',avatarName(p));
 }
 $('choice-cancel').addEventListener('click',()=>$('choice').close('cancel'));
@@ -220,7 +247,8 @@ function requestRemoval(event){
   if(state.step!==0) return;
   const mark=event.target.closest('[data-avatar]');
   const p=mark&&state.family.find(item=>item.id===Number(mark.dataset.avatar));
-  if(p&&!$('choice').open) dialog('remove',p);
+  if(!p||$('choice').open||$('editor').open) return;
+  if(p.kind==='dog') dialog('remove',p);else openEditor(p);
 }
 function changePeriod(period,target){
   if(state.period===period) return;
@@ -235,6 +263,59 @@ function changePeriod(period,target){
   }
 }
 $('board').addEventListener('click',requestRemoval);
+// Groups step: drag figures on the postcard into another group (the selects below do the same by keyboard).
+function canDrag(){
+  return state.step===groupStep&&state.groups[state.period].split&&canSplit(state.family);
+}
+function moveToGroup(p,team){
+  const settings=state.groups[state.period];
+  const assignments=settings.assignments;
+  // Pin everyone to their current group first, so only the moved figure changes place.
+  for(const group of adultGroups(state.family,settings)) for(const m of group.members.slice(1)) assignments.set(m.id,group.id);
+  const leader=team==='free'
+    ?groupSet(state.family,settings).find(g=>g.id==='free')?.members[0]
+    :state.family.find(m=>String(m.id)===team&&m.kind==='adult');
+  if(p.kind==='adult'){
+    if(!leader) assignments.delete(p.id);
+    else if(leader!==p){
+      for(const [id,owner] of assignments) if(owner===p.id) assignments.set(id,leader.id);
+      assignments.set(p.id,leader.id);
+    }
+  }else if(team==='care'&&p.kind==='child') assignments.set(p.id,'care');
+  else if(leader) assignments.set(p.id,leader.id);
+  draw(undefined,true);
+  renderControls();
+  $('announcement').textContent=t('groupsUpdated');
+}
+let drag=null;
+const svgPoint=(svg,event)=>new DOMPoint(event.clientX,event.clientY).matrixTransform(svg.getScreenCTM().inverse());
+const teamAt=(svg,x)=>[...svg.querySelectorAll('[data-team]')].find(g=>x>=Number(g.dataset.x0)-12&&x<=Number(g.dataset.x1)+12);
+$('board').addEventListener('pointerdown',event=>{
+  if(!canDrag()) return;
+  const el=event.target.closest('[data-member]');
+  const p=el&&state.family.find(item=>String(item.id)===el.dataset.member);
+  if(!p) return;
+  event.preventDefault();
+  const svg=el.ownerSVGElement;
+  svg.append(el);
+  drag={p,el,svg,start:svgPoint(svg,event),base:el.getAttribute('transform')};
+  el.classList.add('dragging');
+  $('board').setPointerCapture(event.pointerId);
+});
+$('board').addEventListener('pointermove',event=>{
+  if(!drag) return;
+  const pt=svgPoint(drag.svg,event);
+  drag.el.setAttribute('transform',`translate(${pt.x-drag.start.x} ${pt.y-drag.start.y}) ${drag.base}`);
+  const team=teamAt(drag.svg,pt.x);
+  for(const g of drag.svg.querySelectorAll('[data-team]')) g.classList.toggle('drop-target',g===team);
+});
+$('board').addEventListener('pointerup',event=>{
+  if(!drag) return;
+  const {p,svg}=drag;
+  drag=null;
+  moveToGroup(p,teamAt(svg,svgPoint(svg,event).x)?.dataset.team);
+});
+$('board').addEventListener('pointercancel',()=>{if(drag){drag=null;draw()}});
 $('board').addEventListener('keydown',event=>{
   if(!['Enter',' '].includes(event.key)||!event.target.closest('[data-avatar]')) return;
   event.preventDefault();requestRemoval(event);
@@ -244,6 +325,7 @@ $('controls').addEventListener('click',event=>{
   if(!target) return;
   const {add:kind,place,wish,person,period,mode}=target.dataset;
   if(kind==='child') dialog('age');
+  else if(kind==='grandparent') add('adult',70,kind);
   else if(kind) add(kind);
   else if(place){
     state.place=place;draw();
@@ -265,9 +347,7 @@ $('controls').addEventListener('click',event=>{
 $('controls').addEventListener('change',event=>{
   if(event.target.dataset.assignment){
     const id=Number(event.target.dataset.assignment);
-    const value=event.target.value;
-    state.groups[state.period].assignments.set(id,value==='care'?value:Number(value));
-    draw(undefined,true);renderControls();
+    moveToGroup(state.family.find(p=>p.id===id),event.target.value);
     $('controls').querySelector(`[data-assignment="${id}"]`).focus({preventScroll:true});
     return;
   }
@@ -275,11 +355,80 @@ $('controls').addEventListener('change',event=>{
     state.start=event.target.value;
     syncDateFields();
     if(state.end&&(!validStart()||state.end<=state.start)){state.end='';$('date-end').value=''}
+    state.family.filter(p=>p.birth).forEach(applyAge);
   }else if(event.target.id==='date-end') state.end=event.target.value;
   else return;
   dateError='';
   $('date-error').textContent='';
   draw();
+});
+// Optional character editor, opened by tapping a figure. A birth date (if given) sets age and adult/child.
+let editing=null, hairTouched=false;
+const genderHair={m:2,w:3,d:1};
+function pick(name,count,item,current){
+  return `<div class="pick">${Array.from({length:count},(_,i)=>`<label><input type="radio" name="${name}" value="${i}" ${i===current?'checked':''} aria-label="${t(name)} ${i+1}"><span>${item(i)}</span></label>`).join('')}</div>`;
+}
+function openEditor(p){
+  editing=p;
+  hairTouched=p.hair!=null;
+  const v={name:'',birth:'',gender:'',...p,...lookOf(p)};
+  const field=(key,body)=>`<fieldset><legend>${t(key)}</legend>${body}</fieldset>`;
+  $('editor-title').textContent=t('editorEdit');
+  $('editor-fields').innerHTML=
+    `<label>${t('name')}<input name="name" type="text" maxlength="20" autocomplete="off" value="${html(v.name)}"></label>
+    <div class="editor-age"><label>${t('birth')}<input name="birth" type="date" min="1900-01-01" max="${todayDate()}" value="${v.birth}"></label>
+    <label>${t('age')}<input name="age" type="number" min="0" max="120" inputmode="numeric" value="${v.age??''}"></label></div>`+
+    field('gender',`<div class="pick">${['m','w','d'].map(g=>`<label><input type="radio" name="gender" value="${g}" ${v.gender===g?'checked':''}><span><b>${g.toUpperCase()}</b> ${t('gender'+g.toUpperCase())}</span></label>`).join('')}</div>`)+
+    field('interests',`<div class="pick">${Object.keys(choices).map(key=>`<label><input type="checkbox" name="wish" value="${key}" ${v.wishes.has(key)?'checked':''}><span><svg viewBox="-12 -12 24 24" aria-hidden="true"><path d="${choices[key].path}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>${t(key)}</span></label>`).join('')}</div>`)+
+    field('skin',pick('skin',tones.length,i=>`<i class="dot" style="--c:${tones[i]}"></i>`,v.skin))+
+    field('hair',pick('hair',hairShapes.length,i=>`<svg viewBox="-25 -27 50 50" aria-hidden="true"><circle r="19" style="fill:var(--skin)"/><path d="${hairShapes[i]}" style="fill:var(--hair)"/></svg>`,v.hair))+
+    field('hairColor',pick('hairColor',hairColors.length,i=>`<i class="dot" style="--c:${hairColors[i]}"></i>`,v.hairColor))+
+    field('shirt',pick('shirt',palette.length,i=>`<i class="dot" style="--c:${palette[i]}"></i>`,v.shirt));
+  updateEditor();
+  $('editor').showModal();
+  $('editor-form').elements.name.focus();
+}
+function readEditor(){
+  const f=new FormData($('editor-form'));
+  const age=f.get('age');
+  return {name:f.get('name').trim(),birth:f.get('birth'),age:age===''?editing.age:Math.min(120,Math.max(0,Math.round(age))),gender:f.get('gender')||'',wishes:new Set(f.getAll('wish')),
+    skin:Number(f.get('skin')),hair:Number(f.get('hair')),hairColor:Number(f.get('hairColor')),shirt:Number(f.get('shirt'))};
+}
+function updateEditor(){
+  const p={...editing,...readEditor()};
+  applyAge(p);
+  p.look=editing.kind===p.kind?editing.look:freeLook(p.kind,editing);
+  const figure=avatarFigure(p);
+  const h=figure.height+16, w=Math.max(110,h*.8);
+  $('editor-fields').style.cssText=`--skin:${tones[p.skin]};--hair:${hairColors[p.hairColor]}`;
+  $('editor-preview').innerHTML=`<svg viewBox="${-w/2} ${-figure.height-10} ${w} ${h}" aria-hidden="true">${figure.svg}</svg>
+    <output>${p.name?`<strong>${html(p.name)}</strong>`:''}${p.age!=null?ageText(p)+(p.birth?' '+t(validStart()?'ageOnTrip':'ageToday'):'')+' · ':''}${t(avatarStage(p))}</output>`;
+}
+$('editor-form').addEventListener('input',event=>{
+  const {name,value}=event.target;
+  const form=$('editor-form').elements;
+  if(name==='hair') hairTouched=true;
+  // Birth date and age stay in sync: a date fills in the age, typing an age drops the date.
+  if(name==='birth'&&value){const p={birth:value};applyAge(p);form.age.value=p.age}
+  if(name==='age') form.birth.value='';
+  if(name==='gender'&&!hairTouched) form.hair.value=genderHair[value];
+  updateEditor();
+});
+$('editor-cancel').addEventListener('click',()=>$('editor').close());
+$('editor-remove').addEventListener('click',()=>{
+  $('editor').close();
+  dialog('remove',editing);
+});
+$('editor-form').addEventListener('submit',event=>{
+  event.preventDefault();
+  const fields=readEditor();
+  $('editor').close();
+  Object.assign(editing,fields);
+  applyAge(editing);
+  if(state.family.some(p=>p!==editing&&p.kind===editing.kind&&p.look===editing.look)) editing.look=freeLook(editing.kind,editing);
+  render();
+  $('board').querySelector(`[data-avatar="${editing.id}"]`)?.focus();
+  $('announcement').textContent=t('avatarSaved',avatarName(editing));
 });
 function showExportStatus(key){
   exportStatus=key;
@@ -368,6 +517,7 @@ function resultCards(group){
   if(!group.candidates.length) return hint+`<p>${t('noMatches')}</p>`;
   return hint+`<div class="result-grid">${group.candidates.map(({index,activity:a,time,featured,matches})=>`<article class="result${featured?' is-featured':''}">
     ${featured?`<span class="featured-badge"><span aria-hidden="true">✦</span> ${t('featured')}</span>`:''}
+    ${isMascotActivity(a)?`<span class="featured-badge mascot-badge">${t('mascotPick')}</span>`:''}
     <small>${timeRange(time.start,time.end)} · ${t(a.category)}${a.adultFocus?' · '+t('ageLimit',a.min):''}</small>
     <strong>${html(activityTitle(a))}</strong><p>${html(activityDescription(a))}</p>
     ${featured?`<p class="featured-reason">${html(featuredReason(matches))}</p>`:''}
@@ -397,6 +547,9 @@ function renderResults(focus){
   target.innerHTML=`<h2 id="results-title" tabindex="-1">${t('results')}</h2>
     <p>${state.place} · ${html(dayText(date))} · ${t('catalogNote')}</p>
     ${dates.length>1?`<label class="plan-date">${t('chooseDay')} <select id="plan-date">${dates.map(d=>`<option value="${d}" ${date===d?'selected':''}>${html(dayText(d))}</option>`).join('')}</select></label>`:''}
+    <aside class="mascot-tip mascot-world"><svg viewBox="-56 -90 112 96" aria-hidden="true"><g transform="translate(-22 0)">${bertaArt()}</g><g transform="translate(24 0)">${murmliArt()}</g></svg>
+      <p><strong>${t(isWinter(date)?'mascotWinter':'mascotSummer')}</strong> ${t('mascotWorldHint')}
+      <a href="${isWinter(date)?'https://www.serfaus-fiss-ladis.at/de/winterurlaub/familienwinter/murmlis-und-bertas-winterwelt':'https://www.serfaus-fiss-ladis.at/de/sommerurlaub/familiensommer/murmlis-und-bertas-bergabenteuer'}" target="_blank" rel="noopener">${t('mascotWorldLink')} ↗</a></p></aside>
     <section class="day-plan" aria-labelledby="day-plan-title">
       <h3 id="day-plan-title">${t('dayPlan')}</h3><p>${t('dayPlanHint')}</p>
       <div class="plan-slots">${slots}</div>
