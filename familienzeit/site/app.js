@@ -734,7 +734,8 @@ $('load-local').addEventListener('click',()=>{
 
 refreshDates();
 try {
-  const response=await fetch('/api/experiences');
+  const catalogUrl=document.querySelector('meta[name="catalog-url"]')?.content || '/api/experiences';
+  const response=await fetch(catalogUrl);
   if(!response.ok) throw new Error('Catalog unavailable');
   activities=await response.json();
   catalogState='ready';

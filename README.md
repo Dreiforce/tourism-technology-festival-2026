@@ -271,9 +271,16 @@ A family should not need to understand the technology behind a destination to en
 
 ## 🛠️ Getting Started
 
-The public repository currently contains the project documentation and configuration files, but does not yet include the application source code.
+Build the static sites with Node.js 24 and serve the output locally.
 
-Local installation instructions will be added when the application code is published.
+```sh
+node scripts/build-pages.mjs
+python3 -m http.server 8000 --directory dist/pages
+```
+
+Open [the local planner](http://localhost:8000/). The build includes both prototypes. For the GitHub Pages edition, edit the public activity catalogue in [familienzeit/static/catalog.json](familienzeit/static/catalog.json). Put local photos under `familienzeit/static/photos/` and reference them as `./photos/filename` in the catalogue.
+
+The [GitHub Pages workflow](.github/workflows/pages.yml) publishes the static build from `main`. Catalogue changes made in the ChatGPT Sites admin panel need to be copied into the static catalogue before publishing.
 
 ---
 

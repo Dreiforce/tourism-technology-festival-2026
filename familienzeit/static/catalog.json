@@ -1,0 +1,5403 @@
+[
+  {
+    "id": "sfl-almpromenade",
+    "title": "Almpromenade am Komperdell",
+    "description": "Leichte, rund 1,5 km lange Runde mit Rückkehr zur Bergstation Komperdell.",
+    "operator": "Serfaus-Fiss-Ladis",
+    "address": "Serfaus · Komperdell",
+    "location": [
+      "Serfaus · Komperdell",
+      47.041,
+      10.565
+    ],
+    "category": "Natur",
+    "region": "sfl",
+    "meeting": "komperdell",
+    "priceKnown": true,
+    "min": 0,
+    "max": 17,
+    "duration": 45,
+    "weather": "sun",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "2027-06-12",
+        "to": "2027-10-17",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "09:00",
+        "close": "16:00",
+        "last": ""
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/sommeraktivit%C3%A4ten/wandern/almpromenade_tour_272259",
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/sommeraktivitaeten",
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/oeffnungszeiten-preise",
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/super-sommer-card"
+    ],
+    "booking": "onsite",
+    "bookingLink": "",
+    "bookingNote": "Komperdellbahn separat. Mit gültiger Super. Sommer. Card. ist die geöffnete Bergbahn enthalten.",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [
+      {
+        "card": "sfl",
+        "from": "2027-06-12",
+        "to": "2027-10-17",
+        "source": "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/super-sommer-card",
+        "note": "Geöffnete Sommer-Bergbahn mit gültiger Super. Sommer. Card. nutzen. Zusatzleistungen sind separat."
+      }
+    ],
+    "accessNote": "",
+    "notes": "Planungsfenster innerhalb der bestätigten Sommersaison. Öffnung und Bahnverbindung am Besuchstag prüfen.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-bifang",
+    "title": "Bifangrunde Serfaus",
+    "description": "4,17 km lange Runde auf Asphalt und Schotter mit Blick auf das Dorf.",
+    "operator": "Serfaus-Fiss-Ladis",
+    "address": "Apart Rubin / Wegkreuzung beim Hotel Bär, Serfaus",
+    "location": [
+      "Serfaus",
+      47.0418,
+      10.611
+    ],
+    "category": "Natur",
+    "region": "sfl",
+    "meeting": "serfaus",
+    "min": 0,
+    "max": 17,
+    "duration": 90,
+    "weather": "sun",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "",
+        "to": "",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "09:00",
+        "close": "16:00",
+        "last": ""
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/sommeraktivitaeten/wandern/bifangrunde_tour_272124"
+    ],
+    "booking": "free",
+    "bookingLink": "",
+    "bookingNote": "",
+    "accessibility": {
+      "stroller": "yes"
+    },
+    "accessSource": "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/sommeraktivitaeten/wandern/bifangrunde_tour_272124",
+    "passes": [],
+    "accessNote": "Laut Tourismusverband kinderwagenfreundlich, mit Schotter und Steigungen.",
+    "notes": "Bei Schnee oder Nässe den aktuellen Wegestatus prüfen.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-fiss-seeweg",
+    "title": "Seeweg ab Josefskapelle",
+    "description": "Leichte, 2,4 km lange Rundwanderung über Wiesenwege zurück zur Josefskapelle.",
+    "operator": "Serfaus-Fiss-Ladis",
+    "address": "Josefskapelle, Fiss",
+    "location": [
+      "Fiss",
+      47.0563,
+      10.6258
+    ],
+    "category": "Natur",
+    "region": "sfl",
+    "meeting": "fiss",
+    "min": 4,
+    "max": 17,
+    "duration": 60,
+    "weather": "sun",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "",
+        "to": "",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "09:00",
+        "close": "16:00",
+        "last": ""
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/sommeraktivitaeten/wandern/seeweg_tour_272166"
+    ],
+    "booking": "free",
+    "bookingLink": "",
+    "bookingNote": "",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [],
+    "accessNote": "",
+    "notes": "Bei Schnee oder Nässe den aktuellen Wegestatus prüfen.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-funpark-fiss",
+    "title": "Spielplatz im Sommer-Funpark Fiss",
+    "description": "Spielbereich und Kletterturm an der Möseralm. Die rasanten Attraktionen sind separate Angebote.",
+    "operator": "Serfaus-Fiss-Ladis",
+    "address": "Fiss · Möseralm",
+    "location": [
+      "Fiss · Möseralm",
+      47.059,
+      10.589
+    ],
+    "category": "Kreativ",
+    "region": "sfl",
+    "meeting": "moeseralm",
+    "priceKnown": true,
+    "min": 0,
+    "max": 17,
+    "duration": 75,
+    "weather": "sun",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "2027-06-12",
+        "to": "2027-10-17",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "09:00",
+        "close": "16:00",
+        "last": ""
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/sommeraktivitaeten/wandern/sommer-funpark-fiss_infra_35762",
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/sommeraktivitaeten",
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/oeffnungszeiten-preise",
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/super-sommer-card"
+    ],
+    "booking": "onsite",
+    "bookingLink": "",
+    "bookingNote": "Möseralmbahn separat. Mit gültiger Super. Sommer. Card. ist die geöffnete Bergbahn enthalten.",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [
+      {
+        "card": "sfl",
+        "from": "2027-06-12",
+        "to": "2027-10-17",
+        "source": "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/super-sommer-card",
+        "note": "Geöffnete Sommer-Bergbahn mit gültiger Super. Sommer. Card. nutzen. Zusatzleistungen sind separat."
+      }
+    ],
+    "accessNote": "",
+    "notes": "Planungsfenster innerhalb der bestätigten Sommersaison. Öffnung und Bahnverbindung am Besuchstag prüfen.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-hoeg-baden",
+    "title": "Baden im Högsee",
+    "description": "Badebereich und Flachwasserzone am Högsee. Kinder bleiben bei ihrer Begleitperson.",
+    "operator": "Serfaus-Fiss-Ladis",
+    "address": "Badebereich bei der Mittelstation Alpkopfbahn, Serfaus",
+    "location": [
+      "Serfaus · Högsee",
+      47.03758,
+      10.58068
+    ],
+    "category": "Action",
+    "region": "sfl",
+    "meeting": "hoeg",
+    "min": 4,
+    "max": 17,
+    "duration": 45,
+    "weather": "sun",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "2027-06-12",
+        "to": "2027-10-17",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "09:00",
+        "close": "16:30",
+        "last": ""
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/erlebnispark-hog_infra_33417",
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/oeffnungszeiten-preise",
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/super-sommer-card"
+    ],
+    "booking": "onsite",
+    "bookingLink": "",
+    "bookingNote": "Das Erlebnis selbst ist frei. Für die Anreise per Alpkopfbahn gilt der Bergbahntarif. Dieses Ticket ist im Preis hier nicht eingerechnet.",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [
+      {
+        "card": "sfl",
+        "from": "2027-06-12",
+        "to": "2027-10-17",
+        "source": "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/super-sommer-card",
+        "note": "Die Fahrt mit der geöffneten Alpkopfbahn ist mit gültiger Karte enthalten. Karte beim Lift vorzeigen."
+      }
+    ],
+    "accessNote": "",
+    "notes": "Zugang mit der Alpkopfbahn. Bergfahrt separat, mit gültiger Super. Sommer. Card. ohne zusätzliches Bahnticket. Saison und Badebedingungen prüfen. Nur bei geeigneten Bedingungen baden.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-hoeg-cache",
+    "title": "Gold-Cache am Högsee",
+    "description": "Schatzsuche rund um den Högsee für Kinder, die Rätsel lösen und zu Fuß unterwegs sein möchten.",
+    "operator": "Serfaus-Fiss-Ladis",
+    "address": "Mittelstation Alpkopfbahn, Serfaus",
+    "location": [
+      "Serfaus · Högsee",
+      47.03758,
+      10.58068
+    ],
+    "category": "Entdecken",
+    "region": "sfl",
+    "meeting": "hoeg",
+    "min": 6,
+    "max": 17,
+    "duration": 90,
+    "weather": "sun",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "2027-06-12",
+        "to": "2027-10-17",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "09:00",
+        "close": "16:30",
+        "last": ""
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/familiensommer/wandern-mit-kindern",
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/erlebnispark-hog_infra_33417",
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/oeffnungszeiten-preise",
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/super-sommer-card"
+    ],
+    "booking": "onsite",
+    "bookingLink": "",
+    "bookingNote": "Das Erlebnis selbst ist frei. Für die Anreise per Alpkopfbahn gilt der Bergbahntarif. Dieses Ticket ist im Preis hier nicht eingerechnet.",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [
+      {
+        "card": "sfl",
+        "from": "2027-06-12",
+        "to": "2027-10-17",
+        "source": "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/super-sommer-card",
+        "note": "Die Fahrt mit der geöffneten Alpkopfbahn ist mit gültiger Karte enthalten. Karte beim Lift vorzeigen."
+      }
+    ],
+    "accessNote": "",
+    "notes": "Zugang mit der Alpkopfbahn. Bergfahrt separat, mit gültiger Super. Sommer. Card. ohne zusätzliches Bahnticket. Saison und Badebedingungen prüfen. Aufgaben, Material und tatsächliche Dauer beim Tourismusverband prüfen.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-hoeg-runde",
+    "title": "Spaziergang rund um den Högsee",
+    "description": "Breiter Rundweg am See mit kurzen Stopps am Wasser.",
+    "operator": "Serfaus-Fiss-Ladis",
+    "address": "Mittelstation Alpkopfbahn, Serfaus",
+    "location": [
+      "Serfaus · Högsee",
+      47.03758,
+      10.58068
+    ],
+    "category": "Natur",
+    "region": "sfl",
+    "meeting": "hoeg",
+    "min": 0,
+    "max": 17,
+    "duration": 45,
+    "weather": "sun",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "2027-06-12",
+        "to": "2027-10-17",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "09:00",
+        "close": "16:30",
+        "last": ""
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/region-und-anreise/blog/berge-erleben/Berge-wie-Sand-am-Meer",
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/erlebnispark-hog_infra_33417",
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/oeffnungszeiten-preise",
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/super-sommer-card"
+    ],
+    "booking": "onsite",
+    "bookingLink": "",
+    "bookingNote": "Das Erlebnis selbst ist frei. Für die Anreise per Alpkopfbahn gilt der Bergbahntarif. Dieses Ticket ist im Preis hier nicht eingerechnet.",
+    "accessibility": {
+      "stroller": "yes"
+    },
+    "accessSource": "https://www.serfaus-fiss-ladis.at/de/region-und-anreise/blog/berge-erleben/Berge-wie-Sand-am-Meer",
+    "passes": [
+      {
+        "card": "sfl",
+        "from": "2027-06-12",
+        "to": "2027-10-17",
+        "source": "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/super-sommer-card",
+        "note": "Die Fahrt mit der geöffneten Alpkopfbahn ist mit gültiger Karte enthalten. Karte beim Lift vorzeigen."
+      }
+    ],
+    "accessNote": "Der Uferweg ist laut Tourismusverband kinderwagentauglich.",
+    "notes": "Zugang mit der Alpkopfbahn. Bergfahrt separat, mit gültiger Super. Sommer. Card. ohne zusätzliches Bahnticket. Saison und Badebedingungen prüfen.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-hoeg-spiel",
+    "title": "Spielstationen am Högsee",
+    "description": "Holzspielplätze und Geschicklichkeitsstationen am Speichersee.",
+    "operator": "Serfaus-Fiss-Ladis",
+    "address": "Mittelstation Alpkopfbahn, Serfaus",
+    "location": [
+      "Serfaus · Högsee",
+      47.03758,
+      10.58068
+    ],
+    "category": "Kreativ",
+    "region": "sfl",
+    "meeting": "hoeg",
+    "min": 0,
+    "max": 8,
+    "duration": 45,
+    "weather": "sun",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "2027-06-12",
+        "to": "2027-10-17",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "09:00",
+        "close": "16:30",
+        "last": ""
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/erlebnispark-hog_infra_33417",
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/oeffnungszeiten-preise",
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/super-sommer-card"
+    ],
+    "booking": "onsite",
+    "bookingLink": "",
+    "bookingNote": "Das Erlebnis selbst ist frei. Für die Anreise per Alpkopfbahn gilt der Bergbahntarif. Dieses Ticket ist im Preis hier nicht eingerechnet.",
+    "accessibility": {
+      "stroller": "yes"
+    },
+    "accessSource": "https://www.serfaus-fiss-ladis.at/de/region-und-anreise/blog/berge-erleben/Berge-wie-Sand-am-Meer",
+    "passes": [
+      {
+        "card": "sfl",
+        "from": "2027-06-12",
+        "to": "2027-10-17",
+        "source": "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/super-sommer-card",
+        "note": "Die Fahrt mit der geöffneten Alpkopfbahn ist mit gültiger Karte enthalten. Karte beim Lift vorzeigen."
+      }
+    ],
+    "accessNote": "Der breite Weg entlang des Högsees ist kinderwagentauglich.",
+    "notes": "Zugang mit der Alpkopfbahn. Bergfahrt separat, mit gültiger Super. Sommer. Card. ohne zusätzliches Bahnticket. Saison und Badebedingungen prüfen. Das ist ein Spielbereich im Freien.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-ladis-angeln",
+    "title": "Fischen am Lader Weiher",
+    "description": "Angeln am Schlossweiher mit eigener Ausrüstung.",
+    "operator": "Serfaus-Fiss-Ladis",
+    "address": "Ladis",
+    "location": [
+      "Ladis",
+      47.0751,
+      10.6531
+    ],
+    "category": "Natur",
+    "region": "sfl",
+    "meeting": "ladis",
+    "priceKnown": false,
+    "min": 6,
+    "max": 17,
+    "duration": 90,
+    "weather": "sun",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "",
+        "to": "",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "09:00",
+        "close": "16:00",
+        "last": ""
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/region-und-anreise/restaurants-geschaefte/fischen-am-lader-weiher_infra_370768",
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/sommeraktivitaeten"
+    ],
+    "booking": "onsite",
+    "bookingLink": "",
+    "bookingNote": "Regeln, verfügbaren Fischbestand und etwaige Kosten beim Anbieter prüfen.",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [],
+    "accessNote": "",
+    "notes": "Der Tourismusverband nennt eigene Angelausrüstung. Verfügbarkeit und Regeln vor dem Besuch abklären.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-ladis-cache",
+    "title": "Interaktiver Dorfrundgang Ladis",
+    "description": "Mit der SFL-App auf Schatzsuche nach Ritter Albrecht durch das Dorf.",
+    "operator": "Serfaus-Fiss-Ladis",
+    "address": "Dorfzentrum und Schlossweiher, Ladis",
+    "location": [
+      "Ladis",
+      47.0751,
+      10.6531
+    ],
+    "category": "Entdecken",
+    "region": "sfl",
+    "meeting": "ladis",
+    "min": 5,
+    "max": 17,
+    "duration": 75,
+    "weather": "sun",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "",
+        "to": "",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "09:00",
+        "close": "16:00",
+        "last": ""
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/region-und-anreise/restaurants-geschaefte/interaktiver-dorfrundgang-geocaching_infra_34181"
+    ],
+    "booking": "free",
+    "bookingLink": "",
+    "bookingNote": "",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [],
+    "accessNote": "",
+    "notes": "Bei Schnee oder Nässe den aktuellen Wegestatus prüfen.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-ladis-spiel",
+    "title": "Kinderspielplatz Ladis",
+    "description": "Kurze Spielpause im Dorf für die jüngeren Kinder.",
+    "operator": "Serfaus-Fiss-Ladis",
+    "address": "Kinderspielplatz im Dorf, Ladis",
+    "location": [
+      "Ladis",
+      47.0751,
+      10.6531
+    ],
+    "category": "Kreativ",
+    "region": "sfl",
+    "meeting": "ladis",
+    "min": 0,
+    "max": 10,
+    "duration": 45,
+    "weather": "sun",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "",
+        "to": "2027-07-01",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "09:00",
+        "close": "16:00",
+        "last": ""
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/region-und-anreise/restaurants-geschaefte/kinderspielplatz-ladis_infra_34094"
+    ],
+    "booking": "free",
+    "bookingLink": "",
+    "bookingNote": "",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [],
+    "accessNote": "",
+    "notes": "Öffentlicher Spielplatz. Der Tourismusverband nennt ein ganztägiges Öffnungsfenster; hier ist ein Tageslichtfenster hinterlegt.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-langlauf-wolfsee",
+    "title": "Kleine Wolfseeloipe L6",
+    "description": "Leichte Langlaufrunde am Wolfsee, rund 1,5 km.",
+    "operator": "Serfaus-Fiss-Ladis",
+    "address": "Fiss · Wolfsee",
+    "location": [
+      "Fiss · Wolfsee",
+      47.0576,
+      10.6347
+    ],
+    "category": "Action",
+    "region": "sfl",
+    "meeting": "fiss",
+    "priceKnown": true,
+    "min": 6,
+    "max": 17,
+    "duration": 60,
+    "weather": "sun",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "2026-12-19",
+        "to": "2027-04-04",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "09:00",
+        "close": "15:30",
+        "last": ""
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/winterurlaub/skigebiet-und-winteraktivitaeten/langlaufen",
+      "https://www.serfaus-fiss-ladis.at/de/winterurlaub/skigebiet-und-winteraktivitaeten",
+      "https://www.serfaus-fiss-ladis.at/de/winterurlaub/saison-und-oeffnungszeiten",
+      "https://www.serfaus-fiss-ladis.at/de/winterurlaub/skigebietsstatus-und-pistenplan"
+    ],
+    "booking": "free",
+    "bookingLink": "",
+    "bookingNote": "",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [],
+    "accessNote": "",
+    "notes": "Loipennutzung ist kostenlos. Benötigt Langlaufausrüstung und eine geöffnete, gespurte Loipe.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-laudeck",
+    "title": "Laudeck-Sauerbrunn-Rundsteig",
+    "description": "Mittelschwere Rundwanderung ab Schlossweiher über Mugglasteig und Sauerbrunn zurück nach Ladis.",
+    "operator": "Serfaus-Fiss-Ladis",
+    "address": "Lader Schlossweiher, Ladis",
+    "location": [
+      "Ladis",
+      47.0751,
+      10.6531
+    ],
+    "category": "Natur",
+    "region": "sfl",
+    "meeting": "ladis",
+    "min": 8,
+    "max": 17,
+    "duration": 150,
+    "weather": "sun",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "",
+        "to": "",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "09:00",
+        "close": "16:00",
+        "last": ""
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/sommeraktivitaeten/wandern/laudeck-sauerbrunn-rundsteig_tour_272232"
+    ],
+    "booking": "free",
+    "bookingLink": "",
+    "bookingNote": "",
+    "accessibility": {
+      "stroller": "no",
+      "stepFree": "no"
+    },
+    "accessSource": "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/sommeraktivitaeten/wandern/laudeck-sauerbrunn-rundsteig_tour_272232",
+    "passes": [],
+    "accessNote": "Mittelschwerer Steig mit rund 322 Höhenmetern bergauf.",
+    "notes": "Bei Schnee oder Nässe den aktuellen Wegestatus prüfen.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-murmliwasser",
+    "title": "Murmliwasser am Komperdell",
+    "description": "Wasserspielplatz mit Rinnen, Wasserrädern und Stationen zum Goldwaschen.",
+    "operator": "Serfaus-Fiss-Ladis",
+    "address": "Serfaus · Komperdell",
+    "location": [
+      "Serfaus · Komperdell",
+      47.041,
+      10.565
+    ],
+    "category": "Kreativ",
+    "region": "sfl",
+    "meeting": "komperdell",
+    "priceKnown": true,
+    "min": 0,
+    "max": 17,
+    "duration": 90,
+    "weather": "sun",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "2027-06-12",
+        "to": "2027-10-17",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "09:00",
+        "close": "16:00",
+        "last": ""
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/sommeraktivit%C3%A4ten/wandern/murmliwasser_infra_35648",
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/sommeraktivitaeten",
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/oeffnungszeiten-preise",
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/super-sommer-card"
+    ],
+    "booking": "onsite",
+    "bookingLink": "",
+    "bookingNote": "Komperdellbahn separat. Mit gültiger Super. Sommer. Card. ist die geöffnete Bergbahn enthalten.",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [
+      {
+        "card": "sfl",
+        "from": "2027-06-12",
+        "to": "2027-10-17",
+        "source": "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/super-sommer-card",
+        "note": "Geöffnete Sommer-Bergbahn mit gültiger Super. Sommer. Card. nutzen. Zusatzleistungen sind separat."
+      }
+    ],
+    "accessNote": "",
+    "notes": "Planungsfenster innerhalb der bestätigten Sommersaison. Öffnung und Bahnverbindung am Besuchstag prüfen.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-murmliweg",
+    "title": "Murmliweg ab Komperdell",
+    "description": "Kurzer Themenweg mit Murmli-Spielstationen. Die Planung enthält Zeit für Hin- und Rückweg.",
+    "operator": "Serfaus-Fiss-Ladis",
+    "address": "Serfaus · Komperdell",
+    "location": [
+      "Serfaus · Komperdell",
+      47.041,
+      10.565
+    ],
+    "category": "Natur",
+    "region": "sfl",
+    "meeting": "komperdell",
+    "priceKnown": true,
+    "min": 0,
+    "max": 17,
+    "duration": 60,
+    "weather": "sun",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "2027-06-12",
+        "to": "2027-10-17",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "09:00",
+        "close": "16:00",
+        "last": ""
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/wandern/murmliweg_tour_272238",
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/sommeraktivitaeten",
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/oeffnungszeiten-preise",
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/super-sommer-card"
+    ],
+    "booking": "onsite",
+    "bookingLink": "",
+    "bookingNote": "Komperdellbahn separat. Mit gültiger Super. Sommer. Card. ist die geöffnete Bergbahn enthalten.",
+    "accessibility": {
+      "stroller": "yes"
+    },
+    "accessSource": "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/wandern/murmliweg_tour_272238",
+    "passes": [
+      {
+        "card": "sfl",
+        "from": "2027-06-12",
+        "to": "2027-10-17",
+        "source": "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/super-sommer-card",
+        "note": "Geöffnete Sommer-Bergbahn mit gültiger Super. Sommer. Card. nutzen. Zusatzleistungen sind separat."
+      }
+    ],
+    "accessNote": "Die offizielle Tourenbeschreibung führt den Weg als kinderwagenfreundlich.",
+    "notes": "Planungsfenster innerhalb der bestätigten Sommersaison. Öffnung und Bahnverbindung am Besuchstag prüfen.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-playin",
+    "title": "PlayIN Serfaus – eine Stunde",
+    "description": "Indoor-Spielwelt mit Kletterwänden, Rutschen und interaktiven Spielen.",
+    "operator": "Serfaus-Fiss-Ladis",
+    "address": "Dorfbahnstraße 75, Serfaus",
+    "location": [
+      "Serfaus",
+      47.04,
+      10.5957
+    ],
+    "category": "Action",
+    "region": "sfl",
+    "meeting": "serfaus",
+    "min": 3,
+    "max": 17,
+    "duration": 60,
+    "weather": "both",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 5,
+    "child": 12,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "Richtwert für eine Stunde laut veröffentlichtem Tarif. Minis bis 100 cm sind günstiger.",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "2026-12-04",
+        "to": "2026-12-04",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "19:00",
+        "last": ""
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/region-und-anreise/restaurants-geschaefte/indoor-spiel-kletterwelt-playin-serfaus_infra_16591"
+    ],
+    "booking": "onsite",
+    "bookingLink": "",
+    "bookingNote": "Eintritt vor Ort. Socken und Depot können extra kosten.",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [],
+    "accessNote": "",
+    "notes": "Der Termin ist veröffentlicht. Weitere Wintertermine beim Betreiber prüfen. Kinder unter 8 Jahren brauchen eine erwachsene Begleitperson.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-rabuschl",
+    "title": "Erlebnispark Rabuschl",
+    "description": "Naturspielplatz mit Teich und Rastplätzen. Ab Fiss ist der Zugang eine Wanderung.",
+    "operator": "Serfaus-Fiss-Ladis",
+    "address": "Fiss · Rabuschl",
+    "location": [
+      "Fiss · Rabuschl",
+      47.074,
+      10.608
+    ],
+    "category": "Kreativ",
+    "region": "sfl",
+    "meeting": "",
+    "priceKnown": true,
+    "min": 4,
+    "max": 17,
+    "duration": 180,
+    "weather": "sun",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "",
+        "to": "",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "09:00",
+        "close": "16:00",
+        "last": ""
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/wandern/erlebnispark-rabuschl_infra_34644",
+      "https://www.serfaus-fiss-ladis.at/de/herbsturlaub/herbstaktivitaeten"
+    ],
+    "booking": "free",
+    "bookingLink": "",
+    "bookingNote": "",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [],
+    "accessNote": "",
+    "notes": "Für Hin- und Rückweg zu Fuß ab Fiss je rund eine Stunde einplanen. Diese Gehzeit ist in der Dauer berücksichtigt.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-rodeln-serfaus",
+    "title": "Rodelbahn Serfaus",
+    "description": "Rodelstrecke von rund vier Kilometern mit Rückkehr zur Talstation.",
+    "operator": "Serfaus-Fiss-Ladis",
+    "address": "Serfaus",
+    "location": [
+      "Serfaus",
+      47.04,
+      10.5957
+    ],
+    "category": "Action",
+    "region": "sfl",
+    "meeting": "serfaus",
+    "priceKnown": false,
+    "min": 6,
+    "max": 17,
+    "duration": 90,
+    "weather": "sun",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "2026-12-19",
+        "to": "2027-04-04",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "09:00",
+        "close": "15:30",
+        "last": ""
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/winterurlaub/skigebiet-und-winteraktivitaeten/rodeln",
+      "https://www.serfaus-fiss-ladis.at/de/winterurlaub/skigebiet-und-winteraktivitaeten",
+      "https://www.serfaus-fiss-ladis.at/de/winterurlaub/saison-und-oeffnungszeiten",
+      "https://www.serfaus-fiss-ladis.at/de/winterurlaub/skigebietsstatus-und-pistenplan"
+    ],
+    "booking": "onsite",
+    "bookingLink": "",
+    "bookingNote": "Bergbahnticket und Rodelverleih separat prüfen.",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [],
+    "accessNote": "",
+    "notes": "Nur bei geöffnetem Betrieb. Die Dauer enthält Aufstieg mit der Bahn und Abfahrt. Rodel und Ausrüstung vorab organisieren.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-shop-15358710",
+    "title": "Sportalm Fondueabend",
+    "description": "Fondueabend in der Sportalm mit Aperitif, kombiniert mit der Adventure Night.",
+    "operator": "Ticketshop Serfaus-Fiss-Ladis",
+    "address": "Treffpunkt laut Veranstalter, Serfaus",
+    "location": [
+      "Serfaus",
+      47.04,
+      10.5957
+    ],
+    "category": "Entdecken",
+    "region": "sfl",
+    "meeting": "",
+    "priceKnown": false,
+    "min": 0,
+    "max": 17,
+    "duration": 165,
+    "weather": "both",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "Der Preis hängt vom Termin und Tarif ab. Aktuellen Gesamtpreis im offiziellen Buchungsformular prüfen.",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "2026-12-16",
+        "to": "2026-12-16",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15358693"
+      },
+      {
+        "kind": "regular",
+        "from": "2026-12-23",
+        "to": "2026-12-23",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15358694"
+      },
+      {
+        "kind": "regular",
+        "from": "2026-12-30",
+        "to": "2026-12-30",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15358695"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-06",
+        "to": "2027-01-06",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15358696"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-13",
+        "to": "2027-01-13",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15358697"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-20",
+        "to": "2027-01-20",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15358698"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-27",
+        "to": "2027-01-27",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15358699"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-03",
+        "to": "2027-02-03",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15358700"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-10",
+        "to": "2027-02-10",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15358701"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-17",
+        "to": "2027-02-17",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15358702"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-24",
+        "to": "2027-02-24",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15358703"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-03",
+        "to": "2027-03-03",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15358704"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-10",
+        "to": "2027-03-10",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15358705"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-17",
+        "to": "2027-03-17",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15358706"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-24",
+        "to": "2027-03-24",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15358707"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-31",
+        "to": "2027-03-31",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15358708"
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/sportalm-fondueabend_event_15358710",
+      "https://www.serfaus-fiss-ladis.at/de/buchen-und-mehr/ticket-und-gutscheinshop/buchbare-erlebnisse"
+    ],
+    "booking": "online",
+    "bookingLink": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/sportalm-fondueabend_event_15358710",
+    "bookingNote": "Termin und Verfügbarkeit im offiziellen Ticketshop prüfen.",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [],
+    "accessNote": "",
+    "notes": "Details zu Auf- und Abfahrt sowie Leistungen im Ticket prüfen. Die Karte zeigt den Ortsbezug. Den genauen Treffpunkt und die Verfügbarkeit bitte beim gebuchten Termin prüfen.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-shop-15612747",
+    "title": "Buffet \"Skiing Classics\"",
+    "description": "Buffet im Restaurant Möseralm am Nightflow-Abend.",
+    "operator": "Ticketshop Serfaus-Fiss-Ladis",
+    "address": "Seilbahnstraße 44, Fiss",
+    "location": [
+      "Fiss",
+      47.0574,
+      10.6123
+    ],
+    "category": "Entdecken",
+    "region": "sfl",
+    "meeting": "",
+    "priceKnown": false,
+    "min": 0,
+    "max": 17,
+    "duration": 255,
+    "weather": "both",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "Der Preis hängt vom Termin und Tarif ab. Aktuellen Gesamtpreis im offiziellen Buchungsformular prüfen.",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "2026-12-22",
+        "to": "2026-12-22",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "22:00",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15612725"
+      },
+      {
+        "kind": "regular",
+        "from": "2026-12-29",
+        "to": "2026-12-29",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "22:00",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15612726"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-05",
+        "to": "2027-01-05",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "22:00",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15612727"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-12",
+        "to": "2027-01-12",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "22:00",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15612728"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-19",
+        "to": "2027-01-19",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "22:00",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15612729"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-26",
+        "to": "2027-01-26",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "22:00",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15612730"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-02",
+        "to": "2027-02-02",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "22:00",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15612731"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-09",
+        "to": "2027-02-09",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "22:00",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15612732"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-16",
+        "to": "2027-02-16",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "22:00",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15612733"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-23",
+        "to": "2027-02-23",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "22:00",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15612734"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-02",
+        "to": "2027-03-02",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "22:00",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15612735"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-09",
+        "to": "2027-03-09",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "22:00",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15612736"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-16",
+        "to": "2027-03-16",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "22:00",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15612737"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-23",
+        "to": "2027-03-23",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "22:00",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15612738"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-30",
+        "to": "2027-03-30",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "22:00",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15612739"
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/buffet-skiing-classics_event_15612747",
+      "https://www.serfaus-fiss-ladis.at/de/buchen-und-mehr/ticket-und-gutscheinshop/buchbare-erlebnisse"
+    ],
+    "booking": "online",
+    "bookingLink": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/buffet-skiing-classics_event_15612747",
+    "bookingNote": "Termin und Verfügbarkeit im offiziellen Ticketshop prüfen.",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [],
+    "accessNote": "",
+    "notes": "Treffpunkt und Bergbahnleistungen beim gewählten Termin prüfen. Die Karte zeigt den Ortsbezug. Den genauen Treffpunkt und die Verfügbarkeit bitte beim gebuchten Termin prüfen.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-shop-15666829",
+    "title": "VIP-Lounge. Nightflow.",
+    "description": "Menü und Live-Musik mit Tribünenplatz für die Nightflow-Show.",
+    "operator": "Ticketshop Serfaus-Fiss-Ladis",
+    "address": "Seilbahnstraße 44, Fiss",
+    "location": [
+      "Fiss",
+      47.0574,
+      10.6123
+    ],
+    "category": "Entdecken",
+    "region": "sfl",
+    "meeting": "",
+    "priceKnown": false,
+    "min": 0,
+    "max": 17,
+    "duration": 255,
+    "weather": "both",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "Der Preis hängt vom Termin und Tarif ab. Aktuellen Gesamtpreis im offiziellen Buchungsformular prüfen.",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "2026-12-22",
+        "to": "2026-12-22",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "22:00",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15666811"
+      },
+      {
+        "kind": "regular",
+        "from": "2026-12-29",
+        "to": "2026-12-29",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "22:00",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15666812"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-05",
+        "to": "2027-01-05",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "22:00",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15666813"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-12",
+        "to": "2027-01-12",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "22:00",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15666814"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-19",
+        "to": "2027-01-19",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "22:00",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15666815"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-26",
+        "to": "2027-01-26",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "22:00",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15666816"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-02",
+        "to": "2027-02-02",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "22:00",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15666817"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-09",
+        "to": "2027-02-09",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "22:00",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15666818"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-16",
+        "to": "2027-02-16",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "22:00",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15666819"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-23",
+        "to": "2027-02-23",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "22:00",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15666820"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-02",
+        "to": "2027-03-02",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "22:00",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15666821"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-09",
+        "to": "2027-03-09",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "22:00",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15666822"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-16",
+        "to": "2027-03-16",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "22:00",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15666823"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-23",
+        "to": "2027-03-23",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "22:00",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15666824"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-30",
+        "to": "2027-03-30",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "22:00",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15666825"
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/vip-lounge-nightflow_event_15666829",
+      "https://www.serfaus-fiss-ladis.at/de/buchen-und-mehr/ticket-und-gutscheinshop/buchbare-erlebnisse"
+    ],
+    "booking": "online",
+    "bookingLink": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/vip-lounge-nightflow_event_15666829",
+    "bookingNote": "Termin und Verfügbarkeit im offiziellen Ticketshop prüfen.",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [],
+    "accessNote": "",
+    "notes": "Treffpunkt und Bergbahnleistungen beim gewählten Termin prüfen. Die Karte zeigt den Ortsbezug. Den genauen Treffpunkt und die Verfügbarkeit bitte beim gebuchten Termin prüfen.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-shop-15666936",
+    "title": "Pizza Dome. Sonnenburg.",
+    "description": "In der Sonnenburg belegt und backt ihr kleine Pizzen direkt am Tisch.",
+    "operator": "Ticketshop Serfaus-Fiss-Ladis",
+    "address": "Seilbahnstraße 44, Fiss",
+    "location": [
+      "Fiss",
+      47.0574,
+      10.6123
+    ],
+    "category": "Kreativ",
+    "region": "sfl",
+    "meeting": "",
+    "priceKnown": false,
+    "min": 0,
+    "max": 17,
+    "duration": 225,
+    "weather": "both",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "Der Preis hängt vom Termin und Tarif ab. Aktuellen Gesamtpreis im offiziellen Buchungsformular prüfen.",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "2026-12-20",
+        "to": "2026-12-20",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "21:30",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17139085"
+      },
+      {
+        "kind": "regular",
+        "from": "2026-12-27",
+        "to": "2026-12-27",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "21:30",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17139086"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-07",
+        "to": "2027-01-07",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "21:30",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15666926"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-14",
+        "to": "2027-01-14",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "21:30",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15666927"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-21",
+        "to": "2027-01-21",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "21:30",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15666928"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-28",
+        "to": "2027-01-28",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "21:30",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15666929"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-04",
+        "to": "2027-02-04",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "21:30",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15666930"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-11",
+        "to": "2027-02-11",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "21:30",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15666931"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-18",
+        "to": "2027-02-18",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "21:30",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15666932"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-25",
+        "to": "2027-02-25",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "21:30",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15666933"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-04",
+        "to": "2027-03-04",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "21:30",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/16616997"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-11",
+        "to": "2027-03-11",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "21:30",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/16616998"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-18",
+        "to": "2027-03-18",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "21:30",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/16616999"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-25",
+        "to": "2027-03-25",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "21:30",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/16617000"
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/pizza-dome-sonnenburg_event_15666936",
+      "https://www.serfaus-fiss-ladis.at/de/buchen-und-mehr/ticket-und-gutscheinshop/buchbare-erlebnisse"
+    ],
+    "booking": "online",
+    "bookingLink": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/pizza-dome-sonnenburg_event_15666936",
+    "bookingNote": "Termin und Verfügbarkeit im offiziellen Ticketshop prüfen.",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [],
+    "accessNote": "",
+    "notes": "Laut Veranstalter für bis zu sechs Personen pro Tisch. Größere Gruppen vorher abklären. Die Karte zeigt den Ortsbezug. Den genauen Treffpunkt und die Verfügbarkeit bitte beim gebuchten Termin prüfen.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-shop-15666937",
+    "title": "Silvesterabend. Sonnenburg.",
+    "description": "Silvesterbuffet mit Musik, Wachsgießen und Fackelwanderung in der Sonnenburg.",
+    "operator": "Ticketshop Serfaus-Fiss-Ladis",
+    "address": "Seilbahnstaße 44, Fiss",
+    "location": [
+      "Fiss",
+      47.0574,
+      10.6123
+    ],
+    "category": "Entdecken",
+    "region": "sfl",
+    "meeting": "",
+    "priceKnown": false,
+    "min": 0,
+    "max": 17,
+    "duration": 270,
+    "weather": "both",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "Der Preis hängt vom Termin und Tarif ab. Aktuellen Gesamtpreis im offiziellen Buchungsformular prüfen.",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "2026-12-31",
+        "to": "2026-12-31",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "22:30",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15666934"
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/silvesterabend-sonnenburg_event_15666937",
+      "https://www.serfaus-fiss-ladis.at/de/buchen-und-mehr/ticket-und-gutscheinshop/buchbare-erlebnisse"
+    ],
+    "booking": "online",
+    "bookingLink": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/silvesterabend-sonnenburg_event_15666937",
+    "bookingNote": "Termin und Verfügbarkeit im offiziellen Ticketshop prüfen.",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [],
+    "accessNote": "",
+    "notes": "Veröffentlichter Start und Rückfahrtbedingungen stehen im Ticketangebot. Die Karte zeigt den Ortsbezug. Den genauen Treffpunkt und die Verfügbarkeit bitte beim gebuchten Termin prüfen.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-shop-15667035",
+    "title": "Fondueabend. Sonnenburg.",
+    "description": "Käsefondue oder Fondue Chinoise im Familienrestaurant Sonnenburg.",
+    "operator": "Ticketshop Serfaus-Fiss-Ladis",
+    "address": "Seilbahnstraße 44, Fiss",
+    "location": [
+      "Fiss",
+      47.0574,
+      10.6123
+    ],
+    "category": "Entdecken",
+    "region": "sfl",
+    "meeting": "",
+    "priceKnown": false,
+    "min": 0,
+    "max": 17,
+    "duration": 225,
+    "weather": "both",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "Der Preis hängt vom Termin und Tarif ab. Aktuellen Gesamtpreis im offiziellen Buchungsformular prüfen.",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "2026-12-20",
+        "to": "2026-12-20",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "21:30",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17139083"
+      },
+      {
+        "kind": "regular",
+        "from": "2026-12-27",
+        "to": "2026-12-27",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "21:30",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17139084"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-07",
+        "to": "2027-01-07",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "21:30",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15667023"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-14",
+        "to": "2027-01-14",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "21:30",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15667024"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-21",
+        "to": "2027-01-21",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "21:30",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15667025"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-28",
+        "to": "2027-01-28",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "21:30",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15667026"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-04",
+        "to": "2027-02-04",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "21:30",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15667027"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-11",
+        "to": "2027-02-11",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "21:30",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15667028"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-18",
+        "to": "2027-02-18",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "21:30",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15667029"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-25",
+        "to": "2027-02-25",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "21:30",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15667030"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-04",
+        "to": "2027-03-04",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "21:30",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15667031"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-11",
+        "to": "2027-03-11",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "21:30",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15667032"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-18",
+        "to": "2027-03-18",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "21:30",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15667033"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-25",
+        "to": "2027-03-25",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "17:45",
+        "close": "21:30",
+        "last": "17:45",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15667034"
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/fondueabend-sonnenburg_event_15667035",
+      "https://www.serfaus-fiss-ladis.at/de/buchen-und-mehr/ticket-und-gutscheinshop/buchbare-erlebnisse"
+    ],
+    "booking": "online",
+    "bookingLink": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/fondueabend-sonnenburg_event_15667035",
+    "bookingNote": "Termin und Verfügbarkeit im offiziellen Ticketshop prüfen.",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [],
+    "accessNote": "",
+    "notes": "Treffpunkt und Bergbahnleistungen beim gewählten Termin prüfen. Die Karte zeigt den Ortsbezug. Den genauen Treffpunkt und die Verfügbarkeit bitte beim gebuchten Termin prüfen.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-shop-17816334",
+    "title": "Blick hinter Kulissen Winter Serfaus",
+    "description": "Winterführung hinter die Kulissen der Bergbahnen in Serfaus.",
+    "operator": "Ticketshop Serfaus-Fiss-Ladis",
+    "address": "Dorfbahnstrasse 75\n6534 Serfaus, Serfaus",
+    "location": [
+      "Serfaus",
+      47.04,
+      10.5957
+    ],
+    "category": "Entdecken",
+    "region": "sfl",
+    "meeting": "",
+    "priceKnown": false,
+    "min": 0,
+    "max": 17,
+    "duration": 180,
+    "weather": "both",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "Der Preis hängt vom Termin und Tarif ab. Aktuellen Gesamtpreis im offiziellen Buchungsformular prüfen.",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "2026-12-10",
+        "to": "2026-12-10",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17816316"
+      },
+      {
+        "kind": "regular",
+        "from": "2026-12-17",
+        "to": "2026-12-17",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17816317"
+      },
+      {
+        "kind": "regular",
+        "from": "2026-12-24",
+        "to": "2026-12-24",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17816318"
+      },
+      {
+        "kind": "regular",
+        "from": "2026-12-31",
+        "to": "2026-12-31",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17816319"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-07",
+        "to": "2027-01-07",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17816320"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-14",
+        "to": "2027-01-14",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17816321"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-21",
+        "to": "2027-01-21",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17816322"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-28",
+        "to": "2027-01-28",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17816323"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-04",
+        "to": "2027-02-04",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17816324"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-11",
+        "to": "2027-02-11",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17816325"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-18",
+        "to": "2027-02-18",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17816326"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-25",
+        "to": "2027-02-25",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17816327"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-04",
+        "to": "2027-03-04",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17816328"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-11",
+        "to": "2027-03-11",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17816329"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-18",
+        "to": "2027-03-18",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17816330"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-25",
+        "to": "2027-03-25",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17816331"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-04-01",
+        "to": "2027-04-01",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17816332"
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/blick-hinter-kulissen-winter-serfaus_event_17816334",
+      "https://www.serfaus-fiss-ladis.at/de/buchen-und-mehr/ticket-und-gutscheinshop/buchbare-erlebnisse"
+    ],
+    "booking": "online",
+    "bookingLink": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/blick-hinter-kulissen-winter-serfaus_event_17816334",
+    "bookingNote": "Termin und Verfügbarkeit im offiziellen Ticketshop prüfen.",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [],
+    "accessNote": "",
+    "notes": "Technische Betriebsbereiche. Teilnahmebedingungen und Treffpunkt im Buchungsformular prüfen. Die Karte zeigt den Ortsbezug. Den genauen Treffpunkt und die Verfügbarkeit bitte beim gebuchten Termin prüfen.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-shop-399193",
+    "title": "Blick hinter die Kulissen Fiss",
+    "description": "Führung durch Werkstätten und Betriebsräume der Bergbahnen in Fiss.",
+    "operator": "Ticketshop Serfaus-Fiss-Ladis",
+    "address": "Seilbahnstraße 44, Fiss",
+    "location": [
+      "Fiss",
+      47.0574,
+      10.6123
+    ],
+    "category": "Entdecken",
+    "region": "sfl",
+    "meeting": "",
+    "priceKnown": false,
+    "min": 0,
+    "max": 17,
+    "duration": 180,
+    "weather": "both",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "Der Preis hängt vom Termin und Tarif ab. Aktuellen Gesamtpreis im offiziellen Buchungsformular prüfen.",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "2026-12-10",
+        "to": "2026-12-10",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17761881"
+      },
+      {
+        "kind": "regular",
+        "from": "2026-12-17",
+        "to": "2026-12-17",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17761882"
+      },
+      {
+        "kind": "regular",
+        "from": "2026-12-24",
+        "to": "2026-12-24",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17761883"
+      },
+      {
+        "kind": "regular",
+        "from": "2026-12-31",
+        "to": "2026-12-31",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17761884"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-07",
+        "to": "2027-01-07",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17761885"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-14",
+        "to": "2027-01-14",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17761886"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-21",
+        "to": "2027-01-21",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17761887"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-28",
+        "to": "2027-01-28",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17761888"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-04",
+        "to": "2027-02-04",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17761889"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-11",
+        "to": "2027-02-11",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17761890"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-18",
+        "to": "2027-02-18",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17761891"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-25",
+        "to": "2027-02-25",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17761892"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-04",
+        "to": "2027-03-04",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17761893"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-11",
+        "to": "2027-03-11",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17761894"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-18",
+        "to": "2027-03-18",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17761895"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-25",
+        "to": "2027-03-25",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17761896"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-04-01",
+        "to": "2027-04-01",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "13:00",
+        "close": "16:00",
+        "last": "13:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/17761897"
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/blick-hinter-die-kulissen-fiss_event_399193",
+      "https://www.serfaus-fiss-ladis.at/de/buchen-und-mehr/ticket-und-gutscheinshop/buchbare-erlebnisse"
+    ],
+    "booking": "online",
+    "bookingLink": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/blick-hinter-die-kulissen-fiss_event_399193",
+    "bookingNote": "Termin und Verfügbarkeit im offiziellen Ticketshop prüfen.",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [],
+    "accessNote": "",
+    "notes": "Technische Betriebsbereiche. Teilnahmebedingungen und Treffpunkt im Buchungsformular prüfen. Die Karte zeigt den Ortsbezug. Den genauen Treffpunkt und die Verfügbarkeit bitte beim gebuchten Termin prüfen.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-shop-399198",
+    "title": "Sunset Dinner",
+    "description": "Winterlicher Sonnenuntergang im Masner mit Aperitif und anschließendem Essen.",
+    "operator": "Ticketshop Serfaus-Fiss-Ladis",
+    "address": "Dorfbahnstraße 75, Serfaus",
+    "location": [
+      "Serfaus",
+      47.04,
+      10.5957
+    ],
+    "category": "Entdecken",
+    "region": "sfl",
+    "meeting": "",
+    "priceKnown": false,
+    "min": 0,
+    "max": 17,
+    "duration": 270,
+    "weather": "both",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "Der Preis hängt vom Termin und Tarif ab. Aktuellen Gesamtpreis im offiziellen Buchungsformular prüfen.",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "2026-12-15",
+        "to": "2026-12-15",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "16:00",
+        "close": "20:30",
+        "last": "16:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14276193"
+      },
+      {
+        "kind": "regular",
+        "from": "2026-12-22",
+        "to": "2026-12-22",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "16:00",
+        "close": "20:30",
+        "last": "16:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14276194"
+      },
+      {
+        "kind": "regular",
+        "from": "2026-12-29",
+        "to": "2026-12-29",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "16:00",
+        "close": "20:30",
+        "last": "16:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14276195"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-05",
+        "to": "2027-01-05",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "16:00",
+        "close": "20:30",
+        "last": "16:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14276196"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-12",
+        "to": "2027-01-12",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "16:00",
+        "close": "20:30",
+        "last": "16:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14276197"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-19",
+        "to": "2027-01-19",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "16:00",
+        "close": "20:30",
+        "last": "16:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14276198"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-26",
+        "to": "2027-01-26",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "16:00",
+        "close": "20:30",
+        "last": "16:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14276199"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-02",
+        "to": "2027-02-02",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "16:00",
+        "close": "20:30",
+        "last": "16:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14276200"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-09",
+        "to": "2027-02-09",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "16:00",
+        "close": "20:30",
+        "last": "16:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14276201"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-16",
+        "to": "2027-02-16",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "16:00",
+        "close": "20:30",
+        "last": "16:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14276202"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-23",
+        "to": "2027-02-23",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "16:00",
+        "close": "20:30",
+        "last": "16:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14276203"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-02",
+        "to": "2027-03-02",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "16:00",
+        "close": "20:30",
+        "last": "16:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14276204"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-09",
+        "to": "2027-03-09",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "16:00",
+        "close": "20:30",
+        "last": "16:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14276205"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-16",
+        "to": "2027-03-16",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "16:00",
+        "close": "20:30",
+        "last": "16:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14276206"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-23",
+        "to": "2027-03-23",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "16:00",
+        "close": "20:30",
+        "last": "16:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14276207"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-30",
+        "to": "2027-03-30",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "16:00",
+        "close": "20:30",
+        "last": "16:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14276208"
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/sunset-dinner_event_399198",
+      "https://www.serfaus-fiss-ladis.at/de/buchen-und-mehr/ticket-und-gutscheinshop/buchbare-erlebnisse"
+    ],
+    "booking": "online",
+    "bookingLink": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/sunset-dinner_event_399198",
+    "bookingNote": "Termin und Verfügbarkeit im offiziellen Ticketshop prüfen.",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [],
+    "accessNote": "",
+    "notes": "Treffpunkt, Transfers und Altersbedingungen im Ticketangebot prüfen. Die Karte zeigt den Ortsbezug. Den genauen Treffpunkt und die Verfügbarkeit bitte beim gebuchten Termin prüfen.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-shop-399203",
+    "title": "Lassida Adventure Night",
+    "description": "Hüttenabend mit Buffet, Live-Musik und anschließender Adventure Night.",
+    "operator": "Ticketshop Serfaus-Fiss-Ladis",
+    "address": "Dorfbahnstraße 75, Serfaus",
+    "location": [
+      "Serfaus",
+      47.04,
+      10.5957
+    ],
+    "category": "Entdecken",
+    "region": "sfl",
+    "meeting": "",
+    "priceKnown": false,
+    "min": 0,
+    "max": 17,
+    "duration": 165,
+    "weather": "both",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "Der Preis hängt vom Termin und Tarif ab. Aktuellen Gesamtpreis im offiziellen Buchungsformular prüfen.",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "2026-12-16",
+        "to": "2026-12-16",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14541132"
+      },
+      {
+        "kind": "regular",
+        "from": "2026-12-23",
+        "to": "2026-12-23",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14541133"
+      },
+      {
+        "kind": "regular",
+        "from": "2026-12-30",
+        "to": "2026-12-30",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14541134"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-06",
+        "to": "2027-01-06",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14541135"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-13",
+        "to": "2027-01-13",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14541136"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-20",
+        "to": "2027-01-20",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14541137"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-27",
+        "to": "2027-01-27",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14541138"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-03",
+        "to": "2027-02-03",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14541139"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-10",
+        "to": "2027-02-10",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14541140"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-17",
+        "to": "2027-02-17",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14541141"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-24",
+        "to": "2027-02-24",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14541142"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-03",
+        "to": "2027-03-03",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14541143"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-10",
+        "to": "2027-03-10",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14541144"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-17",
+        "to": "2027-03-17",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14541145"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-24",
+        "to": "2027-03-24",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "20:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14541146"
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/lassida-adventure-night_event_399203",
+      "https://www.serfaus-fiss-ladis.at/de/buchen-und-mehr/ticket-und-gutscheinshop/buchbare-erlebnisse"
+    ],
+    "booking": "online",
+    "bookingLink": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/lassida-adventure-night_event_399203",
+    "bookingNote": "Termin und Verfügbarkeit im offiziellen Ticketshop prüfen.",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [],
+    "accessNote": "",
+    "notes": "Laut Veranstalter inklusive Berg- und Talfahrt. Treffpunkt und Rückfahrt prüfen. Die Karte zeigt den Ortsbezug. Den genauen Treffpunkt und die Verfügbarkeit bitte beim gebuchten Termin prüfen.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-shop-399204",
+    "title": "Lassida & VIP Terrasse Adventure Night",
+    "description": "Hüttenabend im Lassida mit anschließendem Blick auf die Adventure Night von der VIP-Terrasse.",
+    "operator": "Ticketshop Serfaus-Fiss-Ladis",
+    "address": "Dorfbahnstraße 75, Serfaus",
+    "location": [
+      "Serfaus",
+      47.04,
+      10.5957
+    ],
+    "category": "Entdecken",
+    "region": "sfl",
+    "meeting": "",
+    "priceKnown": false,
+    "min": 0,
+    "max": 17,
+    "duration": 220,
+    "weather": "both",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "Der Preis hängt vom Termin und Tarif ab. Aktuellen Gesamtpreis im offiziellen Buchungsformular prüfen.",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "2026-12-16",
+        "to": "2026-12-16",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:05",
+        "close": "21:45",
+        "last": "18:05",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14541342"
+      },
+      {
+        "kind": "regular",
+        "from": "2026-12-23",
+        "to": "2026-12-23",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "21:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14541343"
+      },
+      {
+        "kind": "regular",
+        "from": "2026-12-30",
+        "to": "2026-12-30",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "21:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14541344"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-06",
+        "to": "2027-01-06",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "21:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14541345"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-13",
+        "to": "2027-01-13",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "21:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14541346"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-20",
+        "to": "2027-01-20",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "21:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14541347"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-27",
+        "to": "2027-01-27",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "21:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14541348"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-03",
+        "to": "2027-02-03",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "21:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14541349"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-10",
+        "to": "2027-02-10",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "21:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14541350"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-17",
+        "to": "2027-02-17",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "21:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14541351"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-24",
+        "to": "2027-02-24",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "21:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14541352"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-03",
+        "to": "2027-03-03",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "21:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14541353"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-10",
+        "to": "2027-03-10",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "21:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14541354"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-17",
+        "to": "2027-03-17",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "21:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14541355"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-24",
+        "to": "2027-03-24",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "21:45",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14541356"
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/lassida-vip-terrasse-adventure-night_event_399204",
+      "https://www.serfaus-fiss-ladis.at/de/buchen-und-mehr/ticket-und-gutscheinshop/buchbare-erlebnisse"
+    ],
+    "booking": "online",
+    "bookingLink": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/lassida-vip-terrasse-adventure-night_event_399204",
+    "bookingNote": "Termin und Verfügbarkeit im offiziellen Ticketshop prüfen.",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [],
+    "accessNote": "",
+    "notes": "Laut Veranstalter inklusive Bergbahnleistungen. Gewählten Termin prüfen. Die Karte zeigt den Ortsbezug. Den genauen Treffpunkt und die Verfügbarkeit bitte beim gebuchten Termin prüfen.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-shop-399205",
+    "title": "Ski Lounge VIP Fondue",
+    "description": "Fondue in der Ski Lounge mit Blick auf die Adventure Night.",
+    "operator": "Ticketshop Serfaus-Fiss-Ladis",
+    "address": "Dorfbahnstraße 75, Serfaus",
+    "location": [
+      "Serfaus",
+      47.04,
+      10.5957
+    ],
+    "category": "Entdecken",
+    "region": "sfl",
+    "meeting": "",
+    "priceKnown": false,
+    "min": 0,
+    "max": 17,
+    "duration": 300,
+    "weather": "both",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "Der Preis hängt vom Termin und Tarif ab. Aktuellen Gesamtpreis im offiziellen Buchungsformular prüfen.",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "2026-12-16",
+        "to": "2026-12-16",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "23:00",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14293922"
+      },
+      {
+        "kind": "regular",
+        "from": "2026-12-23",
+        "to": "2026-12-23",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "23:00",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14293923"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-06",
+        "to": "2027-01-06",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "23:00",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14293925"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-13",
+        "to": "2027-01-13",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "23:00",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14293926"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-20",
+        "to": "2027-01-20",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "23:00",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14293927"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-01-27",
+        "to": "2027-01-27",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "23:00",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14293928"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-03",
+        "to": "2027-02-03",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "23:00",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14293929"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-10",
+        "to": "2027-02-10",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "23:00",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14293930"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-17",
+        "to": "2027-02-17",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "23:00",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14293931"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-02-24",
+        "to": "2027-02-24",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "23:00",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14293932"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-03",
+        "to": "2027-03-03",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "23:00",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14293933"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-10",
+        "to": "2027-03-10",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "23:00",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14293934"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-17",
+        "to": "2027-03-17",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "23:00",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14293935"
+      },
+      {
+        "kind": "regular",
+        "from": "2027-03-24",
+        "to": "2027-03-24",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "23:00",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14293936"
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/ski-lounge-vip-fondue_event_399205",
+      "https://www.serfaus-fiss-ladis.at/de/buchen-und-mehr/ticket-und-gutscheinshop/buchbare-erlebnisse"
+    ],
+    "booking": "online",
+    "bookingLink": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/ski-lounge-vip-fondue_event_399205",
+    "bookingNote": "Termin und Verfügbarkeit im offiziellen Ticketshop prüfen.",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [],
+    "accessNote": "",
+    "notes": "Berg- und Talfahrt mit der Komperdellbahn laut Veranstalter enthalten. Die Karte zeigt den Ortsbezug. Den genauen Treffpunkt und die Verfügbarkeit bitte beim gebuchten Termin prüfen.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-shop-399209",
+    "title": "Silvester Seealm Hög",
+    "description": "Silvestermenü in der Seealm Hög mit Auffahrt per Alpkopfbahn.",
+    "operator": "Ticketshop Serfaus-Fiss-Ladis",
+    "address": "Dorfbahnstraße 75, Serfaus",
+    "location": [
+      "Serfaus",
+      47.04,
+      10.5957
+    ],
+    "category": "Entdecken",
+    "region": "sfl",
+    "meeting": "",
+    "priceKnown": false,
+    "min": 0,
+    "max": 17,
+    "duration": 330,
+    "weather": "both",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "Veröffentlichte Tarife: 150 € Erwachsene, 80,50 € für Jahrgänge 2012–2020, 60,50 € ab Jahrgang 2021. Im Shop den passenden Tarif wählen.",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "2026-12-31",
+        "to": "2026-12-31",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "23:30",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14983092"
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/silvester-seealm-hog_event_399209",
+      "https://www.serfaus-fiss-ladis.at/de/buchen-und-mehr/ticket-und-gutscheinshop/buchbare-erlebnisse"
+    ],
+    "booking": "online",
+    "bookingLink": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/silvester-seealm-hog_event_399209",
+    "bookingNote": "Termin und Verfügbarkeit im offiziellen Ticketshop prüfen.",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [],
+    "accessNote": "",
+    "notes": "Alpkopfbahn ab 18 Uhr. Der Betreiber veröffentlicht unterschiedliche Tarife nach Geburtsjahr. Die Karte zeigt den Ortsbezug. Den genauen Treffpunkt und die Verfügbarkeit bitte beim gebuchten Termin prüfen.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-shop-399210",
+    "title": "Silvester Sportalm",
+    "description": "Silvester mit Fleisch- oder Käsefondue in der Sportalm.",
+    "operator": "Ticketshop Serfaus-Fiss-Ladis",
+    "address": "Dorfbahnstraße 75, Serfaus",
+    "location": [
+      "Serfaus",
+      47.04,
+      10.5957
+    ],
+    "category": "Entdecken",
+    "region": "sfl",
+    "meeting": "",
+    "priceKnown": false,
+    "min": 0,
+    "max": 17,
+    "duration": 270,
+    "weather": "both",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "Der Preis hängt vom Termin und Tarif ab. Aktuellen Gesamtpreis im offiziellen Buchungsformular prüfen.",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "2026-12-31",
+        "to": "2026-12-31",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "22:30",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/15000840"
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/silvester-sportalm_event_399210",
+      "https://www.serfaus-fiss-ladis.at/de/buchen-und-mehr/ticket-und-gutscheinshop/buchbare-erlebnisse"
+    ],
+    "booking": "online",
+    "bookingLink": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/silvester-sportalm_event_399210",
+    "bookingNote": "Termin und Verfügbarkeit im offiziellen Ticketshop prüfen.",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [],
+    "accessNote": "",
+    "notes": "Auffahrt und Talfahrt haben eigene Zeitfenster. Hinweise des Veranstalters prüfen. Die Karte zeigt den Ortsbezug. Den genauen Treffpunkt und die Verfügbarkeit bitte beim gebuchten Termin prüfen.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-shop-399211",
+    "title": "Silvester Leithe Wirt",
+    "description": "Silvestermenü mit fünf Gängen im Leithe Wirt.",
+    "operator": "Ticketshop Serfaus-Fiss-Ladis",
+    "address": "Dorfbahnstraße 75, Serfaus",
+    "location": [
+      "Serfaus",
+      47.04,
+      10.5957
+    ],
+    "category": "Entdecken",
+    "region": "sfl",
+    "meeting": "",
+    "priceKnown": false,
+    "min": 0,
+    "max": 17,
+    "duration": 330,
+    "weather": "both",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "Der Preis hängt vom Termin und Tarif ab. Aktuellen Gesamtpreis im offiziellen Buchungsformular prüfen.",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "2026-12-31",
+        "to": "2026-12-31",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "18:00",
+        "close": "23:30",
+        "last": "18:00",
+        "ticketUrl": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event-booking/14983115"
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/silvester-leithe-wirt_event_399211",
+      "https://www.serfaus-fiss-ladis.at/de/buchen-und-mehr/ticket-und-gutscheinshop/buchbare-erlebnisse"
+    ],
+    "booking": "online",
+    "bookingLink": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/silvester-leithe-wirt_event_399211",
+    "bookingNote": "Termin und Verfügbarkeit im offiziellen Ticketshop prüfen.",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [],
+    "accessNote": "",
+    "notes": "Anfahrt und Rückkehr beim Anbieter prüfen. Die Karte zeigt den Ortsbezug. Den genauen Treffpunkt und die Verfügbarkeit bitte beim gebuchten Termin prüfen.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-u-bahn-serfaus",
+    "title": "Fahrt mit der U-Bahn Serfaus",
+    "description": "Kurze Hin- und Rückfahrt mit der Luftkissenbahn durch Serfaus.",
+    "operator": "Serfaus-Fiss-Ladis",
+    "address": "Serfaus",
+    "location": [
+      "Serfaus",
+      47.04,
+      10.5957
+    ],
+    "category": "Entdecken",
+    "region": "sfl",
+    "meeting": "serfaus",
+    "priceKnown": true,
+    "min": 0,
+    "max": 17,
+    "duration": 25,
+    "weather": "both",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "2026-12-04",
+        "to": "2027-04-04",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "07:45",
+        "close": "18:30",
+        "last": ""
+      },
+      {
+        "kind": "regular",
+        "from": "2027-06-12",
+        "to": "2027-10-17",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "07:45",
+        "close": "17:30",
+        "last": ""
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/winterurlaub/u-bahn-serfaus_infra_35406",
+      "https://www.serfaus-fiss-ladis.at/de/winterurlaub/skigebiet-und-winteraktivitaeten",
+      "https://www.serfaus-fiss-ladis.at/de/winterurlaub/saison-und-oeffnungszeiten",
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/oeffnungszeiten-preise"
+    ],
+    "booking": "free",
+    "bookingLink": "",
+    "bookingNote": "",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [],
+    "accessNote": "",
+    "notes": "Betrieb zur gewählten Saison prüfen. Die planbare Besuchsdauer enthält Hin- und Rückfahrt.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-winter-hoeg",
+    "title": "Winterrunde am Högsee",
+    "description": "Geräumte, etwa 700 Meter lange Runde ab der Mittelstation der Alpkopfbahn.",
+    "operator": "Serfaus-Fiss-Ladis",
+    "address": "Serfaus · Högsee",
+    "location": [
+      "Serfaus · Högsee",
+      47.03758,
+      10.58068
+    ],
+    "category": "Natur",
+    "region": "sfl",
+    "meeting": "hoeg",
+    "priceKnown": true,
+    "min": 0,
+    "max": 17,
+    "duration": 30,
+    "weather": "sun",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "2026-12-19",
+        "to": "2027-04-04",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "09:00",
+        "close": "15:30",
+        "last": ""
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/sommeraktivitaeten/wandern/rundwanderweg-hogsee_tour_272278",
+      "https://www.serfaus-fiss-ladis.at/de/winterurlaub/skigebiet-und-winteraktivitaeten",
+      "https://www.serfaus-fiss-ladis.at/de/winterurlaub/saison-und-oeffnungszeiten",
+      "https://www.serfaus-fiss-ladis.at/de/winterurlaub/skigebietsstatus-und-pistenplan"
+    ],
+    "booking": "onsite",
+    "bookingLink": "",
+    "bookingNote": "Winter-Bergbahnticket separat.",
+    "accessibility": {
+      "stroller": "yes"
+    },
+    "accessSource": "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/sommeraktivitaeten/wandern/rundwanderweg-hogsee_tour_272278",
+    "passes": [],
+    "accessNote": "Offiziell kinderwagentauglich bei geräumtem Weg. Bei Eis empfiehlt die Region Schuhspikes.",
+    "notes": "Winter-Planungsfenster. Aktuellen Wegestatus und Betrieb der Alpkopfbahn prüfen.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-winter-seeweg",
+    "title": "Winter-Seeweg ab Josefskapelle",
+    "description": "Winterwanderung ab der Josefskapelle mit Rückkehr zum Ausgangspunkt.",
+    "operator": "Serfaus-Fiss-Ladis",
+    "address": "Fiss",
+    "location": [
+      "Fiss",
+      47.0563,
+      10.6258
+    ],
+    "category": "Natur",
+    "region": "sfl",
+    "meeting": "fiss",
+    "priceKnown": true,
+    "min": 4,
+    "max": 17,
+    "duration": 60,
+    "weather": "sun",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "2026-12-19",
+        "to": "2027-04-04",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "09:00",
+        "close": "15:30",
+        "last": ""
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/winterurlaub/skigebiet-und-winteraktivitaeten/winter-und-schneeschuhwandern/seeweg_tour_272264",
+      "https://www.serfaus-fiss-ladis.at/de/winterurlaub/skigebiet-und-winteraktivitaeten",
+      "https://www.serfaus-fiss-ladis.at/de/winterurlaub/saison-und-oeffnungszeiten",
+      "https://www.serfaus-fiss-ladis.at/de/winterurlaub/skigebietsstatus-und-pistenplan"
+    ],
+    "booking": "free",
+    "bookingLink": "",
+    "bookingNote": "",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [],
+    "accessNote": "",
+    "notes": "Winter-Planungsfenster. Vorab prüfen, ob der Weg geräumt und geöffnet ist.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-wodebad-grill",
+    "title": "Grillplatz Neuegg am Wodebad",
+    "description": "Rast- und Grillplatz beim Wodebad, nahe Wodeturm und Spielmöglichkeiten.",
+    "operator": "Serfaus-Fiss-Ladis",
+    "address": "Ladis · Neuegg",
+    "location": [
+      "Ladis · Neuegg",
+      47.0815,
+      10.6355
+    ],
+    "category": "Natur",
+    "region": "sfl",
+    "meeting": "ladis",
+    "priceKnown": true,
+    "min": 0,
+    "max": 17,
+    "duration": 60,
+    "weather": "sun",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "",
+        "to": "",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "09:00",
+        "close": "16:00",
+        "last": ""
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/sommeraktivitaeten/wandern/grillplatz-neuegg-wodebad_infra_35707",
+      "https://www.serfaus-fiss-ladis.at/de/herbsturlaub/herbstaktivitaeten"
+    ],
+    "booking": "free",
+    "bookingLink": "",
+    "bookingNote": "",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [],
+    "accessNote": "",
+    "notes": "Eigene Verpflegung mitbringen. Aktuelle Regeln für Feuer und Grillen vor Ort beachten.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-wodeturm",
+    "title": "Aussicht am Wodeturm",
+    "description": "Aussichtsturm am Wodebad mit Blick über das Inntal.",
+    "operator": "Serfaus-Fiss-Ladis",
+    "address": "Ladis · Neuegg",
+    "location": [
+      "Ladis · Neuegg",
+      47.0815,
+      10.6355
+    ],
+    "category": "Entdecken",
+    "region": "sfl",
+    "meeting": "ladis",
+    "priceKnown": true,
+    "min": 0,
+    "max": 17,
+    "duration": 45,
+    "weather": "sun",
+    "pets": "unknown",
+    "petNote": "",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "",
+        "to": "",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "09:00",
+        "close": "16:00",
+        "last": ""
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/sommeraktivitaeten/wandern/wodeturm_infra_16654",
+      "https://www.serfaus-fiss-ladis.at/de/herbsturlaub/herbstaktivitaeten"
+    ],
+    "booking": "free",
+    "bookingLink": "",
+    "bookingNote": "",
+    "accessibility": {},
+    "accessSource": "",
+    "passes": [],
+    "accessNote": "",
+    "notes": "Turmaufstieg über Stufen. Das Zeitfenster dient der Planung bei Tageslicht.",
+    "verified": "2026-11-07",
+    "active": true
+  },
+  {
+    "id": "sfl-wolfsee",
+    "title": "Spaziergang und Spiel am Wolfsee",
+    "description": "Leichter Uferweg mit Spielbereich und Rastplätzen.",
+    "operator": "Serfaus-Fiss-Ladis",
+    "address": "Wolfsee, Fiss",
+    "location": [
+      "Fiss",
+      47.0576,
+      10.6347
+    ],
+    "category": "Kreativ",
+    "region": "sfl",
+    "meeting": "fiss",
+    "min": 0,
+    "max": 17,
+    "duration": 60,
+    "weather": "sun",
+    "pets": "no",
+    "petNote": "Hunde sind im Spielareal nicht erlaubt.",
+    "adult": 0,
+    "child": 0,
+    "childFrom": 0,
+    "childTo": 17,
+    "youth": null,
+    "youthFrom": 0,
+    "dogPrice": 0,
+    "priceNote": "",
+    "hours": [
+      {
+        "kind": "regular",
+        "from": "",
+        "to": "",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "open": "09:00",
+        "close": "16:00",
+        "last": ""
+      }
+    ],
+    "sources": [
+      "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/familienidylle-wolfsee_infra_17829"
+    ],
+    "booking": "free",
+    "bookingLink": "",
+    "bookingNote": "",
+    "accessibility": {
+      "stroller": "yes",
+      "stepFree": "yes"
+    },
+    "accessSource": "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/familienidylle-wolfsee_infra_17829",
+    "passes": [],
+    "accessNote": "Der Rundweg ist mit Rollstuhl und Kinderwagen nutzbar.",
+    "notes": "Der Wolfsee ist kein Badesee.",
+    "verified": "2026-11-07",
+    "active": true
+  }
+]
