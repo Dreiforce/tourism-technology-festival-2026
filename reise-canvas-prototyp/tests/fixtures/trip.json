@@ -1,0 +1,75 @@
+{
+  "id": "3f6c1b2a-8d4e-4c1f-9a7b-2e5d8c9f0a11",
+  "lang": "de",
+  "start": "2027-07-10",
+  "end": "2027-07-12",
+  "place": {"name": "Serfaus", "latitude": 47.0408, "longitude": 10.6061},
+  "family": {
+    "adults": 2, "ages": [4, 9], "dogs": 1,
+    "summary": "2 Erwachsene · 2 Kinder · 1 Hund",
+    "members": [
+      {"name": "Mama", "kind": "adult", "age": null},
+      {"name": "Papa", "kind": "adult", "age": null},
+      {"name": "Lena", "kind": "child", "age": 9},
+      {"name": "", "kind": "child", "age": 4},
+      {"name": "Bello", "kind": "dog", "age": null}
+    ]
+  },
+  "wishes": ["Abenteuer", "Wasser"],
+  "card": null,
+  "prices": false,
+  "days": [
+    {
+      "date": "2027-07-10",
+      "label": "Sa., 10.7.",
+      "stops": [
+        {
+          "kind": "activity", "start": "09:30", "end": "11:00",
+          "title": "Murmliwasser am Komperdell", "operator": "",
+          "address": "Serfaus · Komperdell", "place": "Serfaus · Komperdell",
+          "latitude": 47.041, "longitude": 10.565, "group": null,
+          "booking": "info", "bookingLabel": "Infos beim Anbieter",
+          "bookingLink": "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/familiensommer/murmlis-und-bertas-bergabenteuer",
+          "note": "Wasserspielplatz an der Bergstation.", "price": null
+        },
+        {
+          "kind": "activity", "start": "13:30", "end": "15:00",
+          "title": "Spielstationen am Högsee", "operator": "",
+          "address": "Serfaus · Högsee", "place": "Serfaus · Högsee",
+          "latitude": 47.03758, "longitude": 10.58068, "group": null,
+          "booking": "advance", "bookingLabel": "Vorab anmelden",
+          "bookingLink": "https://www.serfaus-fiss-ladis.at/de/sommerurlaub",
+          "note": "", "price": null
+        }
+      ]
+    },
+    {
+      "date": "2027-07-11",
+      "label": "So., 11.7.",
+      "stops": [
+        {
+          "kind": "care", "start": "09:00", "end": "12:00",
+          "title": "Kinderbetreuung", "operator": "",
+          "address": "Serfaus", "place": "Serfaus",
+          "latitude": 47.0408, "longitude": 10.6061, "group": "Kinderbetreuung",
+          "booking": "care", "bookingLabel": "Betreuungszeit selbst eingetragen",
+          "bookingLink": "https://www.serfaus-fiss-ladis.at/de/sommerurlaub/familiensommer/kinderbetreuung",
+          "note": "", "price": null
+        },
+        {
+          "kind": "activity", "start": "09:30", "end": "11:30",
+          "title": "Spaziergang und Spiel am Wolfsee", "operator": "",
+          "address": "Fiss", "place": "Fiss",
+          "latitude": 47.0576, "longitude": 10.6347, "group": "Gruppe 1",
+          "booking": "info", "bookingLabel": "Infos beim Anbieter",
+          "bookingLink": "https://www.serfaus-fiss-ladis.at/de/sommerurlaub",
+          "note": "Leichter Spaziergang mit Spielplatz.", "price": null
+        }
+      ]
+    },
+    {"date": "2027-07-12", "label": "Mo., 12.7.", "stops": []}
+  ],
+  "total": null,
+  "totalLabel": "",
+  "estimateNote": "Zeiten sind Vorschläge aus dem Reise-Canvas. Öffnungszeiten und Anmeldung bitte beim Anbieter prüfen."
+}

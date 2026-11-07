@@ -1,5 +1,10 @@
 // Builds a real, signed sample pass from tests/fixtures/trip.json so you can try it on an iPhone.
-// Output: familienzeit/dist/familienzeit-sample.pkpass → AirDrop or mail it to an iPhone, or open it on a Mac.
+// Output: familienzeit-sample.pkpass in your temp folder (or OUT=path) → AirDrop or mail it to an iPhone, or open it
+// on a Mac. Not written to reise-canvas-prototyp/dist, because that folder holds the site's source files.
+//
+// Optional: STRIP_PNG_DIR=folder with strip.png (375×98), strip@2x.png (750×196) and strip@3x.png (1125×294) →
+// event-ticket layout with that picture (in the app this is the family's postcard). Without it: generic layout.
+// Optional: TRIP_LANG=en for the English pass.
 //
 // One-time setup (needs a paid Apple Developer account with access to "Certificates, Identifiers & Profiles"):
 //
@@ -18,12 +23,14 @@
 //      openssl x509 -inform DER -in AppleWWDRCAG4.cer -out wwdr.pem
 // 4. Run from the repo root:
 //      APPLE_PASS_CERT_FILE=pass-cert.pem APPLE_PASS_KEY_FILE=pass-key.pem APPLE_WWDR_CERT_FILE=wwdr.pem \
-//        node familienzeit/scripts/sample-apple-pass.mjs
+//        node reise-canvas-prototyp/scripts/sample-apple-pass.mjs
 //    APPLE_PASS_TYPE_ID and APPLE_TEAM_ID are read from the certificate (UID and OU) unless you set them.
 //
 // The worker needs the same three PEM files as secrets (see the wallet setup notes); keep pass-key.pem out of git.
 import {X509Certificate} from 'node:crypto';
-import {mkdirSync, readFileSync, readdirSync, writeFileSync} from 'node:fs';
+import {existsSync, readFileSync, readdirSync, writeFileSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
 import {buildApplePass} from '../server/wallet-apple.mjs';
 
 const file = name => {
@@ -59,9 +66,16 @@ const assets = new URL('../server/wallet-assets/apple/', import.meta.url);
 const images = Object.fromEntries(readdirSync(assets).filter(name => name.endsWith('.png'))
   .map(name => [name, new Uint8Array(readFileSync(new URL(name, assets)))]));
 const trip = JSON.parse(readFileSync(new URL('../tests/fixtures/trip.json', import.meta.url), 'utf8'));
+if (process.env.TRIP_LANG === 'en') trip.lang = 'en';
+if (process.env.STRIP_PNG_DIR) {
+  for (const name of ['strip.png', 'strip@2x.png', 'strip@3x.png']) {
+    const path = join(process.env.STRIP_PNG_DIR, name);
+    if (existsSync(path)) images[name] = new Uint8Array(readFileSync(path));
+  }
+  if (!images['strip.png']) console.warn('STRIP_PNG_DIR has no strip.png – building the generic layout.');
+}
 
 const bytes = await buildApplePass(trip, {passTypeIdentifier, teamIdentifier, certificatePem, privateKeyPem, wwdrPem, images});
-const output = new URL('../dist/', import.meta.url);
-mkdirSync(output, {recursive: true});
-writeFileSync(new URL('familienzeit-sample.pkpass', output), bytes);
-console.log(`Wrote familienzeit/dist/familienzeit-sample.pkpass (${bytes.length} bytes) for ${passTypeIdentifier}, team ${teamIdentifier}.`);
+const output = process.env.OUT || join(tmpdir(), 'familienzeit-sample.pkpass');
+writeFileSync(output, bytes);
+console.log(`Wrote ${output} (${bytes.length} bytes, ${images['strip.png'] ? 'event ticket with strip' : 'generic'}) for ${passTypeIdentifier}, team ${teamIdentifier}.`);

@@ -1,4 +1,4 @@
-// Google Wallet "Save to Google Wallet" link for a Familienzeit trip (Generic pass).
+// Google Wallet "Save to Google Wallet" link for a Reise-Canvas trip (Generic pass).
 //
 // No imports and no npm dependencies: this file is bundled into the worker by scripts/build.mjs and also runs in
 // Node 22 for tests. It only uses WebCrypto (crypto.subtle), TextEncoder, atob/btoa and fetch.
@@ -11,9 +11,13 @@
 //   'auto' – (default) 'jwt' when the fat JWT fits into 1800 characters, otherwise 'api'; if the API call fails,
 //            it falls back to the fat JWT so the family still gets a (possibly too long) link instead of an error.
 //
-// The pass is an overview for the family, not a ticket: no barcode, and the guest card is shown as information only.
+// The pass is an overview for the family, not a ticket: no barcode, and a guest card is shown as information only.
+// The hero image is the family's own postcard when config.heroImageUrl is given (uploaded by the browser), otherwise
+// the fixed mountain artwork served by the worker at /wallet/hero.png.
 
 export const GOOGLE_WALLET_SAFE_JWT_LENGTH = 1800;
+// Google's generic pass brand guidelines recommend a 1032 × 812 px hero image (about 5:4, PNG).
+export const GOOGLE_HERO_SIZE = [1032, 812];
 
 const googleSaveBase = 'https://pay.google.com/gp/v/save/';
 const googleApiBase = 'https://walletobjects.googleapis.com/walletobjects/v1/';
@@ -26,7 +30,38 @@ const googleMaxModules = 10;
 const googleMaxLinks = 10;
 const googleMaxHeader = 35;
 const googleMaxBody = 500;
-const googleMonths = ['Jänner','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+const googleTexts = {
+  de: {
+    months: ['Jänner','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'],
+    activities: 'Erlebnisse', count: (n, d) => n ? `${n} an ${d} ${d === 1 ? 'Tag' : 'Tagen'}` : 'noch keine',
+    entry: 'Eintritt ca.', atProvider: 'beim Anbieter', open: ' + offen',
+    wishes: 'Wünsche', days: 'Tage',
+    goodToKnow: 'Gut zu wissen', family: 'Familie',
+    notTicket: 'Diese Karte im Wallet ist eine Übersicht und kein Ticket.',
+    card: name => `Gästekarte ${name} – bei euch dabei. Bitte die Originalkarte vorzeigen, diese Karte im Wallet ist kein Ticket.`,
+    nothingPlanned: 'Noch nichts geplant', yourPlan: 'Euer Urlaubsplan',
+    priceAtProvider: 'Preis beim Anbieter', noEntry: 'kein Eintritt',
+    adult: 'Erwachsene Person', child: 'Kind', dog: 'Hund', underOne: 'unter 1', namedDog: name => `Hund ${name}`,
+    link: {advance: 'anmelden', info: 'Infos', care: 'Infos', online: 'buchen', pass: 'Infos', office: 'Infos', onsite: 'Infos', free: 'Infos'},
+    cardConditions: 'Bedingungen',
+    logo: 'familienzeit. Logo', postcard: 'Eure Reisepostkarte', mountains: 'Berge mit Sonne'
+  },
+  en: {
+    months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+    activities: 'Activities', count: (n, d) => n ? `${n} on ${d} ${d === 1 ? 'day' : 'days'}` : 'none yet',
+    entry: 'Entry approx.', atProvider: 'at the provider', open: ' + open',
+    wishes: 'Wishes', days: 'Days',
+    goodToKnow: 'Good to know', family: 'Family',
+    notTicket: 'This Wallet card is an overview, not a ticket.',
+    card: name => `Guest card ${name} – you have it with you. Please show the original card; this Wallet card is not a ticket.`,
+    nothingPlanned: 'Nothing planned yet', yourPlan: 'Your holiday plan',
+    priceAtProvider: 'Price at the provider', noEntry: 'free entry',
+    adult: 'Adult', child: 'Child', dog: 'Dog', underOne: 'under 1', namedDog: name => `${name} (dog)`,
+    link: {advance: 'register', info: 'info', care: 'info', online: 'book', pass: 'info', office: 'info', onsite: 'info', free: 'info'},
+    cardConditions: 'conditions',
+    logo: 'familienzeit. logo', postcard: 'Your travel postcard', mountains: 'Mountains with sun'
+  }
+};
 
 const googleKeyCache = new Map();
 const googleTokenCache = new Map();
@@ -37,27 +72,36 @@ export function buildGooglePass(trip, config) {
   if (!/^\d+$/.test(issuerId)) throw new Error('Google Wallet: issuerId fehlt oder ist ungültig.');
   const origin = String(config?.origin ?? '').replace(/\/+$/, '');
   const now = googleNow(config);
+  const lang = trip.lang === 'en' ? 'en' : 'de';
+  const text = googleTexts[lang];
+  const localized = value => googleText(value, lang);
+  const prices = trip.prices !== false;
   const classId = `${issuerId}.${googleClassSuffix}`;
   const objectId = `${issuerId}.${String(trip.id).replace(/[^A-Za-z0-9_-]/g, '_').slice(0, 100)}`;
 
   const stops = trip.days.flatMap(day => day.stops);
-  const activeDays = trip.days.filter(day => day.stops.length).length;
-  const unknownPrice = stops.some(stop => stop.price === null);
+  const activities = stops.filter(stop => stop.kind !== 'care');
+  const activeDays = trip.days.filter(day => day.stops.some(stop => stop.kind !== 'care')).length;
+  const unknownPrice = activities.some(stop => stop.price === null);
+  const wishes = (trip.wishes || []).join(' · ');
 
   const front = [
-    {id: 'row2left', header: 'Erlebnisse',
-      body: stops.length ? `${stops.length} an ${activeDays} ${activeDays === 1 ? 'Tag' : 'Tagen'}` : '–'},
-    {id: 'row2right', header: 'Eintritt ca.',
-      body: trip.total === null ? 'beim Anbieter' : googleEuro(trip.total) + (unknownPrice ? ' + offen' : '')}
+    {id: 'row2left', header: text.activities, body: text.count(activities.length, activeDays)},
+    prices
+      ? {id: 'row2right', header: text.entry,
+        body: trip.total === null || trip.total === undefined ? text.atProvider : googleEuro(trip.total) + (unknownPrice ? text.open : '')}
+      : wishes
+        ? {id: 'row2right', header: text.wishes, body: googleCut(wishes, 60)}
+        : {id: 'row2right', header: text.days, body: String(trip.days.length)}
   ];
   const notes = [
-    trip.card
-      ? `Gästekarte ${trip.card.name} – bei euch dabei. Bitte die Originalkarte vorzeigen, diese Karte im Wallet ist kein Ticket.`
-      : 'Diese Karte im Wallet ist eine Übersicht und kein Ticket.',
-    trip.total === null ? '' : `${trip.totalLabel}: ${googleEuro(trip.total)}`,
+    `${text.family}: ${googleMembers(trip, text)}`,
+    wishes && `${text.wishes}: ${wishes}`,
+    trip.card ? text.card(trip.card.name) : text.notTicket,
+    prices && trip.total !== null && trip.total !== undefined && trip.totalLabel ? `${trip.totalLabel}: ${googleEuro(trip.total)}` : '',
     trip.estimateNote
   ].filter(Boolean).join('\n');
-  const closing = {id: 'hinweise', header: 'Gut zu wissen', body: googleFit([notes], googleMaxBody)};
+  const closing = {id: 'hinweise', header: text.goodToKnow, body: googleFit([notes], googleMaxBody)};
 
   const dayBudget = googleMaxModules - front.length - 1;
   const chunkSize = Math.max(1, Math.ceil(trip.days.length / dayBudget));
@@ -68,7 +112,7 @@ export function buildGooglePass(trip, config) {
     dayModules.push({
       id: 'tag-' + chunk[0].date.replaceAll('-', ''),
       header: googleCut(header, googleMaxHeader),
-      body: googleDaysBody(chunk, chunk.length > 1)
+      body: googleDaysBody(chunk, chunk.length > 1, text, prices)
     });
   }
 
@@ -79,18 +123,18 @@ export function buildGooglePass(trip, config) {
     seen.add(uri);
     links.push({uri, description: googleCut(description, 60), id});
   };
-  stops.filter(stop => stop.booking === 'online' && stop.bookingLink)
-    .forEach((stop, i) => addLink(stop.bookingLink, `${stop.title} – buchen`, 'buchen' + (i + 1)));
-  if (trip.card?.source) addLink(trip.card.source, `${trip.card.name} – Bedingungen`, 'gaestekarte');
+  stops.filter(stop => stop.bookingLink)
+    .forEach((stop, i) => addLink(stop.bookingLink, `${stop.title} – ${text.link[stop.booking] || text.link.info}`, 'link' + (i + 1)));
+  if (trip.card?.source) addLink(trip.card.source, `${trip.card.name} – ${text.cardConditions}`, 'gaestekarte');
 
   const tripStart = googleIso(trip.start, '00:00');
   const genericObject = {
     id: objectId,
     classId,
     state: 'ACTIVE',
-    cardTitle: googleText('familienzeit.'),
-    subheader: googleText(googleCut(`${googleRange(trip.start, trip.end)} · ${trip.place.name}`, 88)),
-    header: googleText(googleCut(trip.family.summary || 'Euer Urlaubsplan', 47)),
+    cardTitle: localized('familienzeit.'),
+    subheader: localized(googleCut(`${googleRange(trip.start, trip.end, lang)} · ${trip.place.name}`, 88)),
+    header: localized(googleCut(trip.family.summary || text.yourPlan, 47)),
     hexBackgroundColor: googleBackground,
     validTimeInterval: {
       // Valid from the moment of saving (so it never sits in a "not yet valid" state) until the end of the last day.
@@ -100,9 +144,14 @@ export function buildGooglePass(trip, config) {
     textModulesData: [...front, ...dayModules, closing],
     ...(links.length && {linksModuleData: {uris: links}})
   };
+  // Google loads images from public https URLs only.
   if (googleHttps(origin)) {
-    genericObject.logo = {sourceUri: {uri: `${origin}/wallet/logo.png`}, contentDescription: googleText('familienzeit. Logo')};
-    genericObject.heroImage = {sourceUri: {uri: `${origin}/wallet/hero.png`}, contentDescription: googleText('Berge mit Sonne')};
+    genericObject.logo = {sourceUri: {uri: `${origin}/wallet/logo.png`}, contentDescription: localized(text.logo)};
+  }
+  if (googleHttps(config?.heroImageUrl)) {
+    genericObject.heroImage = {sourceUri: {uri: String(config.heroImageUrl)}, contentDescription: localized(text.postcard)};
+  } else if (googleHttps(origin)) {
+    genericObject.heroImage = {sourceUri: {uri: `${origin}/wallet/hero.png`}, contentDescription: localized(text.mountains)};
   }
   return {genericClass: {id: classId}, genericObject};
 }
@@ -144,8 +193,8 @@ function googleNow(config) {
   return now;
 }
 
-function googleText(value) {
-  return {defaultValue: {language: 'de', value}};
+function googleText(value, lang = 'de') {
+  return {defaultValue: {language: lang, value}};
 }
 
 function googleHttps(value) {
@@ -174,35 +223,55 @@ function googleEuro(value) {
   return `€ ${value < 0 ? '-' : ''}${whole}${rest ? ',' + String(rest).padStart(2, '0') : ''}`;
 }
 
-function googlePrice(stop) {
-  if (stop.price === null) return 'Preis beim Anbieter';
-  if (stop.price === 0) return 'kein Eintritt';
+function googlePrice(stop, text) {
+  if (stop.price === null || stop.price === undefined) return text.priceAtProvider;
+  if (stop.price === 0) return text.noEntry;
   return googleEuro(stop.price);
 }
 
-function googleStopText(stop, detail) {
-  const title = `${stop.start}–${stop.end} ${stop.group ? stop.group + ': ' : ''}${stop.title}`;
-  const facts = detail >= 1 ? [stop.place, stop.bookingLabel, googlePrice(stop)] : [googlePrice(stop)];
-  const lines = [title, facts.filter(Boolean).join(' · ')];
-  if (detail >= 2 && stop.note) lines.push(googleCut(stop.note, 90));
-  return lines.join('\n');
+function googleMembers(trip, text) {
+  const members = trip.family.members || [];
+  if (!members.length) return trip.family.summary;
+  return members.map(member => {
+    const name = String(member.name || '').trim();
+    if (member.kind === 'dog') return name ? text.namedDog(name) : text.dog;
+    const age = member.age === null || member.age === undefined ? '' : ` (${member.age === 0 ? text.underOne : member.age})`;
+    return (name || (member.kind === 'child' ? text.child : text.adult)) + age;
+  }).join(' · ');
 }
 
-function googleDaysBody(days, withLabels) {
+function googleStopText(stop, detail, text, prices) {
+  if (stop.kind === 'care') {
+    return [`${stop.title} ${stop.start}–${stop.end}`, detail >= 1 ? stop.bookingLabel : ''].filter(Boolean).join('\n');
+  }
+  const title = `${stop.start}–${stop.end} ${stop.group ? stop.group + ': ' : ''}${stop.title}`;
+  const price = prices ? googlePrice(stop, text) : '';
+  const facts = detail >= 1 ? [stop.place, stop.bookingLabel, price] : [price];
+  const lines = [title, facts.filter(Boolean).join(' · ')];
+  if (detail >= 2 && stop.note) lines.push(googleCut(stop.note, 90));
+  return lines.filter(Boolean).join('\n');
+}
+
+function googleDaysBody(days, withLabels, text, prices) {
   const render = detail => days.map(day => {
-    const stops = day.stops.length ? day.stops.map(stop => googleStopText(stop, detail)).join('\n\n') : 'Freier Tag';
+    const stops = day.stops.length
+      ? day.stops.map(stop => googleStopText(stop, detail, text, prices)).join('\n\n') : text.nothingPlanned;
     return withLabels ? `${day.label}\n${stops}` : stops;
   }).join('\n\n');
   return googleFit([render(2), render(1), render(0)], googleMaxBody);
 }
 
-function googleRange(start, end) {
+// de: "10.–12. Juli 2027", en: "10–12 July 2027"
+function googleRange(start, end, lang = 'de') {
+  const months = googleTexts[lang].months;
+  const en = lang === 'en';
   const [y1, m1, d1] = start.split('-').map(Number);
   const [y2, m2, d2] = end.split('-').map(Number);
-  if (start === end) return `${d1}. ${googleMonths[m1 - 1]} ${y1}`;
-  if (y1 === y2 && m1 === m2) return `${d1}.–${d2}. ${googleMonths[m2 - 1]} ${y2}`;
-  if (y1 === y2) return `${d1}. ${googleMonths[m1 - 1]} – ${d2}. ${googleMonths[m2 - 1]} ${y2}`;
-  return `${d1}. ${googleMonths[m1 - 1]} ${y1} – ${d2}. ${googleMonths[m2 - 1]} ${y2}`;
+  const dm = (d, m) => en ? `${d} ${months[m - 1]}` : `${d}. ${months[m - 1]}`;
+  if (start === end) return `${dm(d1, m1)} ${y1}`;
+  if (y1 === y2 && m1 === m2) return en ? `${d1}–${d2} ${months[m2 - 1]} ${y2}` : `${d1}.–${d2}. ${months[m2 - 1]} ${y2}`;
+  if (y1 === y2) return `${dm(d1, m1)} – ${dm(d2, m2)} ${y2}`;
+  return `${dm(d1, m1)} ${y1} – ${dm(d2, m2)} ${y2}`;
 }
 
 // Europe/Vienna follows the EU rule: CEST from the last Sunday of March 01:00 UTC to the last Sunday of October 01:00 UTC.

@@ -1,2 +1,4 @@
-# This static site keeps its source files in dist.
+# This site keeps its source files in dist.
 !/dist/
+# Worker bundle built by scripts/build.mjs (not checked in).
+/dist/server/

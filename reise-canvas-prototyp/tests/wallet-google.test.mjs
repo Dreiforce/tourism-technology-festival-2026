@@ -1,9 +1,9 @@
-// node --test tests/wallet-google.test.mjs
+// node --test reise-canvas-prototyp/tests/wallet-google.test.mjs
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {createPublicKey, generateKeyPairSync, verify} from 'node:crypto';
 import {readFileSync} from 'node:fs';
-import {buildGooglePass, buildGoogleSaveUrl, GOOGLE_WALLET_SAFE_JWT_LENGTH} from '../server/wallet-google.mjs';
+import {buildGooglePass, buildGoogleSaveUrl, GOOGLE_WALLET_SAFE_JWT_LENGTH, GOOGLE_HERO_SIZE} from '../server/wallet-google.mjs';
 
 const fixture = JSON.parse(readFileSync(new URL('./fixtures/trip.json', import.meta.url), 'utf8'));
 const {privateKey} = generateKeyPairSync('rsa', {modulusLength: 2048});
@@ -50,7 +50,7 @@ function longTrip(days = 14, perDay = 3) {
   trip.days = Array.from({length: days}, (_, i) => {
     const date = `2027-07-${String(i + 1).padStart(2, '0')}`;
     return {date, label: `Tag ${i + 1}`, stops: Array.from({length: perDay}, (_, j) => ({
-      ...fixture.days[0].stops[2], start: `${10 + j * 3}:00`, end: `${11 + j * 3}:30`,
+      ...fixture.days[0].stops[0], start: `${10 + j * 3}:00`, end: `${11 + j * 3}:30`,
       title: `${long} ${i + 1}.${j + 1}`, place: 'Serfaus · Komperdell · Mittelstation',
       group: j === 1 ? 'Oma Gertraud' : null,
       bookingLink: `https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/event_${i}_${j}`,
@@ -85,7 +85,7 @@ test('fat JWT: signed RS256 save link with class and object', async t => {
   assert.equal(object.cardTitle.defaultValue.value, 'familienzeit.');
   assert.equal(object.cardTitle.defaultValue.language, 'de');
   assert.equal(object.subheader.defaultValue.value, '10.–12. Juli 2027 · Serfaus');
-  assert.equal(object.header.defaultValue.value, '2 Erwachsene · 2 Kinder');
+  assert.equal(object.header.defaultValue.value, '2 Erwachsene · 2 Kinder · 1 Hund');
   assert.equal(object.logo.sourceUri.uri, `${origin}/wallet/logo.png`);
   assert.equal(object.heroImage.sourceUri.uri, `${origin}/wallet/hero.png`);
   assert.deepEqual(object.validTimeInterval, {start: {date: '2026-11-07T19:40:00Z'}, end: {date: '2027-07-12T23:59:59+02:00'}});
@@ -93,14 +93,19 @@ test('fat JWT: signed RS256 save link with class and object', async t => {
   const ids = object.textModulesData.map(module => module.id);
   assert.deepEqual(ids, ['row2left', 'row2right', 'tag-20270710', 'tag-20270711', 'tag-20270712', 'hinweise']);
   const byId = Object.fromEntries(object.textModulesData.map(module => [module.id, module]));
-  assert.equal(byId.row2left.body, '5 an 2 Tagen');
-  assert.equal(byId.row2right.body, '€ 34 + offen');
-  assert.match(byId['tag-20270711'].body, /10:00–11:30 Mama: Spielstationen am Högsee/);
-  assert.match(byId['tag-20270711'].body, /Papa: Spaziergang/);
-  assert.equal(byId['tag-20270712'].body, 'Freier Tag');
-  assert.match(byId.hinweise.body, /Originalkarte vorzeigen/);
+  assert.equal(byId.row2left.header, 'Erlebnisse');
+  assert.equal(byId.row2left.body, '3 an 2 Tagen');
+  assert.equal(byId.row2right.header, 'Wünsche');
+  assert.equal(byId.row2right.body, 'Abenteuer · Wasser');
+  assert.match(byId['tag-20270711'].body, /^Kinderbetreuung 09:00–12:00$/m);
+  assert.match(byId['tag-20270711'].body, /09:30–11:30 Gruppe 1: Spaziergang und Spiel am Wolfsee/);
+  assert.equal(byId['tag-20270712'].body, 'Noch nichts geplant');
+  assert.match(byId.hinweise.body, /^Familie: Mama · Papa · Lena \(9\) · Kind \(4\) · Hund Bello$/m);
+  assert.match(byId.hinweise.body, /^Wünsche: Abenteuer · Wasser$/m);
   assert.match(byId.hinweise.body, /kein Ticket/);
-  assert.deepEqual(object.linksModuleData.uris.map(link => link.id), ['buchen1', 'gaestekarte']);
+  assert.deepEqual(object.linksModuleData.uris.map(link => link.description), [
+    'Murmliwasser am Komperdell – Infos', 'Spielstationen am Högsee – anmelden', 'Kinderbetreuung – Infos'
+  ]);
   assertWithinLimits(object);
 
   t.diagnostic(`fixture fat link: ${url.length} chars (JWT ${url.length - saveBase.length}, safe length ${GOOGLE_WALLET_SAFE_JWT_LENGTH})`);
@@ -231,4 +236,64 @@ test('local origin: no image URLs (Google needs public https), localhost kept in
 test('missing configuration fails loudly', async () => {
   assert.throws(() => buildGooglePass(fixture, {issuerId: ''}), /issuerId/);
   await assert.rejects(buildGoogleSaveUrl(fixture, {...config(), serviceAccountEmail: ''}), /serviceAccountEmail/);
+});
+
+test('postcard as hero image: https heroImageUrl replaces the default artwork', () => {
+  const heroImageUrl = `${origin}/api/wallet/postcards/0b7c1c5e-6a5e-4c55-9d1e-2f4f5f6a7b8c/hero.png`;
+  const {genericObject} = buildGooglePass(fixture, config({heroImageUrl}));
+  assert.equal(genericObject.heroImage.sourceUri.uri, heroImageUrl);
+  assert.equal(genericObject.heroImage.contentDescription.defaultValue.value, 'Eure Reisepostkarte');
+  assert.equal(genericObject.logo.sourceUri.uri, `${origin}/wallet/logo.png`);
+
+  const insecure = buildGooglePass(fixture, config({heroImageUrl: 'http://example.com/hero.png'})).genericObject;
+  assert.equal(insecure.heroImage.sourceUri.uri, `${origin}/wallet/hero.png`, 'http URLs are ignored');
+
+  const local = buildGooglePass(fixture, config({origin: 'http://localhost:8787', heroImageUrl})).genericObject;
+  assert.equal(local.logo, undefined);
+  assert.equal(local.heroImage.sourceUri.uri, heroImageUrl);
+  assert.deepEqual(GOOGLE_HERO_SIZE, [1032, 812]);
+});
+
+test('prices === false: no price strings; prices === true keeps the entry module', () => {
+  for (const lang of ['de', 'en']) {
+    const text = JSON.stringify(buildGooglePass({...fixture, lang}, config()).genericObject);
+    assert.doesNotMatch(text, /€|EUR|Preis|Eintritt|[Pp]rice|[Ee]ntry|Summe|[Tt]otal/, lang);
+  }
+  const priced = clone(fixture);
+  priced.prices = true;
+  priced.total = 34;
+  priced.totalLabel = 'Summe der bekannten Eintrittspreise';
+  priced.days[0].stops[1].price = 34;
+  const {genericObject} = buildGooglePass(priced, config());
+  const byId = Object.fromEntries(genericObject.textModulesData.map(module => [module.id, module]));
+  assert.equal(byId.row2right.header, 'Eintritt ca.');
+  assert.equal(byId.row2right.body, '€ 34 + offen');
+  assert.match(byId['tag-20270710'].body, /Preis beim Anbieter/);
+  assert.match(byId.hinweise.body, /Summe der bekannten Eintrittspreise: € 34/);
+});
+
+test('English labels for lang "en"', () => {
+  const english = {...clone(fixture), lang: 'en'};
+  const {genericObject} = buildGooglePass(english, config({heroImageUrl: `${origin}/api/wallet/postcards/x/hero.png`}));
+  assert.equal(genericObject.cardTitle.defaultValue.language, 'en');
+  assert.equal(genericObject.header.defaultValue.language, 'en');
+  assert.equal(genericObject.subheader.defaultValue.value, '10–12 July 2027 · Serfaus');
+  assert.equal(genericObject.heroImage.contentDescription.defaultValue.value, 'Your travel postcard');
+  const byId = Object.fromEntries(genericObject.textModulesData.map(module => [module.id, module]));
+  assert.equal(byId.row2left.header, 'Activities');
+  assert.equal(byId.row2left.body, '3 on 2 days');
+  assert.equal(byId.row2right.header, 'Wishes');
+  assert.equal(byId['tag-20270712'].body, 'Nothing planned yet');
+  assert.equal(byId.hinweise.header, 'Good to know');
+  assert.match(byId.hinweise.body, /^Family: Mama · Papa · Lena \(9\) · Child \(4\) · Bello \(dog\)$/m);
+  assert.match(byId.hinweise.body, /not a ticket/);
+  assert.deepEqual(genericObject.linksModuleData.uris.map(link => link.description.split(' – ')[1]), ['info', 'register', 'info']);
+  const fixed = JSON.stringify({...genericObject, textModulesData: genericObject.textModulesData.map(m => ({...m, body: m.body
+    .replace(fixture.estimateNote, '')}))});
+  assert.doesNotMatch(fixed.replace(/Infos beim Anbieter|Vorab anmelden|Betreuungszeit selbst eingetragen|Kinderbetreuung/g, ''),
+    /Erlebnisse|Wünsche|Gut zu wissen|Noch nichts|kein Ticket|Jänner|Juli/);
+  const winter = {...english, start: '2027-01-30', end: '2027-02-02', days: [{date: '2027-01-30', label: 'Sat, 30 Jan', stops: []}]};
+  assert.equal(buildGooglePass(winter, config()).genericObject.subheader.defaultValue.value, '30 January – 2 February 2027 · Serfaus');
+  assert.equal(buildGooglePass({...winter, lang: 'de'}, config()).genericObject.subheader.defaultValue.value,
+    '30. Jänner – 2. Februar 2027 · Serfaus');
 });
