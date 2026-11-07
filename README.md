@@ -1,13 +1,13 @@
 # 🏔️ Familienzeit
 ### Your family. Your holiday. Your time together.
 
-A personalised holiday-planning experience that helps families discover, organise and enjoy activities during their stay in **Serfaus-Fiss-Ladis**.
+A personalised holiday experience that helps families discover, plan and enjoy activities during their stay in **Serfaus-Fiss-Ladis**.
 
-Instead of navigating multiple tourism platforms, Familienzeit puts the family at the centre of the holiday experience — combining personal preferences, activity discovery and intelligent planning in one place.
+Familienzeit puts the family at the centre of holiday planning. By combining family preferences, destination information and activity discovery, we want to make it easier to create unforgettable experiences together.
 
 Built during the **Tourism Technology Festival 2026** in Salzburg, Austria.
 
-Our project addresses Challenge 06: **One Family Holiday, Four Booking Systems**.
+**Selected challenge:** Challenge 06 – One Family Holiday, Four Booking Systems.
 
 ---
 
@@ -27,52 +27,54 @@ Today, families have to navigate multiple platforms, compare age restrictions, c
 
 Familienzeit starts with the family, not with a catalogue of activities.
 
-Our idea is to create a personalised holiday companion that understands what families enjoy and helps them make the most of their time together.
+Our vision is to create a personalised holiday companion that understands what families enjoy and helps them make the most of their time together.
 
 Families can define:
-- When they are staying.
-- How old their children are.
-- What they enjoy doing.
-- What kind of experiences they are looking for.
-- Their interests and holiday preferences.
+- Their holiday dates.
+- Their destination.
+- Their children's ages.
+- Their interests and preferences.
+- The experiences they are looking for.
 
-Based on this information, Familienzeit helps turn individual preferences into suitable activities and practical holiday plans.
+Based on this information, Familienzeit aims to turn individual preferences into suitable activities and personalised holiday plans.
 
-**Less searching. Less planning. More gemeinsam erleben.**
+**Less searching. Less planning. More time together.**
+
+---
 
 ## 🎨 The Prototype – Reise-Canvas
 
-Our current prototype explores a more personal and visual approach to holiday planning.
+Our prototype explores a more personal and visual approach to holiday planning.
 
-The Reise-Canvas is the starting point of the Familienzeit experience.
+The **Reise-Canvas** is the starting point of the Familienzeit experience.
 
 Instead of immediately presenting families with hundreds of activities, it allows them to create their own personalised holiday canvas — a visual representation of their family, destination and holiday preferences.
 
 The prototype focuses on:
-- Creating a personal family holiday experience.
+- A personalised family holiday experience.
 - Defining the family and travel context.
 - Selecting the destination.
 - Capturing individual interests and preferences.
-- Generating a personalised visual holiday postcard.
-- Providing an intuitive and engaging interface.
+- Creating a personalised visual holiday postcard.
+- An intuitive and engaging user experience.
 
 ### 🚀 Try the Prototype
 
 **[Open Familienzeit – Reise-Canvas](https://familienzeit-canvas-prototyp.dervondenbergen.chatgpt.site/)**
 
-The prototype demonstrates the initial user experience and design direction. The complete activity discovery, itinerary planning and booking integrations represent the broader product vision.
+---
 
 ## 🎯 The Challenge
 
 **Challenge 06 – One Family Holiday, Four Booking Systems**
 
-Partner: Dialogschmiede GmbH, on behalf of Serfaus-Fiss-Ladis.
+Challenge partner: Dialogschmiede GmbH, on behalf of Serfaus-Fiss-Ladis.
 
 Serfaus-Fiss-Ladis offers a wide range of family activities, from kids' clubs and guided hikes to bike parks and cable car experiences.
 
-However, the information and booking processes are distributed across different systems:
+However, information and booking processes are distributed across different systems:
 
-| Platform | Content |
+| Platform | Purpose |
 |---|---|
 | Feratel | Events without registration |
 | Feratel Experience Shop | Registration-based activities |
@@ -82,6 +84,8 @@ However, the information and booking processes are distributed across different 
 Families currently need to understand and navigate these systems individually.
 
 Our goal is to make the experience feel like one connected destination.
+
+---
 
 ## 🚀 Our Solution
 
@@ -99,7 +103,7 @@ This becomes the foundation for a personalised experience.
 
 Bring activities from different sources into one searchable experience.
 
-Recommendations consider:
+Recommendations should consider:
 - Children's age groups.
 - Family interests and preferences.
 - Travel dates and available time.
@@ -111,7 +115,7 @@ Recommendations consider:
 
 Turn individual activities into realistic daily plans.
 
-The planner considers:
+The planner should consider:
 - Available time and activity duration.
 - Geographic distance between activities.
 - Weather and changing conditions.
@@ -127,6 +131,8 @@ We distinguish between:
 
 The goal is to reduce unnecessary steps without replacing the existing booking infrastructure.
 
+---
+
 ## 👨‍👩‍👧‍👦 Our Target Audience
 
 Familienzeit is designed specifically for families visiting Serfaus-Fiss-Ladis, especially parents who want to organise enjoyable activities for children of different ages.
@@ -141,13 +147,15 @@ Our example family:
 
 The experience should help the whole family find activities everyone can enjoy.
 
+---
+
 ## 🧠 Intelligence & Personalisation
 
-The application combines structured tourism data with intelligent recommendations.
+Our vision combines structured tourism data with intelligent recommendations.
 
-Rather than relying on an AI model to invent activities or availability, we aim to use actual destination data as the foundation for recommendations.
+Rather than relying on an AI model to invent activities or availability, we want to use actual destination data as the foundation for recommendations.
 
-AI can help with:
+AI could help with:
 - Understanding natural-language requests.
 - Translating family preferences into search criteria.
 - Explaining why activities match a family.
@@ -156,11 +164,13 @@ AI can help with:
 
 Activity details, age restrictions, opening hours and booking information should remain grounded in their respective data sources.
 
+---
+
 ## 🗂️ Data Sources & Integrations
 
 The solution is designed around the data and infrastructure made available for Challenge 06.
 
-| Source | Purpose |
+| Source | Intended purpose |
 |---|---|
 | Feratel | Events and activities without registration |
 | Feratel Experience Shop | Activities requiring registration |
@@ -172,33 +182,38 @@ The solution is designed around the data and infrastructure made available for C
 | Open-Meteo | Weather forecasts |
 | OpenHolidays API | School holiday information |
 
-Additional context:
+Additional contextual information:
 - Family travel dates.
 - Children's age groups: 0–2, 3–6, 7–12 and 13–17.
 - Interests and preferences.
 - Lift and trail status.
 - Opening hours and operational information.
 
-Data availability and integration methods depend on the access provided during the hackathon.
+Integration status and data availability depend on the access provided by the respective partners.
+
+---
 
 ## 🏗️ Technical Concept
 
-The architecture aims to separate data integration, activity matching, itinerary planning and the user experience.
+The intended architecture separates the user experience, data integration, activity matching and itinerary planning.
 
 ### Main components
 
-1. **Frontend:** Personalised family holiday canvas, discovery and itinerary interface.
+1. **Frontend:** Personalised family holiday canvas and activity discovery interface.
 2. **Family profile:** Travel dates, children's ages, interests and preferences.
-3. **Data integration:** Connect and normalise information from the different tourism systems.
+3. **Data integration:** Connect and normalise information from different tourism systems.
 4. **Recommendation engine:** Match activities against family profiles and contextual conditions.
 5. **Planning engine:** Build realistic daily itineraries based on time, distance and weather.
-6. **Booking integration:** Link users to the appropriate registration and payment flows.
+6. **Booking integration:** Connect users to appropriate registration and payment flows.
 7. **AI layer:** Natural-language interaction and recommendation explanations.
 
-### Hackathon infrastructure
+### Technology
 
-We can leverage the infrastructure provided by buildbar_ and destination.one, where appropriate:
+The current public repository does not yet contain the application source code or a verified implementation stack.
 
+Technology choices and implementation details will be documented here as the codebase evolves.
+
+Potential hackathon infrastructure includes:
 - Next.js starter application.
 - n8n workflows.
 - one.intelligence AI models.
@@ -206,21 +221,25 @@ We can leverage the infrastructure provided by buildbar_ and destination.one, wh
 - MCP integrations.
 - TTF Data Space.
 
-The final technology choices will reflect the actual implementation.
+These are potential technologies and integrations, not a declaration of currently implemented components.
 
-## 🎯 MVP – What We Want to Demonstrate
+---
 
-Our primary objective is to demonstrate a complete family journey:
+## 🎯 MVP – Our Goal
+
+Our objective is to demonstrate a complete family holiday journey:
 
 1. A family opens Familienzeit.
 2. They create their personal holiday canvas.
 3. They enter their holiday dates, children's ages and interests.
-4. The application discovers suitable activities across the different sources.
+4. The application discovers suitable activities across different sources.
 5. The family receives recommendations that account for weather and timing.
 6. The application creates a practical daily itinerary.
 7. The family can open the original activity details and continue to registration or booking.
 
-**The key demonstration:** One family, one personalised experience, multiple booking systems — without having to search through them individually.
+**The key experience:** One family, one personalised experience, multiple booking systems — without having to search through them individually.
+
+---
 
 ## 🌱 Our Vision
 
@@ -236,9 +255,9 @@ A family should not need to understand the technology behind a destination to en
 
 ---
 
-## 👥 Team
+## 👥 Our Team
 
-![team.webp](resources/team.webp)
+![Team](resources/team.webp)
 
 | Name | Role |
 |---|---|
@@ -248,19 +267,27 @@ A family should not need to understand the technology behind a destination to en
 | Niki | TBD |
 | Lukas | TBD |
 
+---
+
 ## 🛠️ Getting Started
 
-Setup and installation instructions will be added once the application structure has been finalised.
+The public repository currently contains the project documentation and configuration files, but does not yet include the application source code.
+
+Local installation instructions will be added when the application code is published.
+
+---
 
 ## 📸 Screenshots & Demo
 
-### Reise-Canvas – Live Prototype
+### Familienzeit – Reise-Canvas
 
 Explore the current prototype:
 
-👉 [familienzeit-canvas-prototyp.dervondenbergen.chatgpt.site](https://familienzeit-canvas-prototyp.dervondenbergen.chatgpt.site/)
+**[Open the live prototype →](https://familienzeit-canvas-prototyp.dervondenbergen.chatgpt.site/)**
 
-Further screenshots and demonstrations will be added as the application evolves.
+Screenshots and recordings will be added to the repository as they become available.
+
+---
 
 ## 🏆 Hackathon
 
@@ -274,10 +301,13 @@ Further screenshots and demonstrations will be added as the application evolves.
 
 **Challenge partner:** Dialogschmiede GmbH / Serfaus-Fiss-Ladis.
 
-Useful resources:
-- https://www.tourism-technology.com/
-- https://buildbar.at/ttf-2026
-- https://www.serfaus-fiss-ladis.at/
+### Useful Resources
+
+- [Tourism Technology Festival](https://www.tourism-technology.com/)
+- [TTF 2026 – Challenges & Resources](https://buildbar.at/ttf-2026)
+- [Serfaus-Fiss-Ladis](https://www.serfaus-fiss-ladis.at/)
+- [Live Familienzeit Prototype](https://familienzeit-canvas-prototyp.dervondenbergen.chatgpt.site/)
+- [GitHub Repository](https://github.com/Dreiforce/tourism-technology-festival-2026)
 
 ---
 
