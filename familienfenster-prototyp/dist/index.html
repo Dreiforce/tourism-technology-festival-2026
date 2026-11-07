@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="de-AT">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Familienfenster. Ein interaktiver Prototyp für die Planung eines Familienausflugs.">
+<title>Familienfenster · Familienzeit</title><link rel="stylesheet" href="style.css"><script src="app.js" defer></script>
+</head>
+<body>
+<header class="masthead"><div class="shell masthead-inner"><a class="wordmark" href="./"><span aria-hidden="true">✳</span> familienzeit</a><span class="prototype-tag">Interaktiver Prototyp</span></div></header>
+<main class="shell">
+  <div class="intro"><span class="eyebrow">SERFAUS–FISS–LADIS</span><p>Euer Ausflug, Schritt für Schritt.</p></div>
+  <nav aria-label="Planungsschritte"><ol class="steps" id="steps"></ol></nav>
+  <div class="workspace">
+    <section class="form-card" aria-labelledby="screen-title">
+      <div id="screen"></div>
+      <div class="navigation"><button class="secondary" id="back" type="button">← Zurück</button><button class="primary" id="next" type="button">Weiter <span aria-hidden="true">→</span></button></div>
+    </section>
+    <aside class="family-preview" aria-label="Eure Familie als Illustration">
+      <div class="facade">
+        <div class="sign"><span aria-hidden="true">✳</span> Unser Familienfenster <span aria-hidden="true">✳</span></div>
+        <div class="window"><div class="window-sky" aria-hidden="true"></div><div id="avatars" class="avatars" aria-hidden="true"></div></div>
+        <p class="window-count" id="window-count"></p>
+      </div>
+      <p class="caption" id="preview-caption">Die Figuren wachsen mit dem gewählten Alter.</p>
+    </aside>
+  </div>
+  <p class="sr-only" id="announcement" role="status" aria-live="polite"></p>
+</main>
+<footer class="shell"><span>FAMILIENZEIT · DESIGNPROTOTYP</span><a href="entwurf.png">Startseitenentwurf ansehen ↗</a></footer>
+</body>
+</html>

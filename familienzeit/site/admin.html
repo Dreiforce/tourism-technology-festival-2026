@@ -1,0 +1,81 @@
+<!doctype html><html lang="de-AT"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Erlebniskatalog · Familienzeit</title><link rel="stylesheet" href="/styles.css"></head>
+<body class="catalog-admin"><main>
+<p><a href="/#entdecken">← Zum Familienplaner</a></p><p class="eyebrow">FAMILIENZEIT · VERWALTUNG</p>
+<h1>Erlebniskatalog</h1><p>Hier pflegt ihr Angebote, Preise, Quellen, Fotos und Buchungswege für den Familienplaner.</p>
+<section id="catalog-overview" aria-labelledby="overview-title">
+  <div class="admin-overview-heading"><h2 id="overview-title" tabindex="-1">Übersicht</h2><button id="new-record" type="button" class="primary" disabled>+ Neues Erlebnis</button></div>
+  <p id="catalog-summary" role="status">Katalog wird geladen …</p>
+  <div class="admin-filters">
+    <label>Suche<input id="catalog-search" type="search" placeholder="Name, Ort, Anbieter oder Kategorie"></label>
+    <label>Status<select id="catalog-status"><option value="all">Alle Einträge</option><option value="live">Veröffentlicht</option><option value="draft">Entwürfe</option></select></label>
+  </div>
+  <p id="catalog-matches" role="status"></p>
+  <details id="catalog-access" class="admin-access" hidden>
+    <summary>Katalog-Admins verwalten</summary>
+    <p>Trage die E-Mail-Adresse ein, mit der sich die Person bei ChatGPT anmeldet. Danach kannst du ihr den Link zu dieser Verwaltung teilen.</p>
+    <form id="access-form" class="admin-filters">
+      <label>E-Mail-Adresse des ChatGPT-Kontos<input id="admin-email" type="email" required maxlength="254" autocomplete="off"></label>
+      <button type="submit" class="add-button">Freischalten</button>
+    </form>
+    <p id="access-status" role="status"></p>
+    <ul id="admin-list" class="admin-records"></ul>
+  </details>
+  <ul id="catalog-list" class="admin-records"></ul>
+</section>
+<section id="catalog-editor" aria-labelledby="editor-title" hidden>
+  <button id="back-overview" type="button" class="add-button">← Zur Übersicht</button>
+  <h2 id="editor-title" tabindex="-1">Neues Erlebnis</h2>
+<form id="editor" hidden>
+<fieldset class="admin-grid"><legend>Erlebnis und Standort</legend>
+<label>Name<input name="title" required maxlength="120"></label>
+<label>Anbieter<input name="operator" required maxlength="120"></label>
+<label>Ort<input name="town" required maxlength="120"></label>
+<label>Adresse<input name="address" required maxlength="200"></label>
+<label>Breitengrad<input name="latitude" type="number" min="-90" max="90" step="any" required></label>
+<label>Längengrad<input name="longitude" type="number" min="-180" max="180" step="any" required></label>
+
+<label>Treffpunkt für Gruppen<select name="meeting"><option value="">Kein Treffpunkt hinterlegt</option></select></label>
+<label>Kategorie<select name="category"><option>Natur</option><option>Entdecken</option><option>Action</option><option>Kreativ</option></select></label>
+<label>Wetter<select name="weather"><option value="both">Wetterunabhängig</option><option value="sun">Draußen bei trockenem Wetter</option></select></label>
+<label>Alter ab<input name="min" type="number" min="0" max="17" required></label>
+<label>Alter bis<input name="max" type="number" min="0" max="17" required></label>
+<label>Besuchsdauer in Minuten<input name="duration" type="number" min="5" max="600" required></label>
+<label>Hunde<select name="pets"><option value="unknown">Ungeklärt</option><option value="yes">Erlaubt</option><option value="no">Nicht erlaubt</option></select></label>
+<label class="span-all">Hinweis zur Tierregel<input name="petNote" maxlength="350" placeholder="z. B. Leinenpflicht oder andere Haustiere"></label>
+<label class="span-all">Beschreibung<textarea name="description" required maxlength="1600" rows="3"></textarea></label>
+<label class="span-all">Besuchshinweise<textarea name="notes" maxlength="700" rows="2"></textarea></label>
+</fieldset>
+<fieldset class="admin-grid"><legend>Preise und Buchung</legend>
+<label class="inline-check span-all"><input name="priceKnown" type="checkbox" checked> Eintrittspreis ist bestätigt</label><label>Erwachsene in €<input name="adult" type="number" min="0" max="9999" step=".01" required></label>
+<label>Kinder in €<input name="child" type="number" min="0" max="9999" step=".01" required></label>
+<label>Kindertarif ab<input name="childFrom" type="number" min="0" max="17" required></label>
+<label>Kindertarif bis<input name="childTo" type="number" min="0" max="17" required></label>
+<label>Jugendtarif in € (optional)<input name="youth" type="number" min="0" max="9999" step=".01"></label>
+<label>Jugendtarif ab<input name="youthFrom" type="number" min="0" max="17" required></label>
+<label>Hund in €<input name="dogPrice" type="number" min="0" max="9999" step=".01" required></label>
+<label>Buchungsweg<select name="booking"><option value="online">Online beim Anbieter</option><option value="office">Im Tourismusbüro</option><option value="onsite">Direkt vor Ort</option><option value="free">Kein Ticket nötig</option></select></label>
+<label class="span-all">Preis- und Tarifhinweise<input name="priceNote" maxlength="350"></label>
+<label class="span-all">Buchungslink<input name="bookingLink" type="url" maxlength="1000" placeholder="https://…"></label>
+<label class="span-all">Buchungshinweis oder Adresse des Tourismusbüros<input name="bookingNote" maxlength="350"></label>
+</fieldset>
+<fieldset class="admin-grid"><legend>Kinderwagen und Barrierefreiheit</legend>
+<div class="admin-grid span-all" id="access-fields"></div>
+<label class="span-all">Details und Einschränkungen<textarea name="accessNote" rows="2" maxlength="700" placeholder="z. B. Abmessungen für Kinderwagen oder Hilfen nur nach Anmeldung"></textarea></label>
+<label class="span-all">Quelle zur Barrierefreiheit<input name="accessSource" type="url" maxlength="1000" placeholder="https://…"></label>
+</fieldset>
+<fieldset><legend>Mit Gästekarte inkludierter Eintritt</legend><p>Hier nur bestätigte Inklusivleistungen erfassen. Saison, Kontingente und Ausnahmen als Hinweis ergänzen.</p><div id="pass-rules"></div><button type="button" class="add-button" id="add-pass">+ Gästekarte</button></fieldset>
+<fieldset><legend>Öffnungszeiten</legend><p>Mehrere Zeitfenster sind möglich. Saisonzeiten erhalten ein Von- und Bis-Datum. Sonderöffnungen und Schließzeiten ersetzen die regulären Zeiten am jeweiligen Tag.</p>
+<div id="hours"></div><button type="button" class="add-button" id="add-hours">+ Zeitfenster</button>
+</fieldset>
+<fieldset><legend>Fotos</legend><div id="photos" class="admin-photos"></div>
+<label>Fotos hinzufügen<input id="upload" type="file" accept="image/jpeg,image/png,image/webp" multiple></label>
+<p>Bis zu vier Fotos pro Erlebnis, je maximal 4 MB. JPG, PNG oder WebP. Das erste Foto erscheint auf der Karte.</p>
+</fieldset>
+<fieldset class="admin-grid"><legend>Quellen und Sichtbarkeit</legend>
+<label class="span-all">Quellenlinks (ein Link pro Zeile)<textarea name="sources" required rows="3"></textarea></label>
+<label>Geprüft am<input name="verified" type="date" required></label>
+<label class="inline-check"><input name="active" type="checkbox"> Im Familienplaner anzeigen</label>
+</fieldset>
+<button type="submit" class="primary" id="save">Erlebnis speichern</button>
+</form></section><p id="status" role="status" aria-live="polite"></p>
+</main><script src="/admin.js" type="module"></script></body></html>

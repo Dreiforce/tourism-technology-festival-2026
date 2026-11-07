@@ -1,0 +1,3 @@
+CREATE TABLE IF NOT EXISTS catalog_admins (
+  email TEXT PRIMARY KEY NOT NULL
+);

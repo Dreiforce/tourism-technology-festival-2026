@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="960" viewBox="0 0 1400 960">
+<defs>
+ <pattern id="paper" width="14" height="14" patternUnits="userSpaceOnUse"><circle cx="2" cy="4" r=".55" fill="#795d38" opacity=".13"/><circle cx="10" cy="11" r=".45" fill="#795d38" opacity=".11"/></pattern>
+ <pattern id="plaster" width="19" height="19" patternUnits="userSpaceOnUse"><path d="M1 2l3-1m8 8 2 1m-9 6 3-2" stroke="#fff4d0" opacity=".25" fill="none"/></pattern>
+ <clipPath id="window"><rect x="762" y="302" width="514" height="308"/></clipPath>
+ <g id="spark" fill="none" stroke="#174782" stroke-width="2.5" stroke-linecap="round"><path d="M0-12v24m-12-12h24m-8-8L8 8M8-8-8 8"/></g>
+ <g id="walker">
+  <ellipse cx="0" cy="88" rx="29" ry="6" fill="#496a82" opacity=".19"/>
+  <path d="M-12 39-14 82m27-43 1 43" stroke="#173653" stroke-width="13" stroke-linecap="round"/>
+  <path d="m-19 0-14 26m52-26 14 26" stroke="#d39a6f" stroke-width="11" stroke-linecap="round"/>
+  <path d="M-20-1Q0-17 20-1l5 42h-50z" fill="currentColor"/>
+  <path d="M-5-5q5 6 10 0" fill="none" stroke="#fff3cb" stroke-width="3"/>
+  <circle cx="0" cy="-27" r="18" fill="#d39a6f"/>
+  <path d="M-18-24q-7-24 15-25 23-4 22 20-8-2-10-9-9 7-22 5z" fill="#49372d"/>
+  <path d="M-12-39q9-9 20-6" fill="none" stroke="#855f45" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="-6" cy="-25" r="1.8" fill="#173653"/><circle cx="6" cy="-25" r="1.8" fill="#173653"/>
+  <path d="M-4-18q4 4 8 0" fill="none" stroke="#173653" stroke-width="1.5" stroke-linecap="round"/>
+ </g>
+</defs>
+<rect width="1400" height="960" fill="#f7f2e6"/>
+<rect width="1400" height="960" fill="url(#paper)"/>
+<!-- Shop-sign masthead -->
+<rect x="0" y="0" width="1400" height="112" fill="#174782"/>
+<rect x="57" y="19" width="1286" height="72" fill="#fffaf0"/>
+<circle cx="95" cy="55" r="18" fill="#f5c32b"/><use href="#spark" x="95" y="55"/>
+<text x="124" y="66" fill="#174782" font-family="Georgia,serif" font-size="34" font-weight="bold" letter-spacing="1.7">familienzeit</text>
+<text x="1311" y="61" text-anchor="end" fill="#174782" font-family="Arial,sans-serif" font-size="14" font-weight="bold" letter-spacing="1.6">AUSFLÜGE PLANEN  ↗</text>
+<path d="M0 112h1400" stroke="#f5c32b" stroke-width="6"/>
+<!-- Intro -->
+<text x="68" y="203" fill="#174782" font-family="Arial,sans-serif" font-size="16" font-weight="bold" letter-spacing="4">SERFAUS · FISS · LADIS</text>
+<path d="M68 226h66" stroke="#d59c13" stroke-width="4"/>
+<text x="61" y="320" fill="#174782" font-family="Georgia,serif" font-size="75" font-weight="bold" letter-spacing="-4">Weniger planen.</text>
+<text x="62" y="414" fill="#174782" font-family="Georgia,serif" font-size="77" font-style="italic" letter-spacing="-4">Mehr zusammen.</text>
+<text x="69" y="483" fill="#3e5268" font-family="Arial,sans-serif" font-size="21">
+ <tspan x="69" dy="0">Vom ersten Familienfenster bis zum Ausflug.</tspan>
+ <tspan x="69" dy="32">Findet heraus, was zu euch und eurem Tag passt.</tspan>
+</text>
+<rect x="68" y="561" width="300" height="62" rx="2" fill="#174782"/>
+<text x="92" y="599" fill="#fffaf0" font-family="Arial,sans-serif" font-weight="bold" font-size="18">Familie zusammenstellen</text>
+<path d="M331 591h14m-6-6 6 6-6 6" fill="none" stroke="#f5c32b" stroke-width="2.5" stroke-linecap="round"/>
+<text x="69" y="655" fill="#526273" font-family="Arial,sans-serif" font-size="14">4 kurze Schritte für euren Familienausflug</text>
+<!-- Facade -->
+<rect x="718" y="179" width="602" height="513" fill="#173653" opacity=".14"/>
+<rect x="705" y="165" width="614" height="514" fill="#f4bd24" stroke="#174782" stroke-width="5"/>
+<path d="M707 165h610v47L707 563zM1317 571v108h-192z" fill="#1d5495"/>
+<path d="m707 563 610-351m-192 467 192-108" stroke="#fffaf0" stroke-width="12"/>
+<rect x="706" y="166" width="611" height="512" fill="url(#plaster)"/>
+<rect x="732" y="192" width="560" height="69" fill="#fffaf0" stroke="#dcded5" stroke-width="2"/>
+<use href="#spark" x="762" y="226"/><use href="#spark" x="1262" y="226"/>
+<text x="1012" y="237" text-anchor="middle" fill="#174782" font-family="Georgia,serif" font-size="30" letter-spacing="1">Unser Familienfenster</text>
+<rect x="744" y="285" width="550" height="342" fill="#173653" opacity=".25"/>
+<rect x="737" y="278" width="550" height="344" fill="#fffaf0"/>
+<rect x="754" y="296" width="530" height="322" fill="#d6ded9"/>
+<g clip-path="url(#window)">
+ <rect x="762" y="302" width="514" height="308" fill="#dbe7e5"/>
+ <circle cx="1169" cy="373" r="32" fill="#f1c54a"/>
+ <path d="M762 487 879 349 1000 488 1092 407l184 104v100H762z" fill="#9fbac4"/>
+ <path d="m836 400 43-51 54 61-41-15-15-19-16 18z" fill="#fffaf0"/>
+ <path d="M762 515q138-75 268-9t246-10v116H762z" fill="#86a8a0"/>
+ <path d="M762 560q108-59 263-13t251 0v63H762z" fill="#698b83"/>
+ <path d="M872 611q86-50 252-44 79 3 94-29" stroke="#e8d4a6" stroke-width="15" fill="none" opacity=".7"/>
+ <use href="#walker" transform="translate(850 507)" color="#e9a943"/>
+ <use href="#walker" transform="translate(920 530) scale(.74)" color="#7b9cad"/>
+ <use href="#walker" transform="translate(1053 519) scale(.86)" color="#d57758"/>
+ <use href="#walker" transform="translate(1122 505)" color="#6e9b88"/>
+ <g transform="translate(1212 575)"><ellipse rx="24" ry="13" fill="#d79d6c"/><path d="M-20 0q-12-4-14-10m20 16v11m25-11v11" fill="none" stroke="#72523c" stroke-width="5" stroke-linecap="round"/><circle cx="15" cy="-12" r="13" fill="#d79d6c"/><path d="M8-21Q-3-17 4-7l7-3z" fill="#72523c"/><circle cx="20" cy="-13" r="2" fill="#173653"/><circle cx="26" cy="-7" r="3" fill="#173653"/></g>
+</g>
+<path d="M1011 294v320" stroke="#fffaf0" stroke-width="12"/>
+<rect x="876" y="637" width="273" height="26" fill="#fffaf0"/>
+<text x="1012" y="655" text-anchor="middle" fill="#174782" font-family="Arial,sans-serif" font-size="13" font-weight="bold" letter-spacing="1">2 ERWACHSENE · 2 KINDER · 1 HUND</text>
+<!-- Preview of the four steps -->
+<path d="M68 734h1264" stroke="#b6babc" stroke-width="1"/>
+<text x="68" y="785" fill="#174782" font-family="Georgia,serif" font-size="37" font-weight="bold">So kommt ihr zu eurem Plan.</text>
+<g font-family="Arial,sans-serif" font-weight="bold" fill="#174782">
+ <g transform="translate(68 830)"><rect width="290" height="60" fill="#174782"/><circle cx="27" cy="30" r="13" fill="#f5c32b"/><text x="27" y="35" text-anchor="middle" font-size="13">1</text><text x="54" y="36" fill="#fffaf0" font-size="18">Wer kommt mit?</text></g>
+ <g transform="translate(389 830)"><rect width="290" height="60" fill="#fffaf0" stroke="#c9d1d0"/><circle cx="27" cy="30" r="13" fill="#f5c32b"/><text x="27" y="35" text-anchor="middle" font-size="13">2</text><text x="54" y="36" font-size="18">Ort und Zeit</text></g>
+ <g transform="translate(710 830)"><rect width="290" height="60" fill="#fffaf0" stroke="#c9d1d0"/><circle cx="27" cy="30" r="13" fill="#f5c32b"/><text x="27" y="35" text-anchor="middle" font-size="13">3</text><text x="54" y="36" font-size="18">Wünsche</text></g>
+ <g transform="translate(1031 830)"><rect width="290" height="60" fill="#fffaf0" stroke="#c9d1d0"/><circle cx="27" cy="30" r="13" fill="#f5c32b"/><text x="27" y="35" text-anchor="middle" font-size="13">4</text><text x="54" y="36" font-size="18">Überblick</text></g>
+</g>
+<text x="68" y="929" fill="#526273" font-family="Arial,sans-serif" font-size="12" letter-spacing="2.2">STARTSEITENENTWURF  /  FASSADE IN BLAU UND GELB</text>
+</svg>

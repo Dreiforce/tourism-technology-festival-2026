@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="de-AT">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Ein interaktiver Reise-Canvas für Familien in Serfaus, Fiss und Ladis.">
+<title>Reise-Canvas · Familienzeit</title><link rel="stylesheet" href="style.css"><script defer src="i18n.js"></script><script defer src="scene.js"></script><script defer src="planner.js"></script><script defer src="app.js"></script></head>
+<body>
+<main class="journey" id="journey">
+  <header class="top"><a href="./" class="brand">✳ <span>familienzeit</span></a><span class="edition"><span data-text="canvas">Reise-Canvas</span> <span class="edition-dot">·</span> <span data-text="prototype">Prototyp</span></span><button type="button" id="exit" data-text="exit" class="small" hidden>Großansicht verlassen</button></header>
+  <section class="welcome" id="welcome">
+    <div class="welcome-copy"><p class="kicker">SERFAUS · FISS · LADIS</p><h1><span data-text="welcomeTitle">Euer Urlaub</span><br><span data-text="welcomeLead">nimmt</span> <em data-text="welcomeAccent">Form an.</em></h1><p data-text="welcomeDescription">Setzt eure Familie, den Ort und eure Wünsche zu einer eigenen Reisepostkarte zusammen.</p><button type="button" class="primary" id="start"><span class="start-label" data-text="startCanvas">Canvas starten</span> <span aria-hidden="true">→</span></button></div>
+    <div class="cover" aria-hidden="true" id="cover"></div>
+  </section>
+  <section id="experience" class="experience" aria-label="Reise-Canvas" data-label="canvas" hidden>
+    <nav aria-label="Schritte" data-label="steps" id="steps" class="steps"></nav>
+    <div id="board" class="board"></div>
+    <section id="controls" class="controls" aria-labelledby="prompt"></section>
+    <section id="results" class="results" aria-labelledby="results-title" hidden></section>
+    <p class="sr-only" id="announcement" role="status" aria-live="polite"></p>
+  </section>
+  <footer><span data-text="designPrototype">Familienzeit / Designprototyp</span><div class="footer-tools"><details><summary data-text="imageReferences">Bildvorlagen</summary><div><a href="https://www.dreisonnen.com/de" target="_blank" rel="noopener" data-text="referenceSerfaus">Serfaus · Ortsansicht</a><a href="https://www.serfaus-fiss-ladis.at/de/sommerurlaub/familienidylle-wolfsee_infra_17829" target="_blank" rel="noopener">Fiss · Wolfsee</a><a href="https://www.laderhof.at/de/kinderhotel-ladis/urlaubs-infos/anreise-serfaus-fiss-ladis/" target="_blank" rel="noopener" data-text="referenceLadis">Ladis · Schlossweiher</a></div></details><label class="footer-language"><span data-text="language">Sprache</span><select id="language"><option value="de" lang="de">Deutsch</option><option value="en" lang="en">English</option></select></label></div></footer>
+  <dialog id="choice"><form method="dialog" id="choice-form"><h2 id="choice-title"></h2><div id="choice-content"></div><div class="dialog-actions"><button class="small" id="choice-cancel" data-text="cancel" type="button">Abbrechen</button><button class="primary" id="choice-confirm" data-text="confirm" value="confirm" type="submit">Bestätigen</button></div></form></dialog>
+</main>
+</body></html>
