@@ -585,6 +585,7 @@ function tripItem(entry,day){
     o.today?`<span class="chip-live today">● ${t('liveToday')}</span>`:`<span class="chip-live">● ${t('liveOpen',openingOn(a,day.date))}</span>`,
     a.weather==='both'&&bad?`<span class="chip-soft">☂ ${t('weatherProof')}</span>`:a.weather==='sun'?`<span class="chip-soft">☀ ${t('outdoors')}</span>`:'',
     a.advanceBooking?`<span class="chip-soft warn">${t('advanceBooking')}</span>`:'',
+    o.dogCheck?`<span class="chip-soft warn">${t('dogAsk')}</span>`:o.dogWelcome?`<span class="chip-live">${t('dogWelcome')}</span>`:'',
     isMascotActivity(a)?`<span class="chip-soft mascot">${t('mascotPick')}</span>`:''
   ].join('');
   return `<article class="trip-item">${who}

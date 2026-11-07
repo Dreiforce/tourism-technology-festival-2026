@@ -102,6 +102,8 @@ const messages={
   continueCanvas:['Weiter planen','Continue planning'],
   resetCanvas:['Neu beginnen','Start over'],
   share:['Teilen','Share'],
+  dogAsk:['🐕 Hund: beim Anbieter nachfragen','🐕 Dog: check with the provider'],
+  dogWelcome:['🐕 Hunde willkommen','🐕 Dogs welcome'],
   printPdf:['Drucken / PDF · A4','Print / PDF · A4'],
   foldHere:['Hier falten: oben Vorderseite, unten Rückseite','Fold here: front on top, back below'],
   sheetLabel:['Reisepostkarte zum Ausdrucken: Vorder- und Rückseite auf A4, zum Falten','Printable travel postcard: front and back on A4, to fold'],

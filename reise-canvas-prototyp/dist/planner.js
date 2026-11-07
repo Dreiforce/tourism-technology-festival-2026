@@ -112,7 +112,7 @@ function slotOptions(catalog,{date,period,group,place,general,weather,used,day,f
   const options=[];
   for(const [index,activity] of catalog.entries()){
     if(used.has(index)||activity.region!=='sfl'||!ages.every(age=>age>=activity.min&&age<=activity.max)||
-      dog&&activity.pets!=='yes'||access.some(key=>activity.accessibility?.[key]==='no')) continue;
+      dog&&activity.pets==='no'||access.some(key=>activity.accessibility?.[key]==='no')) continue;
     const time=suggestedTime(activity,date,window);
     if(!time||period==='evening'&&time.start<17*60) continue;
     // Only a forecast thunderstorm rules out fair-weather activities; forecast rain costs a lot,
@@ -127,6 +127,9 @@ function slotOptions(catalog,{date,period,group,place,general,weather,used,day,f
     score+=access.filter(key=>activity.accessibility?.[key]==='yes').length;
     if(today) score+=1.5;
     if(outdoorOnly&&bad) score-=forecast?2.5:.5;
+    // Dogs: almost no activity says yet whether dogs may come. Only a confirmed 'no' excludes it;
+    // unknown stays in (labelled "ask the provider"), outdoor activities first, since trails usually allow dogs.
+    if(dog) score+=activity.pets==='yes'?1:outdoorOnly?-.3:-1.2;
     if(bad&&activity.weather==='both') score+=forecast?1:.3;
     if(weather?.kind==='sun'&&outdoorOnly) score+=.5;
     if(outdoorOnly&&weather&&weather.tmax<=2) score-=1.5;
@@ -135,7 +138,7 @@ function slotOptions(catalog,{date,period,group,place,general,weather,used,day,f
     if(day.categories.has(activity.category)) score-=1;
     if(day.coords&&activity.coords) score-=.12*distanceKm(day.coords,activity.coords);
     score+=(stableHash(seed+activity.title+date+period)%100)/250;
-    options.push({index,activity,time,score,likes,today,
+    options.push({index,activity,time,score,likes,today,dogCheck:dog&&activity.pets!=='yes',dogWelcome:dog&&activity.pets==='yes',
       access:access.map(key=>({key,status:activity.accessibility?.[key]||'unknown'}))});
   }
   return options.sort((a,b)=>b.score-a.score);
