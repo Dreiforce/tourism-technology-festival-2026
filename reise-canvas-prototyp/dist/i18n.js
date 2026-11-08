@@ -1,7 +1,7 @@
 const messages={
-  pageTitle:['Familienzeit'],
-  pageDescription:['Ein interaktiver Reise-Planer für Familien in Serfaus, Fiss und Ladis.','An interactive travel planer for families in Serfaus, Fiss and Ladis.'],
-  canvas:['Travel Planer'],
+  pageTitle:['Familienzeit','Familienzeit'],
+  pageDescription:['Ein interaktiver Reise-Planer für Familien in Serfaus, Fiss und Ladis.','An interactive travel planner for families in Serfaus, Fiss and Ladis.'],
+  canvas:['Reiseplaner','Travel planner'],
   prototype:['Prototyp','Prototype'],
   exit:['Startseite','Home'],
   welcomeTitle:['Euer Urlaub','Your holiday'],
@@ -377,9 +377,10 @@ const messages={
   avatarEdit:['{0} bearbeiten','Edit {0}'],
   avatarSaved:['{0} gespeichert.','{0} saved.'],
   removeHeading:['Figur entfernen?','Remove this character?'],
+  dogHeading:['Euer Hund','Your dog'],
+  coat:['Fell','Coat'],
   removeDescription:['{0} wird von der Postkarte entfernt.','{0} will be removed from the postcard.'],
   remove:['Entfernen','Remove'],
-  avatarRemove:['{0} entfernen','Remove {0}'],
   avatarAdded:['{0} hinzugefügt.','{0} added.'],
   avatarRemoved:['{0} entfernt.','{0} removed.'],
   interactivePostcard:['Reisepostkarte mit entfernbaren Familienfiguren','Travel postcard with removable family characters'],
@@ -434,8 +435,8 @@ const messages={
 };
 
 const languageKey='familienzeit-canvas-language';
-let language='de';
-try{if(localStorage.getItem(languageKey)==='en') language='en'}catch{}
+let language='en';
+try{if(localStorage.getItem(languageKey)==='de') language='de'}catch{}
 const locale=()=>language==='en'?'en-GB':'de-AT';
 const t=(key,...values)=>messages[key][language==='en'?1:0].replace(/\{(\d+)\}/g,(_,index)=>values[index]);
 function setLanguage(value){

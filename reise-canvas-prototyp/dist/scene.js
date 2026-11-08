@@ -263,7 +263,7 @@ function personArt(p,x,y,scale,interactive,tag=''){
   const selected=[...p.wishes];
   const badges=selected.map((key,i)=>badge(key,(i-(selected.length-1)/2)*24,-figure.height-19-(i%2)*5)).join('');
   const label=avatarName(p)+(p.kind!=='dog'&&p.age!=null?', '+ageText(p):'');
-  return `<g transform="translate(${x} ${y}) scale(${scale})" data-member="${p.id}" ${interactive?`class="avatar-mark" role="button" tabindex="0" data-avatar="${p.id}" aria-label="${html(t(p.kind==='dog'?'avatarRemove':'avatarEdit',label))}"`:''}>
+  return `<g transform="translate(${x} ${y}) scale(${scale})" data-member="${p.id}" ${interactive?`class="avatar-mark" role="button" tabindex="0" data-avatar="${p.id}" aria-label="${html(t('avatarEdit',label))}"`:''}>
     <g data-figure="${p.id}"><rect x="-41" y="${-figure.height-4}" width="82" height="${figure.height+12}" rx="12" fill="#fff" fill-opacity=".001"/>
     ${interactive?`<ellipse class="avatar-ring" cy="2" rx="33" ry="7" fill="none" stroke="#fff4cf" stroke-width="2" opacity="0"/>`:''}
     <g class="idle" style="animation-delay:-${(typeof p.id==='number'?p.id*.61:0)%3.4}s">${figure.svg}</g>${badges}
@@ -332,8 +332,8 @@ function wrapText(text,max){
   return lines;
 }
 function postcardBack({place,family,date,general=new Set(),season='summer',weather=null}){
-  const names=family.filter(p=>p.kind!=='dog').map(p=>p.name||avatarName(p));
-  const dogs=family.filter(p=>p.kind==='dog').length;
+  const names=family.filter(p=>p.kind!=='dog'||p.name).map(p=>p.name||avatarName(p));
+  const dogs=family.filter(p=>p.kind==='dog'&&!p.name).length;
   const who=new Intl.ListFormat(locale(),{type:'conjunction'}).format(dogs?[...names,dogs>1?t('backDogs',dogs):t('backDog')]:names);
   const wishes=[...new Set([...general,...family.flatMap(p=>[...p.wishes])])].slice(0,8);
   const forecast=weather&&t(weather.source==='forecast'?'backWeather':'backWeatherLastYear',t('weather_'+weather.kind),weather.tmax,weather.year);

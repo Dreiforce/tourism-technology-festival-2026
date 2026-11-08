@@ -285,6 +285,22 @@ function dialog(kind,p){
   $('choice-confirm').textContent=t('remove');
   $('choice').showModal();
 }
+// Dogs get a small editor of their own: a name and one of the coats dogArt draws.
+function dogDialog(p){
+  pending={kind:'dog',p};
+  $('choice').returnValue='';
+  $('choice-title').textContent=t('dogHeading');
+  $('choice-content').innerHTML=`<label>${t('name')}<input name="dogName" type="text" maxlength="20" autocomplete="off" value="${html(p.name||'')}"></label>
+    <p><strong>${t('coat')}</strong></p><div class="part-grid">${[0,1,2,3].map(i=>`<button type="button" class="part" data-coat="${i}" aria-pressed="${(p.look??0)%4===i}" aria-label="${t('option',i+1)}"><svg viewBox="-44 -56 88 62" aria-hidden="true">${dogArt(i,'').svg}</svg></button>`).join('')}</div>
+    <p><button type="button" class="small" id="dog-remove">${t('remove')}</button></p>`;
+  $('choice-confirm').textContent=t('save');
+  $('choice').showModal();
+}
+$('choice-content').addEventListener('click',event=>{
+  const coat=event.target.closest('[data-coat]');
+  if(coat) $('choice-content').querySelectorAll('[data-coat]').forEach(b=>b.setAttribute('aria-pressed',b===coat));
+  if(event.target.closest('#dog-remove')){const p=pending.p; $('choice').close('cancel'); dialog('remove',p);}
+});
 function cheer(){
   if(reduced.matches) return;
   const board=$('board');
@@ -306,6 +322,15 @@ $('choice-form').addEventListener('submit',async event=>{
   event.preventDefault();
   const action=pending;
   pending=null;
+  if(action?.kind==='dog'){
+    const name=$('choice-form').elements.dogName.value.trim(), coat=$('choice-content').querySelector('[data-coat][aria-pressed=true]');
+    $('choice').close('confirm');
+    action.p.name=name;
+    if(coat) action.p.look=Number(coat.dataset.coat);
+    render(action.p.id);
+    if(!$('results').hidden&&catalog) renderResults();
+    return;
+  }
   $('choice').close('confirm');
   if(!action) return;
   state.family=state.family.filter(p=>p!==action.p);
@@ -324,7 +349,7 @@ $('choice-form').addEventListener('submit',async event=>{
 // Tapping a figure on any step opens the editor (dogs: the remove prompt).
 function openPerson(p){
   if(!p||$('choice').open||$('editor').open) return;
-  if(p.kind==='dog') dialog('remove',p);else openEditor(p);
+  if(p.kind==='dog') dogDialog(p);else openEditor(p);
 }
 let suppressClick=false;
 function requestRemoval(event){
