@@ -613,7 +613,6 @@
     ],
     "booking": "onsite",
     "bookingLink": "",
-    "bookingNote": "Regeln, verfügbaren Fischbestand und etwaige Kosten beim Anbieter prüfen.",
     "accessibility": {},
     "accessSource": "",
     "passes": [],
@@ -1078,7 +1077,7 @@
     "accessSource": "",
     "passes": [],
     "accessNote": "",
-    "notes": "Der Termin ist veröffentlicht. Weitere Wintertermine beim Betreiber prüfen. Kinder unter 8 Jahren brauchen eine erwachsene Begleitperson.",
+    "notes": "Der Termin ist veröffentlicht. Kinder unter 8 Jahren brauchen eine erwachsene Begleitperson.",
     "verified": "2026-11-07",
     "active": true
   },
@@ -1238,7 +1237,7 @@
     "youth": null,
     "youthFrom": 0,
     "dogPrice": 0,
-    "priceNote": "Der Preis hängt vom Termin und Tarif ab. Aktuellen Gesamtpreis im offiziellen Buchungsformular prüfen.",
+    "priceNote": "Der Preis hängt vom Termin und Tarif ab.",
     "hours": [
       {
         "kind": "regular",
@@ -1535,12 +1534,11 @@
     ],
     "booking": "online",
     "bookingLink": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/sportalm-fondueabend_event_15358710",
-    "bookingNote": "Termin und Verfügbarkeit im offiziellen Ticketshop prüfen.",
     "accessibility": {},
     "accessSource": "",
     "passes": [],
     "accessNote": "",
-    "notes": "Details zu Auf- und Abfahrt sowie Leistungen im Ticket prüfen. Die Karte zeigt den Ortsbezug. Den genauen Treffpunkt und die Verfügbarkeit bitte beim gebuchten Termin prüfen.",
+    "notes": "Details zu Auf- und Abfahrt sowie Leistungen im Ticket prüfen. Die Karte zeigt den Ortsbezug.",
     "verified": "2026-11-07",
     "active": true
   },
@@ -1572,7 +1570,7 @@
     "youth": null,
     "youthFrom": 0,
     "dogPrice": 0,
-    "priceNote": "Der Preis hängt vom Termin und Tarif ab. Aktuellen Gesamtpreis im offiziellen Buchungsformular prüfen.",
+    "priceNote": "Der Preis hängt vom Termin und Tarif ab.",
     "hours": [
       {
         "kind": "regular",
@@ -1851,12 +1849,11 @@
     ],
     "booking": "online",
     "bookingLink": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/buffet-skiing-classics_event_15612747",
-    "bookingNote": "Termin und Verfügbarkeit im offiziellen Ticketshop prüfen.",
     "accessibility": {},
     "accessSource": "",
     "passes": [],
     "accessNote": "",
-    "notes": "Treffpunkt und Bergbahnleistungen beim gewählten Termin prüfen. Die Karte zeigt den Ortsbezug. Den genauen Treffpunkt und die Verfügbarkeit bitte beim gebuchten Termin prüfen.",
+    "notes": "Die Karte zeigt den Ortsbezug.",
     "verified": "2026-11-07",
     "active": true
   },
@@ -1888,7 +1885,7 @@
     "youth": null,
     "youthFrom": 0,
     "dogPrice": 0,
-    "priceNote": "Der Preis hängt vom Termin und Tarif ab. Aktuellen Gesamtpreis im offiziellen Buchungsformular prüfen.",
+    "priceNote": "Der Preis hängt vom Termin und Tarif ab.",
     "hours": [
       {
         "kind": "regular",
@@ -2167,12 +2164,11 @@
     ],
     "booking": "online",
     "bookingLink": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/vip-lounge-nightflow_event_15666829",
-    "bookingNote": "Termin und Verfügbarkeit im offiziellen Ticketshop prüfen.",
     "accessibility": {},
     "accessSource": "",
     "passes": [],
     "accessNote": "",
-    "notes": "Treffpunkt und Bergbahnleistungen beim gewählten Termin prüfen. Die Karte zeigt den Ortsbezug. Den genauen Treffpunkt und die Verfügbarkeit bitte beim gebuchten Termin prüfen.",
+    "notes": "Die Karte zeigt den Ortsbezug.",
     "verified": "2026-11-07",
     "active": true
   },
@@ -2204,7 +2200,7 @@
     "youth": null,
     "youthFrom": 0,
     "dogPrice": 0,
-    "priceNote": "Der Preis hängt vom Termin und Tarif ab. Aktuellen Gesamtpreis im offiziellen Buchungsformular prüfen.",
+    "priceNote": "Der Preis hängt vom Termin und Tarif ab.",
     "hours": [
       {
         "kind": "regular",
@@ -2465,12 +2461,11 @@
     ],
     "booking": "online",
     "bookingLink": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/pizza-dome-sonnenburg_event_15666936",
-    "bookingNote": "Termin und Verfügbarkeit im offiziellen Ticketshop prüfen.",
     "accessibility": {},
     "accessSource": "",
     "passes": [],
     "accessNote": "",
-    "notes": "Laut Veranstalter für bis zu sechs Personen pro Tisch. Größere Gruppen vorher abklären. Die Karte zeigt den Ortsbezug. Den genauen Treffpunkt und die Verfügbarkeit bitte beim gebuchten Termin prüfen.",
+    "notes": "Laut Veranstalter für bis zu sechs Personen pro Tisch. Größere Gruppen vorher abklären. Die Karte zeigt den Ortsbezug.",
     "verified": "2026-11-07",
     "active": true
   },
@@ -2502,7 +2497,7 @@
     "youth": null,
     "youthFrom": 0,
     "dogPrice": 0,
-    "priceNote": "Der Preis hängt vom Termin und Tarif ab. Aktuellen Gesamtpreis im offiziellen Buchungsformular prüfen.",
+    "priceNote": "Der Preis hängt vom Termin und Tarif ab.",
     "hours": [
       {
         "kind": "regular",
@@ -2529,12 +2524,11 @@
     ],
     "booking": "online",
     "bookingLink": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/silvesterabend-sonnenburg_event_15666937",
-    "bookingNote": "Termin und Verfügbarkeit im offiziellen Ticketshop prüfen.",
     "accessibility": {},
     "accessSource": "",
     "passes": [],
     "accessNote": "",
-    "notes": "Veröffentlichter Start und Rückfahrtbedingungen stehen im Ticketangebot. Die Karte zeigt den Ortsbezug. Den genauen Treffpunkt und die Verfügbarkeit bitte beim gebuchten Termin prüfen.",
+    "notes": "Veröffentlichter Start und Rückfahrtbedingungen stehen im Ticketangebot. Die Karte zeigt den Ortsbezug.",
     "verified": "2026-11-07",
     "active": true
   },
@@ -2566,7 +2560,7 @@
     "youth": null,
     "youthFrom": 0,
     "dogPrice": 0,
-    "priceNote": "Der Preis hängt vom Termin und Tarif ab. Aktuellen Gesamtpreis im offiziellen Buchungsformular prüfen.",
+    "priceNote": "Der Preis hängt vom Termin und Tarif ab.",
     "hours": [
       {
         "kind": "regular",
@@ -2827,12 +2821,11 @@
     ],
     "booking": "online",
     "bookingLink": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/fondueabend-sonnenburg_event_15667035",
-    "bookingNote": "Termin und Verfügbarkeit im offiziellen Ticketshop prüfen.",
     "accessibility": {},
     "accessSource": "",
     "passes": [],
     "accessNote": "",
-    "notes": "Treffpunkt und Bergbahnleistungen beim gewählten Termin prüfen. Die Karte zeigt den Ortsbezug. Den genauen Treffpunkt und die Verfügbarkeit bitte beim gebuchten Termin prüfen.",
+    "notes": "Die Karte zeigt den Ortsbezug.",
     "verified": "2026-11-07",
     "active": true
   },
@@ -2864,7 +2857,7 @@
     "youth": null,
     "youthFrom": 0,
     "dogPrice": 0,
-    "priceNote": "Der Preis hängt vom Termin und Tarif ab. Aktuellen Gesamtpreis im offiziellen Buchungsformular prüfen.",
+    "priceNote": "Der Preis hängt vom Termin und Tarif ab.",
     "hours": [
       {
         "kind": "regular",
@@ -3179,12 +3172,11 @@
     ],
     "booking": "online",
     "bookingLink": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/blick-hinter-kulissen-winter-serfaus_event_17816334",
-    "bookingNote": "Termin und Verfügbarkeit im offiziellen Ticketshop prüfen.",
     "accessibility": {},
     "accessSource": "",
     "passes": [],
     "accessNote": "",
-    "notes": "Technische Betriebsbereiche. Teilnahmebedingungen und Treffpunkt im Buchungsformular prüfen. Die Karte zeigt den Ortsbezug. Den genauen Treffpunkt und die Verfügbarkeit bitte beim gebuchten Termin prüfen.",
+    "notes": "Technische Betriebsbereiche. Die Karte zeigt den Ortsbezug.",
     "verified": "2026-11-07",
     "active": true
   },
@@ -3216,7 +3208,7 @@
     "youth": null,
     "youthFrom": 0,
     "dogPrice": 0,
-    "priceNote": "Der Preis hängt vom Termin und Tarif ab. Aktuellen Gesamtpreis im offiziellen Buchungsformular prüfen.",
+    "priceNote": "Der Preis hängt vom Termin und Tarif ab.",
     "hours": [
       {
         "kind": "regular",
@@ -3531,12 +3523,11 @@
     ],
     "booking": "online",
     "bookingLink": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/blick-hinter-die-kulissen-fiss_event_399193",
-    "bookingNote": "Termin und Verfügbarkeit im offiziellen Ticketshop prüfen.",
     "accessibility": {},
     "accessSource": "",
     "passes": [],
     "accessNote": "",
-    "notes": "Technische Betriebsbereiche. Teilnahmebedingungen und Treffpunkt im Buchungsformular prüfen. Die Karte zeigt den Ortsbezug. Den genauen Treffpunkt und die Verfügbarkeit bitte beim gebuchten Termin prüfen.",
+    "notes": "Technische Betriebsbereiche. Die Karte zeigt den Ortsbezug.",
     "verified": "2026-11-07",
     "active": true
   },
@@ -3568,7 +3559,7 @@
     "youth": null,
     "youthFrom": 0,
     "dogPrice": 0,
-    "priceNote": "Der Preis hängt vom Termin und Tarif ab. Aktuellen Gesamtpreis im offiziellen Buchungsformular prüfen.",
+    "priceNote": "Der Preis hängt vom Termin und Tarif ab.",
     "hours": [
       {
         "kind": "regular",
@@ -3865,12 +3856,11 @@
     ],
     "booking": "online",
     "bookingLink": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/sunset-dinner_event_399198",
-    "bookingNote": "Termin und Verfügbarkeit im offiziellen Ticketshop prüfen.",
     "accessibility": {},
     "accessSource": "",
     "passes": [],
     "accessNote": "",
-    "notes": "Treffpunkt, Transfers und Altersbedingungen im Ticketangebot prüfen. Die Karte zeigt den Ortsbezug. Den genauen Treffpunkt und die Verfügbarkeit bitte beim gebuchten Termin prüfen.",
+    "notes": "Die Karte zeigt den Ortsbezug.",
     "verified": "2026-11-07",
     "active": true
   },
@@ -3902,7 +3892,7 @@
     "youth": null,
     "youthFrom": 0,
     "dogPrice": 0,
-    "priceNote": "Der Preis hängt vom Termin und Tarif ab. Aktuellen Gesamtpreis im offiziellen Buchungsformular prüfen.",
+    "priceNote": "Der Preis hängt vom Termin und Tarif ab.",
     "hours": [
       {
         "kind": "regular",
@@ -4181,12 +4171,11 @@
     ],
     "booking": "online",
     "bookingLink": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/lassida-adventure-night_event_399203",
-    "bookingNote": "Termin und Verfügbarkeit im offiziellen Ticketshop prüfen.",
     "accessibility": {},
     "accessSource": "",
     "passes": [],
     "accessNote": "",
-    "notes": "Laut Veranstalter inklusive Berg- und Talfahrt. Treffpunkt und Rückfahrt prüfen. Die Karte zeigt den Ortsbezug. Den genauen Treffpunkt und die Verfügbarkeit bitte beim gebuchten Termin prüfen.",
+    "notes": "Laut Veranstalter inklusive Berg- und Talfahrt. Die Karte zeigt den Ortsbezug.",
     "verified": "2026-11-07",
     "active": true
   },
@@ -4218,7 +4207,7 @@
     "youth": null,
     "youthFrom": 0,
     "dogPrice": 0,
-    "priceNote": "Der Preis hängt vom Termin und Tarif ab. Aktuellen Gesamtpreis im offiziellen Buchungsformular prüfen.",
+    "priceNote": "Der Preis hängt vom Termin und Tarif ab.",
     "hours": [
       {
         "kind": "regular",
@@ -4497,12 +4486,11 @@
     ],
     "booking": "online",
     "bookingLink": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/lassida-vip-terrasse-adventure-night_event_399204",
-    "bookingNote": "Termin und Verfügbarkeit im offiziellen Ticketshop prüfen.",
     "accessibility": {},
     "accessSource": "",
     "passes": [],
     "accessNote": "",
-    "notes": "Laut Veranstalter inklusive Bergbahnleistungen. Gewählten Termin prüfen. Die Karte zeigt den Ortsbezug. Den genauen Treffpunkt und die Verfügbarkeit bitte beim gebuchten Termin prüfen.",
+    "notes": "Laut Veranstalter inklusive Bergbahnleistungen. Gewählten Termin prüfen. Die Karte zeigt den Ortsbezug.",
     "verified": "2026-11-07",
     "active": true
   },
@@ -4534,7 +4522,7 @@
     "youth": null,
     "youthFrom": 0,
     "dogPrice": 0,
-    "priceNote": "Der Preis hängt vom Termin und Tarif ab. Aktuellen Gesamtpreis im offiziellen Buchungsformular prüfen.",
+    "priceNote": "Der Preis hängt vom Termin und Tarif ab.",
     "hours": [
       {
         "kind": "regular",
@@ -4795,12 +4783,11 @@
     ],
     "booking": "online",
     "bookingLink": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/ski-lounge-vip-fondue_event_399205",
-    "bookingNote": "Termin und Verfügbarkeit im offiziellen Ticketshop prüfen.",
     "accessibility": {},
     "accessSource": "",
     "passes": [],
     "accessNote": "",
-    "notes": "Berg- und Talfahrt mit der Komperdellbahn laut Veranstalter enthalten. Die Karte zeigt den Ortsbezug. Den genauen Treffpunkt und die Verfügbarkeit bitte beim gebuchten Termin prüfen.",
+    "notes": "Berg- und Talfahrt mit der Komperdellbahn laut Veranstalter enthalten. Die Karte zeigt den Ortsbezug.",
     "verified": "2026-11-07",
     "active": true
   },
@@ -4859,12 +4846,11 @@
     ],
     "booking": "online",
     "bookingLink": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/silvester-seealm-hog_event_399209",
-    "bookingNote": "Termin und Verfügbarkeit im offiziellen Ticketshop prüfen.",
     "accessibility": {},
     "accessSource": "",
     "passes": [],
     "accessNote": "",
-    "notes": "Alpkopfbahn ab 18 Uhr. Der Betreiber veröffentlicht unterschiedliche Tarife nach Geburtsjahr. Die Karte zeigt den Ortsbezug. Den genauen Treffpunkt und die Verfügbarkeit bitte beim gebuchten Termin prüfen.",
+    "notes": "Alpkopfbahn ab 18 Uhr. Der Betreiber veröffentlicht unterschiedliche Tarife nach Geburtsjahr. Die Karte zeigt den Ortsbezug.",
     "verified": "2026-11-07",
     "active": true
   },
@@ -4896,7 +4882,7 @@
     "youth": null,
     "youthFrom": 0,
     "dogPrice": 0,
-    "priceNote": "Der Preis hängt vom Termin und Tarif ab. Aktuellen Gesamtpreis im offiziellen Buchungsformular prüfen.",
+    "priceNote": "Der Preis hängt vom Termin und Tarif ab.",
     "hours": [
       {
         "kind": "regular",
@@ -4923,12 +4909,11 @@
     ],
     "booking": "online",
     "bookingLink": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/silvester-sportalm_event_399210",
-    "bookingNote": "Termin und Verfügbarkeit im offiziellen Ticketshop prüfen.",
     "accessibility": {},
     "accessSource": "",
     "passes": [],
     "accessNote": "",
-    "notes": "Auffahrt und Talfahrt haben eigene Zeitfenster. Hinweise des Veranstalters prüfen. Die Karte zeigt den Ortsbezug. Den genauen Treffpunkt und die Verfügbarkeit bitte beim gebuchten Termin prüfen.",
+    "notes": "Auffahrt und Talfahrt haben eigene Zeitfenster. Die Karte zeigt den Ortsbezug.",
     "verified": "2026-11-07",
     "active": true
   },
@@ -4960,7 +4945,7 @@
     "youth": null,
     "youthFrom": 0,
     "dogPrice": 0,
-    "priceNote": "Der Preis hängt vom Termin und Tarif ab. Aktuellen Gesamtpreis im offiziellen Buchungsformular prüfen.",
+    "priceNote": "Der Preis hängt vom Termin und Tarif ab.",
     "hours": [
       {
         "kind": "regular",
@@ -4987,12 +4972,11 @@
     ],
     "booking": "online",
     "bookingLink": "https://www.serfaus-fiss-ladis.at/de/events-und-erlebnisse/erlebnisprogramm/silvester-leithe-wirt_event_399211",
-    "bookingNote": "Termin und Verfügbarkeit im offiziellen Ticketshop prüfen.",
     "accessibility": {},
     "accessSource": "",
     "passes": [],
     "accessNote": "",
-    "notes": "Anfahrt und Rückkehr beim Anbieter prüfen. Die Karte zeigt den Ortsbezug. Den genauen Treffpunkt und die Verfügbarkeit bitte beim gebuchten Termin prüfen.",
+    "notes": "Die Karte zeigt den Ortsbezug.",
     "verified": "2026-11-07",
     "active": true
   },

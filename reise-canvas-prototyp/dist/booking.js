@@ -1,6 +1,6 @@
 // In-site booking (DEMO): one booking for the whole itinerary — a time slot per activity, tickets, contact
 // (prefilled from an imaginary linked account), payment choice, one booking number and a calendar file.
-// Nothing is reserved or paid anywhere; the provider links stay available.
+// Nothing is reserved or paid anywhere; everything happens on the site.
 // Also the OpenStreetMap day maps of the trip plan.
 
 // ---------- OpenStreetMap day map (no library: OSM tiles + an SVG overlay) ----------

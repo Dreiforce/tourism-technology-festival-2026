@@ -176,11 +176,13 @@ function photoKey(village,date,text=''){
   return photoSpots.find(([pattern,key])=>pattern.test(text)&&fits(key))?.[1]||villagePhotos[village]?.find(fits)||villagePhotos[village]?.[0];
 }
 const activityPhoto=(a,date)=>photoKey(a.location[0].split(' · ')[0],date,`${a.title} ${a.location[0]} ${a.address||''}`);
-function photoFigure(key,className){
+// compact: thumbnails show a small © that carries the full credit (also listed in the footer).
+function photoFigure(key,className,compact=false){
   const p=photos[key];
   if(!p) return '';
+  const credit=`${t('photoBy',html(p.author))} · ${p.license}`;
   return `<figure class="photo ${className}"><img src="photos/${key}.jpg" alt="${html(p.alt[language==='en'?1:0])}" loading="lazy" decoding="async">
-    <figcaption><a href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(p.file.replaceAll(' ','_'))}" target="_blank" rel="noopener">${t('photoBy',html(p.author))} · ${p.license}</a></figcaption></figure>`;
+    <figcaption><a href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(p.file.replaceAll(' ','_'))}" target="_blank" rel="noopener"${compact?` title="${credit}" aria-label="${credit}">©`:`>${credit}`}</a></figcaption></figure>`;
 }
 const isMascotActivity=activity=>/murmli|berta/i.test(activity.title);
 function renderControls(){
@@ -644,21 +646,21 @@ function tripItem(entry,day){
   const a=o.activity;
   const bad=badWeather.has(day.weather?.kind);
   const rule=cardRule(a,day.date,state.guestCard), mode=bookingMode(a,rule), cost=groupPrice(a,group.members,rule);
-  const ticket=mode==='online'?ticketLink(a,day.date):'';
   const map=mapLink(a);
   const info=[localText(a,'notes'),localText(a,'bookingNote'),localText(a,'priceNote'),localText(a,'petNote'),localText(a,'accessNote'),rule&&`${superSommerCard.name}: ${localText(rule,'note')}`].filter(Boolean);
   // Card: the essentials only; everything else sits in "Details".
   const n=group.members.filter(p=>p.kind!=='dog').length;
-  const unsure=o.dogCheck||o.access.some(item=>item.status!=='yes')||a.advanceBooking;
   const flags=[o.today&&`<span class="chip-live today">● ${t('liveToday')}</span>`,
     a.weather==='both'&&bad&&`<span class="chip-soft">☂ ${t('weatherProof')}</span>`,
     isMascotActivity(a)&&`<span class="chip-soft mascot">${t('mascotPick')}</span>`,
-    unsure&&`<span class="chip-soft warn">⚠ ${t('checkFirst')}</span>`].filter(Boolean).join('');
-  return `<article class="trip-item">${photoFigure(activityPhoto(a,day.date),'trip-photo')}${who}
-    <div class="trip-head"><span class="trip-time">${timeRange(o.time.start,o.time.end)}</span><strong>${html(activityTitle(a))}</strong></div>
-    <p class="trip-meta">${html(a.location[0])} · ${t('minutes',a.duration)} · <strong>${priceText(cost,mode,a)}</strong></p>
-    ${flags?`<p class="trip-chips">${flags}</p>`:''}
-    ${o.likes.length?`<p class="trip-likes">${o.likes.map(l=>`<span title="${html(l.keys.map(k=>t(k)).join(', '))}">♥ ${shortName(l.person)}</span>`).join('')}</p>`:''}
+    a.advanceBooking&&`<span class="chip-soft">${t('advanceBooking')}</span>`,
+    ...o.likes.map(l=>`<span class="chip-like" title="${html(l.keys.map(k=>t(k)).join(', '))}">♥ ${shortName(l.person)}</span>`)].filter(Boolean).join('');
+  return `<article class="trip-item has-photo">${photoFigure(activityPhoto(a,day.date),'trip-photo',true)}
+    <div class="trip-body">${who}
+      <div class="trip-head"><span class="trip-time">${timeRange(o.time.start,o.time.end)}</span><strong>${html(activityTitle(a))}</strong></div>
+      <p class="trip-meta"><span>📍 ${html(a.location[0])}</span><span>⏱ ${t('minutes',a.duration)}</span><span class="trip-price">${priceText(cost,mode,a)}</span></p>
+      ${flags?`<p class="trip-chips">${flags}</p>`:''}
+    </div>
     <details class="trip-info"><summary>${t('details')}</summary>
       <p>${html(activityDescription(a))}</p>
       <p>📍 ${html(localText(a,'address')||a.location[0])}${map?` · <a href="${html(map)}" target="_blank" rel="noopener">${t('mapLink')} ↗</a>`:''}</p>
@@ -666,8 +668,8 @@ function tripItem(entry,day){
       <p><span class="chip-book ${mode}">${t('book_'+mode)}</span>${cost&&n>1?` ${t('priceFor',n)}`:''}</p>
       ${o.likes.length?`<p>${o.likes.map(l=>`♥ ${shortName(l.person)}: ${l.keys.map(k=>t(k)).join(', ')}`).join(' · ')}</p>`:''}
       ${o.access.length?`<p class="access-line">${o.access.map(({key:k,status})=>`<span class="access-chip ${status}">${status==='yes'?'✓':status==='limited'?'≈':'?'} ${t('access_'+k)}: ${t('accessStatus_'+status)}</span>`).join('')}</p>`:''}
-      ${[a.advanceBooking&&t('advanceBooking'),o.dogCheck&&t('dogAsk'),o.access.some(item=>item.status!=='yes')&&t('accessAsk'),...info.map(note=>html(note))].filter(Boolean).map(note=>`<p>${note}</p>`).join('')}
-      <p><a href="${html(ticket||a.sources[0])}" target="_blank" rel="noopener">${t('provider')} ↗</a>${a.checked?` · <small>${t('checkedOn',dayText(a.checked))}</small>`:''}</p>
+      ${info.map(note=>`<p>${html(note)}</p>`).join('')}
+      ${a.checked?`<p><small>${t('checkedOn',dayText(a.checked))}</small></p>`:''}
     </details>
     <div class="trip-actions">${bookButton(entry)}
       ${bookingFor(entry)?'':alternatives.length?`<button type="button" class="small" data-alt="${html(key)}" aria-expanded="${open}">⇄ ${t('swap')}</button>`:''}
@@ -695,11 +697,10 @@ function bookingOverview(days){
   const groups=bookingOrder.map(mode=>{
     const list=rows.filter(row=>row.mode===mode);
     return list.length?`<section class="booking-group"><h4><span class="chip-book ${mode}">${t('book_'+mode)}</span></h4>${list.map(({day,entry,a,rule,cost})=>{
-      const link=mode==='online'?ticketLink(a,day.date):'';
       return `<div class="booking-row"><div><strong>${html(activityTitle(a))}</strong>
         <small>${html(dayText(day.date))} · ${timeRange(entry.chosen.time.start,entry.chosen.time.end)} · ${html(localText(a,'address')||a.location[0])}${entry.group.id==='all'?'':' · '+html(entry.group.label)}</small>
 </div>
-        <div class="booking-side"><strong>${priceText(cost,mode,a)}</strong>${bookButton(entry)}${link?`<a href="${html(link)}" target="_blank" rel="noopener">${t('provider')} ↗</a>`:''}</div></div>`;
+        <div class="booking-side"><strong>${priceText(cost,mode,a)}</strong>${bookButton(entry)}</div></div>`;
     }).join('')}</section>`:'';
   }).join('');
   return `<section class="booking-overview" aria-labelledby="booking-title"><h3 id="booking-title">${t('bookingTitle')}</h3>

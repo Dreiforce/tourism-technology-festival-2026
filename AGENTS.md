@@ -58,7 +58,7 @@ Plain classic `<script defer>` files that share one global scope. **Load order m
 
 ### Trip planner in short
 
-For each day × slot (morning, afternoon, evening events) × group, an activity is a candidate only if it is open that day, fits every child's age, the dog isn't confirmed unwelcome (`pets: 'no'`; unknown stays in, labelled "ask the provider", outdoor first), nobody's accessibility needs are confirmed `no`, it isn't already planned, and it isn't an outdoor-only activity on a day with a forecast thunderstorm (forecast rain costs a lot of points; last year's rain, used when there's no forecast yet, only a little). Score: people in the group who like it, weighted by **fairness** (people with fewer favourite moments so far count more), plus bonuses for one-day events, weatherproof activities on bad days, confirmed access, mascot activities for kids and the home village; minus points for repeating a category in a day, distance and cold days for fair-weather activities. The user's swaps and removals are stored in `state.picks`, and the rest re-plans around them.
+For each day × slot (morning, afternoon, evening events) × group, an activity is a candidate only if it is open that day, fits every child's age, the dog isn't confirmed unwelcome (`pets: 'no'`; unknown stays in, outdoor first), nobody's accessibility needs are confirmed `no`, it isn't already planned, and it isn't an outdoor-only activity on a day with a forecast thunderstorm (forecast rain costs a lot of points; last year's rain, used when there's no forecast yet, only a little). Score: people in the group who like it, weighted by **fairness** (people with fewer favourite moments so far count more), plus bonuses for one-day events, weatherproof activities on bad days, confirmed access, mascot activities for kids and the home village; minus points for repeating a category in a day, distance and cold days for fair-weather activities. The user's swaps and removals are stored in `state.picks`, and the rest re-plans around them.
 
 ## Conventions
 
@@ -66,7 +66,7 @@ For each day × slot (morning, afternoon, evening events) × group, an activity 
 - Match the existing dense code style (short helpers, template-literal rendering, `$=id=>getElementById`).
 - Escape user text with `html()` before it goes into HTML or SVG.
 - **Accessibility**: real buttons and labels, `aria-pressed`/`aria-expanded`, keyboard paths for drag & drop (the dropdowns on the groups step), and honour `prefers-reduced-motion` for every new animation.
-- **Data honesty**: never invent opening hours, prices, ages or accessibility. Unknown stays unknown, and the UI says "beim Anbieter nachfragen".
+- **Data honesty**: never invent opening hours, prices, ages or accessibility. Unknown stays unknown: leave it out (or say "unknown") instead of guessing. Everything happens on the site, so never send people to "check with the provider", the ticket shop or a booking form.
 - The page must work at phone width (375 px) without horizontal scrolling.
 - Fonts (Caveat, Fraunces) are self-hosted in `dist/fonts/`. The PNG export inlines them as data URLs, because an SVG drawn as an image can't load web fonts. Everything placed into SVG must be XML-safe: run it through `html()`, a raw `&` breaks the export.
 - Original artwork only. The mascots and figures are our own simple drawings.
