@@ -158,6 +158,30 @@ function mascotTip(index){
   return `<div class="mascot-tip"><svg viewBox="-28 -90 56 96" aria-hidden="true">${mascot.art()}</svg><p><strong>${mascot.name}:</strong> ${t('tip'+steps[index])}</p></div>`;
 }
 const isWinter=date=>[11,12,1,2,3,4].includes(Number(date.slice(5,7)));
+// Real photos from Wikimedia Commons (credited on the photo and in the footer). A spot photo is used only
+// when it fits the season; otherwise the village photo stands in, so a summer walk never shows snow.
+const photos={
+  'serfaus-summer':{season:'summer',alt:['Serfaus im Sommer','Serfaus in summer'],author:'Dominik Ivic',license:'CC BY-SA 3.0',file:'Serfaus sommer.jpg'},
+  'serfaus-winter':{season:'winter',alt:['Serfaus im Winter','Serfaus in winter'],author:'Philipp Vallant',license:'CC BY-SA 3.0',file:'Serfaus winter.jpg'},
+  fiss:{alt:['Ortszentrum Fiss mit Kirche','Fiss village centre and church'],author:'Miebner',license:'CC BY-SA 3.0',file:'Ortszentrum Fiss.jpg'},
+  laudegg:{alt:['Burg Laudegg über dem Schlossweiher in Ladis','Laudegg Castle above the castle pond in Ladis'],author:'Braveheart',license:'CC BY-SA 4.0',file:'Burg Laudegg, Ladis.jpg'},
+  komperdell:{season:'winter',alt:['Komperdell oberhalb von Serfaus','Komperdell above Serfaus'],author:'Root5.5',license:'CC BY-SA 3.0',file:'Komperdell 2.jpg'},
+  wolfsee:{season:'summer',alt:['Wolfsee bei Fiss','Lake Wolfsee near Fiss'],author:'StefanFiss',license:'CC BY-SA 4.0',file:'Fiss - Wolfsee.jpg'},
+  ubahn:{alt:['Im Zug der U-Bahn Serfaus','Inside the Serfaus U-Bahn'],author:'BennyLLynneB',license:'CC BY-SA 4.0',file:'Serfaus-U-Bahn Innenraum Zug 20210911.jpg'}
+};
+const photoSpots=[[/Komperdell/,'komperdell'],[/Wolfsee/,'wolfsee'],[/Laudeck|Laudegg|Schlossweiher/,'laudegg'],[/U-Bahn/,'ubahn']];
+const villagePhotos={Serfaus:['serfaus-summer','serfaus-winter'],Fiss:['fiss'],Ladis:['laudegg']};
+function photoKey(village,date,text=''){
+  const season=isWinter(date||todayDate())?'winter':'summer', fits=key=>!photos[key].season||photos[key].season===season;
+  return photoSpots.find(([pattern,key])=>pattern.test(text)&&fits(key))?.[1]||villagePhotos[village]?.find(fits)||villagePhotos[village]?.[0];
+}
+const activityPhoto=(a,date)=>photoKey(a.location[0].split(' · ')[0],date,`${a.title} ${a.location[0]} ${a.address||''}`);
+function photoFigure(key,className){
+  const p=photos[key];
+  if(!p) return '';
+  return `<figure class="photo ${className}"><img src="photos/${key}.jpg" alt="${html(p.alt[language==='en'?1:0])}" loading="lazy" decoding="async">
+    <figcaption><a href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(p.file.replaceAll(' ','_'))}" target="_blank" rel="noopener">${t('photoBy',html(p.author))} · ${p.license}</a></figcaption></figure>`;
+}
 const isMascotActivity=activity=>/murmli|berta/i.test(activity.title);
 function renderControls(){
   const index=state.step;
@@ -175,7 +199,7 @@ function renderControls(){
           Array.from({length:to-from+1},(_,i)=>from+i).map(age=>`<button type="button" class="age-chip" data-age="${age}" aria-label="${ageText({age})}">${age===0?'&lt;1':age}</button>`).join('')}</div></div>`).join('')}</div>`:'');
   }else if(index===1){
     content=header(t('placeHeading'),t('placeHint'))+
-      `<div class="options">${Object.keys(towns).map(town=>`<button type="button" class="place" data-place="${town}" aria-pressed="${town===state.place}"><strong>${town}</strong><small>${t('motif'+town)}</small></button>`).join('')}</div>`;
+      `<div class="options">${Object.keys(towns).map(town=>`<button type="button" class="place" data-place="${town}" aria-pressed="${town===state.place}"><img src="photos/${photoKey(town,state.start)}.jpg" alt="" loading="lazy" decoding="async"><strong>${town}</strong><small>${t('motif'+town)}</small></button>`).join('')}</div>`;
   }else if(index===2){
     content=header(t('datesHeading'),t('datesHint'))+
       `<div class="date-fields"><label>${t('dateFrom')}<input id="date-start" type="date" value="${state.start}" aria-describedby="date-error"></label><label>${t('dateTo')}<input id="date-end" type="date" value="${state.end}" aria-describedby="date-error"></label></div><p id="date-error" role="alert"></p><p id="weather-note" class="weather-note" role="status"></p>
@@ -630,7 +654,7 @@ function tripItem(entry,day){
     a.weather==='both'&&bad&&`<span class="chip-soft">☂ ${t('weatherProof')}</span>`,
     isMascotActivity(a)&&`<span class="chip-soft mascot">${t('mascotPick')}</span>`,
     unsure&&`<span class="chip-soft warn">⚠ ${t('checkFirst')}</span>`].filter(Boolean).join('');
-  return `<article class="trip-item">${who}
+  return `<article class="trip-item">${photoFigure(activityPhoto(a,day.date),'trip-photo')}${who}
     <div class="trip-head"><span class="trip-time">${timeRange(o.time.start,o.time.end)}</span><strong>${html(activityTitle(a))}</strong></div>
     <p class="trip-meta">${html(a.location[0])} · ${t('minutes',a.duration)} · <strong>${priceText(cost,mode,a)}</strong></p>
     ${flags?`<p class="trip-chips">${flags}</p>`:''}
@@ -714,7 +738,7 @@ function renderResults(focus){
       ${day.slots.map(slot=>`<div class="trip-slot"><div class="slot-label">${t(slot.period==='evening'?'evening':slot.period)}</div><div class="slot-entries">${slot.entries.map(entry=>tripItem(entry,day)).join('')}</div></div>`).join('')}
     </section>`;
   }).join('');
-  target.innerHTML=`<div class="trip-top"><div><h2 id="results-title" tabindex="-1">${t('tripTitle')}</h2>
+  target.innerHTML=`${photoFigure(photoKey(state.place,dates[0]),'trip-hero')}<div class="trip-top"><div><h2 id="results-title" tabindex="-1">${t('tripTitle')}</h2>
     <p>${state.place} · ${html(stamp())} · ${t('tripIntro')}</p></div>
     <button type="button" class="primary" id="replan">✨ ${t('replan')}</button></div>
     <aside class="mascot-tip mascot-world"><svg viewBox="-56 -90 112 96" aria-hidden="true"><g transform="translate(-22 0)">${bertaArt()}</g><g transform="translate(24 0)">${murmliArt()}</g></svg>

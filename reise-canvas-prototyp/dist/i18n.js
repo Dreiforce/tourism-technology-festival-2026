@@ -12,6 +12,8 @@ const messages={
   steps:['Schritte','Steps'],
   designPrototype:['Familienzeit','Familienzeit'],
   imageReferences:['Bildvorlagen','Visual references'],
+  photoCredits:['Fotos','Photos'],
+  photoBy:['Foto: {0}','Photo: {0}'],
   referenceSerfaus:['Serfaus · Ortsansicht','Serfaus · Village view'],
   referenceLadis:['Ladis · Schlossweiher','Ladis · Castle pond'],
   language:['Sprache','Language'],

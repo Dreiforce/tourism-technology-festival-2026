@@ -448,3 +448,7 @@ dialog.book-dialog{width:min(720px,calc(100% - 20px));max-height:calc(100dvh - 2
 }
 @media(prefers-reduced-motion:reduce){.chat-log.typing::after{animation:none}.chat-log{scroll-behavior:auto}}
 @media print{.chat-toggle,.chat-panel{display:none!important}}
+.photo{margin:0;position:relative;overflow:hidden;border-radius:10px;background:#dce9dc}.photo img{display:block;width:100%;height:100%;object-fit:cover}.photo figcaption{position:absolute;right:0;bottom:0;max-width:100%;padding:2px 7px;font-size:10px;line-height:1.4;background:#173443b8;border-top-left-radius:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.photo figcaption a{color:#fff;text-decoration:none}.photo figcaption a:hover{text-decoration:underline}
+.trip-hero{height:clamp(150px,26vw,250px);margin:0 0 14px;border-radius:14px;box-shadow:0 7px 22px #193b3817}.trip-photo{height:128px;margin:-11px -13px 4px;border-radius:13px 13px 0 0}
+.options .place{flex:1 1 100px;max-width:230px;padding:6px 6px 9px}.place img{display:block;width:100%;height:82px;object-fit:cover;border-radius:5px;margin-bottom:6px}.place strong,.place small{padding:0 4px}
+.footer-tools details+details{margin-left:4px}
