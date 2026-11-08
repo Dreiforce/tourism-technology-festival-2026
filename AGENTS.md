@@ -68,7 +68,7 @@ For each day × slot (morning, afternoon, evening events) × group, an activity 
 - **Accessibility**: real buttons and labels, `aria-pressed`/`aria-expanded`, keyboard paths for drag & drop (the dropdowns on the groups step), and honour `prefers-reduced-motion` for every new animation.
 - **Data honesty**: never invent opening hours, prices, ages or accessibility. Unknown stays unknown: leave it out (or say "unknown") instead of guessing. Everything happens on the site, so never send people to "check with the provider", the ticket shop or a booking form.
 - The page must work at phone width (375 px) without horizontal scrolling.
-- Fonts (Caveat, Fraunces) are self-hosted in `dist/fonts/`. The PNG export inlines them as data URLs, because an SVG drawn as an image can't load web fonts. Everything placed into SVG must be XML-safe: run it through `html()`, a raw `&` breaks the export.
+- Fonts (Caveat, Fraunces) are self-hosted in `dist/fonts/`. Everything placed into SVG must be XML-safe: run it through `html()`, a raw `&` breaks the export.
 - Original artwork only. The mascots and figures are our own simple drawings.
 - Windows checkouts convert to CRLF. Compare files with `tr -d '\r'` if checksums disagree.
 

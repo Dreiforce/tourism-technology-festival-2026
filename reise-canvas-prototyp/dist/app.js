@@ -218,7 +218,7 @@ function renderControls(){
   }else{
     content=header(t('doneHeading'),t('doneHint'))+
       (hasSplit()?periodPicker():'')+
-      `<div class="summary-actions"><button class="small" type="button" id="flip" aria-pressed="${state.flipped}"><span aria-hidden="true">↻</span> ${t('flipCard')}</button><button class="small" type="button" id="share" aria-expanded="false" aria-controls="share-panel"><span aria-hidden="true">↗</span> ${t('shareSave')}</button><a class="primary to-plan" href="#results">${t('toPlan')}</a></div><div id="share-panel" class="share-panel" hidden></div><p id="export-status" role="status"></p>`;
+      `<div class="summary-actions"><button class="small" type="button" id="flip" aria-pressed="${state.flipped}"><span aria-hidden="true">↻</span> ${t('flipCard')}</button><button class="small" type="button" id="print-card"><span aria-hidden="true">⎙</span> ${t('savePdf')}</button><a class="primary to-plan" href="#results">${t('toPlan')}</a></div><p id="export-status" role="status"></p>`;
   }
   const disabled=index===0&&!state.family.some(p=>p.kind==='adult');
   if(planReady()&&index<finalStep) content+=`<a class="plan-hint" href="#results">↓ ${t('planBelow')}</a>`;
@@ -490,12 +490,8 @@ $('controls').addEventListener('click',event=>{
     $('controls').querySelector(`[data-mode="${mode}"]`).focus({preventScroll:true});
   }else if(target.hasAttribute('data-next')) go(state.step+1);
   else if(target.hasAttribute('data-back')) go(state.step-1);
-  else if(target.id==='export') exportPNG();
   else if(target.id==='flip') flipCard(!state.flipped);
-  else if(target.id==='share') toggleSharePanel(target);
-  else if(target.id==='share-native') sharePostcard();
   else if(target.id==='print-card') printSheet();
-  else if(target.id==='share-copy') navigator.clipboard?.writeText(shareURL()).then(()=>showExportStatus('shareCopied'),()=>{});
 });
 $('controls').addEventListener('change',event=>{
   if(event.target.dataset.assignment){
@@ -522,18 +518,6 @@ function showExportStatus(key){
   const status=$('export-status');
   if(status) status.textContent=t(key);
 }
-// An SVG drawn as an image cannot load web fonts, so the export inlines ours as data URLs.
-let exportFontCSS;
-function exportFonts(){
-  return exportFontCSS ||= fetch('fonts/fonts.css').then(response=>response.text()).then(async css=>{
-    for(const file of new Set(css.match(/[\w-]+\.woff2/g))){
-      const blob=await fetch('fonts/'+file).then(response=>response.blob());
-      const data=await new Promise(resolve=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.readAsDataURL(blob)});
-      css=css.split(`url(${file})`).join(`url(${data})`);
-    }
-    return css.replace(/\/\*[^]*?\*\//g,'');
-  }).catch(()=>{exportFontCSS=null;return ''});
-}
 // A4 portrait print sheet (units: 0.1 mm): the front on the top A5 half, the back on the bottom half
 // turned 180°, so the sheet folded along the middle line is a postcard whose back reads the right way up.
 function sheetSVG(styles=''){
@@ -547,24 +531,6 @@ function sheetSVG(styles=''){
     <text x="1050" y="1460" text-anchor="middle" font-size="28" fill="#7f8b82" font-family="system-ui, sans-serif">${html(t('foldHere'))}</text>
   </svg>`;
 }
-// Renders the A4 sheet (both sides) as a PNG blob at 200 dpi.
-async function renderPNG(){
-  const fonts=await exportFonts();
-  const source=sheetSVG(fonts).replace('width="2100" height="2970"','width="1654" height="2339"');
-  const url=URL.createObjectURL(new Blob([source],{type:'image/svg+xml;charset=utf-8'}));
-  try{
-    const img=new Image();
-    await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=reject;img.src=url});
-    await img.decode?.().catch(()=>{});
-    const canvas=document.createElement('canvas');
-    canvas.width=1654;canvas.height=2339;
-    canvas.getContext('2d').drawImage(img,0,0);
-    const png=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
-    if(!png) throw Error('PNG unavailable');
-    return png;
-  }finally{URL.revokeObjectURL(url)}
-}
-const pngName=()=>'familienzeit-'+state.place.toLowerCase()+'-a4.png';
 // Print / save as PDF: the same A4 sheet as vector graphics through the browser's print dialog.
 function printSheet(){
   $('print-sheet')?.remove();
@@ -575,57 +541,6 @@ function printSheet(){
   addEventListener('afterprint',()=>sheet.remove(),{once:true});
   print();
 }
-async function exportPNG(){
-  showExportStatus('exporting');
-  try{
-    const pngURL=URL.createObjectURL(await renderPNG());
-    const link=document.createElement('a');
-    link.download=pngName();
-    link.href=pngURL;
-    document.body.append(link);link.click();link.remove();
-    setTimeout(()=>URL.revokeObjectURL(pngURL),60000);
-    showExportStatus('exported');
-  }catch{
-    showExportStatus('exportFailed');
-  }
-}
-// One "Share & save" menu: the device's share sheet with the postcard image (where supported), social links,
-// copy link, and saving as PNG or printing / PDF.
-const shareURL=()=>location.origin+location.pathname;
-const canShareFiles=()=>{try{return Boolean(navigator.canShare?.({files:[new File([''],'x.png',{type:'image/png'})]}))}catch{return false}};
-async function sharePostcard(){
-  try{
-    const file=new File([await renderPNG()],pngName(),{type:'image/png'});
-    await navigator.share({files:[file],title:t('shareTitle'),text:`${t('shareText',state.place)} ${shareURL()}`});
-  }catch(error){
-    if(error?.name!=='AbortError') showExportStatus('exportFailed');
-  }
-}
-function toggleSharePanel(button){
-  const panel=$('share-panel');
-  const open=panel.hidden;
-  panel.hidden=!open;
-  button.setAttribute('aria-expanded',String(open));
-  if(!open) return;
-  const url=encodeURIComponent(shareURL()), message=encodeURIComponent(t('shareText',state.place));
-  const links={whatsapp:`https://wa.me/?text=${message}%20${url}`,facebook:`https://www.facebook.com/sharer/sharer.php?u=${url}`,
-    x:`https://x.com/intent/post?text=${message}&url=${url}`,pinterest:`https://www.pinterest.com/pin/create/button/?url=${url}&description=${message}`,
-    email:`mailto:?subject=${encodeURIComponent(t('shareTitle'))}&body=${message}%20${url}`};
-  panel.innerHTML=`<section aria-labelledby="share-heading"><h3 id="share-heading">${t('share')}</h3><div class="share-links">
-      ${canShareFiles()?`<button type="button" class="share-link native" id="share-native"><span aria-hidden="true">📤</span> ${t('shareNative')}</button>`:''}
-      ${Object.entries(links).map(([key,href])=>`<a class="share-link ${key}" href="${html(href)}" ${key==='email'?'':'target="_blank" rel="noopener"'}>${t('share_'+key)}</a>`).join('')}
-      <button type="button" class="share-link" id="share-copy"><span aria-hidden="true">🔗</span> ${t('shareCopy')}</button></div></section>
-    <section aria-labelledby="save-heading"><h3 id="save-heading">${t('saveHeading')}</h3><div class="share-links">
-      <button type="button" class="share-link" id="export"><span aria-hidden="true">⬇</span> ${t('export')}</button>
-      <button type="button" class="share-link" id="print-card"><span aria-hidden="true">⎙</span> ${t('printPdf')}</button></div></section>`;
-  panel.querySelector('button,a').focus();
-}
-$('controls').addEventListener('keydown',event=>{
-  if(event.key!=='Escape'||!event.target.closest('#share-panel')) return;
-  $('share-panel').hidden=true;
-  $('share').setAttribute('aria-expanded','false');
-  $('share').focus();
-});
 function visitDates(){
   const end=state.end||state.start;
   const dates=[];
