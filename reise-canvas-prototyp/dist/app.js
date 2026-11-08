@@ -176,13 +176,13 @@ function photoKey(village,date,text=''){
   return photoSpots.find(([pattern,key])=>pattern.test(text)&&fits(key))?.[1]||villagePhotos[village]?.find(fits)||villagePhotos[village]?.[0];
 }
 const activityPhoto=(a,date)=>photoKey(a.location[0].split(' · ')[0],date,`${a.title} ${a.location[0]} ${a.address||''}`);
-// compact: thumbnails show a small © that carries the full credit (also listed in the footer).
-function photoFigure(key,className,compact=false){
+// Thumbnails show a small © that carries the full credit (also listed in the footer).
+function photoFigure(key,className){
   const p=photos[key];
   if(!p) return '';
   const credit=`${t('photoBy',html(p.author))} · ${p.license}`;
   return `<figure class="photo ${className}"><img src="photos/${key}.jpg" alt="${html(p.alt[language==='en'?1:0])}" loading="lazy" decoding="async">
-    <figcaption><a href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(p.file.replaceAll(' ','_'))}" target="_blank" rel="noopener"${compact?` title="${credit}" aria-label="${credit}">©`:`>${credit}`}</a></figcaption></figure>`;
+    <figcaption><a href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(p.file.replaceAll(' ','_'))}" target="_blank" rel="noopener" title="${credit}" aria-label="${credit}">©</a></figcaption></figure>`;
 }
 const isMascotActivity=activity=>/murmli|berta/i.test(activity.title);
 function renderControls(){
@@ -218,7 +218,7 @@ function renderControls(){
   }else{
     content=header(t('doneHeading'),t('doneHint'))+
       (hasSplit()?periodPicker():'')+
-      `<div class="summary-actions"><button class="small" type="button" id="flip" aria-pressed="${state.flipped}"><span aria-hidden="true">↻</span> ${t('flipCard')}</button><button class="small" type="button" id="share" aria-expanded="false" aria-controls="share-panel"><span aria-hidden="true">↗</span> ${t('share')}</button><button class="small" type="button" id="print-card"><span aria-hidden="true">⎙</span> ${t('printPdf')}</button><button class="small" type="button" id="export">${t('export')}</button><a class="primary to-plan" href="#results">${t('toPlan')}</a></div><div id="share-panel" class="share-panel" hidden></div><p id="export-status" role="status"></p>`;
+      `<div class="summary-actions"><button class="small" type="button" id="flip" aria-pressed="${state.flipped}"><span aria-hidden="true">↻</span> ${t('flipCard')}</button><button class="small" type="button" id="share" aria-expanded="false" aria-controls="share-panel"><span aria-hidden="true">↗</span> ${t('shareSave')}</button><a class="primary to-plan" href="#results">${t('toPlan')}</a></div><div id="share-panel" class="share-panel" hidden></div><p id="export-status" role="status"></p>`;
   }
   const disabled=index===0&&!state.family.some(p=>p.kind==='adult');
   if(planReady()&&index<finalStep) content+=`<a class="plan-hint" href="#results">↓ ${t('planBelow')}</a>`;
@@ -492,7 +492,8 @@ $('controls').addEventListener('click',event=>{
   else if(target.hasAttribute('data-back')) go(state.step-1);
   else if(target.id==='export') exportPNG();
   else if(target.id==='flip') flipCard(!state.flipped);
-  else if(target.id==='share') sharePostcard(target);
+  else if(target.id==='share') toggleSharePanel(target);
+  else if(target.id==='share-native') sharePostcard();
   else if(target.id==='print-card') printSheet();
   else if(target.id==='share-copy') navigator.clipboard?.writeText(shareURL()).then(()=>showExportStatus('shareCopied'),()=>{});
 });
@@ -588,34 +589,43 @@ async function exportPNG(){
     showExportStatus('exportFailed');
   }
 }
-// Share: the device's share sheet with the postcard image (phones: WhatsApp, Instagram, Signal …);
-// where that is not available, a panel with social links and "copy link".
+// One "Share & save" menu: the device's share sheet with the postcard image (where supported), social links,
+// copy link, and saving as PNG or printing / PDF.
 const shareURL=()=>location.origin+location.pathname;
-async function sharePostcard(button){
-  const text=t('shareText',state.place);
+const canShareFiles=()=>{try{return Boolean(navigator.canShare?.({files:[new File([''],'x.png',{type:'image/png'})]}))}catch{return false}};
+async function sharePostcard(){
   try{
     const file=new File([await renderPNG()],pngName(),{type:'image/png'});
-    if(navigator.canShare?.({files:[file]})){
-      await navigator.share({files:[file],title:t('shareTitle'),text:`${text} ${shareURL()}`});
-      return;
-    }
+    await navigator.share({files:[file],title:t('shareTitle'),text:`${t('shareText',state.place)} ${shareURL()}`});
   }catch(error){
-    if(error?.name==='AbortError') return;
+    if(error?.name!=='AbortError') showExportStatus('exportFailed');
   }
+}
+function toggleSharePanel(button){
   const panel=$('share-panel');
   const open=panel.hidden;
   panel.hidden=!open;
   button.setAttribute('aria-expanded',String(open));
   if(!open) return;
-  const url=encodeURIComponent(shareURL()), message=encodeURIComponent(text);
+  const url=encodeURIComponent(shareURL()), message=encodeURIComponent(t('shareText',state.place));
   const links={whatsapp:`https://wa.me/?text=${message}%20${url}`,facebook:`https://www.facebook.com/sharer/sharer.php?u=${url}`,
     x:`https://x.com/intent/post?text=${message}&url=${url}`,pinterest:`https://www.pinterest.com/pin/create/button/?url=${url}&description=${message}`,
     email:`mailto:?subject=${encodeURIComponent(t('shareTitle'))}&body=${message}%20${url}`};
-  panel.innerHTML=`<p>${t('shareHint')}</p><div class="share-links">${Object.entries(links).map(([key,href])=>
-    `<a class="share-link ${key}" href="${html(href)}" ${key==='email'?'':'target="_blank" rel="noopener"'}>${t('share_'+key)}</a>`).join('')}
-    <button type="button" class="share-link" id="share-copy">${t('shareCopy')}</button></div>`;
-  panel.querySelector('a').focus();
+  panel.innerHTML=`<section aria-labelledby="share-heading"><h3 id="share-heading">${t('share')}</h3><div class="share-links">
+      ${canShareFiles()?`<button type="button" class="share-link native" id="share-native"><span aria-hidden="true">📤</span> ${t('shareNative')}</button>`:''}
+      ${Object.entries(links).map(([key,href])=>`<a class="share-link ${key}" href="${html(href)}" ${key==='email'?'':'target="_blank" rel="noopener"'}>${t('share_'+key)}</a>`).join('')}
+      <button type="button" class="share-link" id="share-copy"><span aria-hidden="true">🔗</span> ${t('shareCopy')}</button></div></section>
+    <section aria-labelledby="save-heading"><h3 id="save-heading">${t('saveHeading')}</h3><div class="share-links">
+      <button type="button" class="share-link" id="export"><span aria-hidden="true">⬇</span> ${t('export')}</button>
+      <button type="button" class="share-link" id="print-card"><span aria-hidden="true">⎙</span> ${t('printPdf')}</button></div></section>`;
+  panel.querySelector('button,a').focus();
 }
+$('controls').addEventListener('keydown',event=>{
+  if(event.key!=='Escape'||!event.target.closest('#share-panel')) return;
+  $('share-panel').hidden=true;
+  $('share').setAttribute('aria-expanded','false');
+  $('share').focus();
+});
 function visitDates(){
   const end=state.end||state.start;
   const dates=[];
@@ -655,7 +665,7 @@ function tripItem(entry,day){
     isMascotActivity(a)&&`<span class="chip-soft mascot">${t('mascotPick')}</span>`,
     a.advanceBooking&&`<span class="chip-soft">${t('advanceBooking')}</span>`,
     ...o.likes.map(l=>`<span class="chip-like" title="${html(l.keys.map(k=>t(k)).join(', '))}">♥ ${shortName(l.person)}</span>`)].filter(Boolean).join('');
-  return `<article class="trip-item has-photo">${photoFigure(activityPhoto(a,day.date),'trip-photo',true)}
+  return `<article class="trip-item has-photo">${photoFigure(activityPhoto(a,day.date),'trip-photo')}
     <div class="trip-body">${who}
       <div class="trip-head"><span class="trip-time">${timeRange(o.time.start,o.time.end)}</span><strong>${html(activityTitle(a))}</strong></div>
       <p class="trip-meta"><span>📍 ${html(a.location[0])}</span><span>⏱ ${t('minutes',a.duration)}</span><span class="trip-price">${priceText(cost,mode,a)}</span></p>
@@ -739,7 +749,7 @@ function renderResults(focus){
       ${day.slots.map(slot=>`<div class="trip-slot"><div class="slot-label">${t(slot.period==='evening'?'evening':slot.period)}</div><div class="slot-entries">${slot.entries.map(entry=>tripItem(entry,day)).join('')}</div></div>`).join('')}
     </section>`;
   }).join('');
-  target.innerHTML=`${photoFigure(photoKey(state.place,dates[0]),'trip-hero')}<div class="trip-top"><div><h2 id="results-title" tabindex="-1">${t('tripTitle')}</h2>
+  target.innerHTML=`<div class="trip-top"><div><h2 id="results-title" tabindex="-1">${t('tripTitle')}</h2>
     <p>${state.place} · ${html(stamp())} · ${t('tripIntro')}</p></div>
     <button type="button" class="primary" id="replan">✨ ${t('replan')}</button></div>
     <aside class="mascot-tip mascot-world"><svg viewBox="-56 -90 112 96" aria-hidden="true"><g transform="translate(-22 0)">${bertaArt()}</g><g transform="translate(24 0)">${murmliArt()}</g></svg>

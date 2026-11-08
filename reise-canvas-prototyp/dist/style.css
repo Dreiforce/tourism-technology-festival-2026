@@ -449,7 +449,6 @@ dialog.book-dialog{width:min(720px,calc(100% - 20px));max-height:calc(100dvh - 2
 @media(prefers-reduced-motion:reduce){.chat-log.typing::after{animation:none}.chat-log{scroll-behavior:auto}}
 @media print{.chat-toggle,.chat-panel{display:none!important}}
 .photo{margin:0;position:relative;overflow:hidden;border-radius:10px;background:#dce9dc}.photo img{display:block;width:100%;height:100%;object-fit:cover}.photo figcaption{position:absolute;right:0;bottom:0;max-width:100%;padding:2px 7px;font-size:10px;line-height:1.4;background:#173443b8;border-top-left-radius:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.photo figcaption a{color:#fff;text-decoration:none}.photo figcaption a:hover{text-decoration:underline}
-.trip-hero{height:clamp(110px,17vw,165px);margin:0 0 14px;border-radius:14px;box-shadow:0 7px 22px #193b3817}
 .trip-item{background:#fff;border:1px solid #e3e8dd;border-radius:16px;padding:12px;box-shadow:0 10px 24px -20px #193b3880;transition:transform .15s,box-shadow .15s}
 .trip-item:not(.empty):not(.care):hover{transform:translateY(-2px);box-shadow:0 16px 30px -18px #193b3899}
 .trip-item.empty,.trip-item.care{box-shadow:none}
@@ -465,3 +464,4 @@ dialog.book-dialog{width:min(720px,calc(100% - 20px));max-height:calc(100dvh - 2
 @media(prefers-reduced-motion:reduce){.trip-item{transition:none}.trip-item:not(.empty):not(.care):hover{transform:none}}
 .options .place{flex:1 1 100px;max-width:230px;padding:6px 6px 9px}.place img{display:block;width:100%;height:58px;object-fit:cover;border-radius:5px;margin-bottom:6px}.place strong,.place small{padding:0 4px}
 .footer-tools details+details{margin-left:4px}
+.share-panel{display:grid;gap:10px}.share-panel h3{margin:0 0 6px;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#966324}.share-panel section+section{padding-top:10px;border-top:1px dashed var(--line)}.share-link{gap:6px}.share-link.native{background:var(--green);border-color:var(--green);color:#fff}.share-link.native:hover{background:#1b4639}
