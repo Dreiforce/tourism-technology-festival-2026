@@ -10,7 +10,7 @@ const messages={
   welcomeDescription:['Setzt eure Familie, den Ort und eure Wünsche zu einer eigenen Reisepostkarte zusammen.','Bring your family, destination and favourite things together in a travel postcard.'],
   startCanvas:['Canvas starten','Start the canvas'],
   steps:['Schritte','Steps'],
-  designPrototype:['Familienzeit / Designprototyp','Familienzeit / Design prototype'],
+  designPrototype:['Familienzeit','Familienzeit'],
   imageReferences:['Bildvorlagen','Visual references'],
   referenceSerfaus:['Serfaus · Ortsansicht','Serfaus · Village view'],
   referenceLadis:['Ladis · Schlossweiher','Ladis · Castle pond'],
