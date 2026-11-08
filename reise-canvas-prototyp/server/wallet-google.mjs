@@ -64,7 +64,7 @@ const googleTexts = {
     cardConditions: 'conditions',
     logo: 'familienzeit. logo', postcard: 'Your travel postcard', mountains: 'Mountains with sun',
     booking: 'Booking', openCanvas: 'Open Familienzeit',
-    demoBooking: ref => `Booking ${ref} – booked with Familienzeit (demo), nothing is reserved or paid.`
+    demoBooking: ref => `Booking ${ref}`
   }
 };
 

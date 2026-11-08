@@ -71,7 +71,7 @@ const tripText = {
     info: 'Details from the provider',
     careTitle: 'Childcare',
     careLabel: 'Childcare hours you entered',
-    booked: 'Booked (demo)',
+    booked: 'Booked',
     estimateNote: 'Times are suggestions from Familienzeit. Please check opening hours and booking with the provider.',
     locale: 'en-GB',
     dayFormat: {weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC'}

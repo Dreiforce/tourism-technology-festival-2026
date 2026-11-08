@@ -88,7 +88,6 @@ function openBooking(){
   const contact=(()=>{try{return JSON.parse(localStorage.getItem('familienzeit-contact'))||mockAccount}catch{return mockAccount}})();
   $('book-content').innerHTML=`<h2 id="book-title">${t(state.tripRef?'bookMoreTitle':'bookAllTitle')}</h2>
     ${state.tripRef?`<p>${t('bookMoreIntro',html(state.tripRef))}</p>`:''}
-    <p class="demo-banner">${t('demoBanner')}</p>
     ${bookingDraft.map((item,i)=>{
       const {adults,children,dogs}=people(item.entry.group.members);
       return `<fieldset class="book-item"><legend><strong>${html(activityTitle(item.a))}</strong>
@@ -131,7 +130,6 @@ function confirmBooking(form){
   saveState();
   renderResults();
   $('book-content').innerHTML=`<h2 id="book-title">${t('bookedTitle')}</h2>
-    <p class="demo-banner">${t('demoBanner')}</p>
     <p>${t('bookedIntro',html(contact.email))}</p>
     <p class="trip-ref">${t('bookingNumber')} <code>${html(state.tripRef)}</code></p>
     <ul class="booked-list">${done.map(({a,day,booking})=>`<li><strong>${html(activityTitle(a))}</strong>
@@ -154,7 +152,7 @@ function downloadCalendar(){
       return ['BEGIN:VEVENT',`UID:${booking.ref}@familienzeit`,`DTSTAMP:${new Date().toISOString().replace(/[-:]/g,'').slice(0,15)}Z`,
         `DTSTART:${stamp(day.date)}T${time(booking.start)}`,`DTEND:${stamp(day.date)}T${time(booking.end)}`,
         `SUMMARY:${esc(activityTitle(a))}`,`LOCATION:${esc(localText(a,'address')||a.location[0])}`,
-        `DESCRIPTION:${esc(`${t('demoBanner')} ${booking.ref}`)}`,'END:VEVENT'].join('\r\n');
+        `DESCRIPTION:${esc(`${booking.ref}`)}`,'END:VEVENT'].join('\r\n');
     });
   const file=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Familienzeit//Reise-Canvas//DE',...events,'END:VCALENDAR'].join('\r\n');
   const url=URL.createObjectURL(new Blob([file],{type:'text/calendar;charset=utf-8'}));

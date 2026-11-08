@@ -317,7 +317,7 @@ test('PKCS#1 keys are accepted; EC, encrypted and mismatched keys get clear erro
   await assert.rejects(buildApplePass(trip, {...config, images: noIcon}), /icon\.png/);
 });
 
-test('QR code to the Reise-Canvas home page and the demo booking number', () => {
+test('QR code to the Reise-Canvas home page and the booking number', () => {
   const trip0 = trip;
   const booked = {...trip0, booking: {ref: 'FZ-AB12CD'},
     days: trip0.days.map((day, i) => ({...day, stops: day.stops.map((stop, j) => i === 0 && j === 0
